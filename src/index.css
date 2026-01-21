@@ -1,16 +1,22 @@
 /*
   Tailwind v4 entrypoint.
-  Dark mode only: we set <html class="dark"> in index.html.
+  Supports both dark and light modes via class-based theme switching.
 */
 @import "tailwindcss";
 
 @layer base {
   :root {
-    color-scheme: dark;
+    color-scheme: light dark;
   }
 
-  html {
+  /* Dark Mode (default) */
+  html.dark {
     @apply bg-zinc-950 text-zinc-100;
+  }
+
+  /* Light Mode */
+  html.light {
+    @apply bg-zinc-50 text-zinc-900;
   }
 
   body {
@@ -18,41 +24,54 @@
   }
 
   a {
-    @apply text-zinc-100 underline decoration-zinc-700 underline-offset-4;
+    @apply text-zinc-100 underline decoration-zinc-700 underline-offset-4 dark:text-zinc-100 dark:decoration-zinc-700;
+    @apply light:text-zinc-900 light:decoration-zinc-300;
   }
 
   a:hover {
-    @apply decoration-zinc-400;
+    @apply decoration-zinc-400 dark:decoration-zinc-400;
+    @apply light:decoration-zinc-600;
   }
 
   input,
   select,
   textarea {
-    @apply w-full rounded-lg border border-zinc-800 bg-zinc-900 px-3 py-2 text-zinc-100 placeholder:text-zinc-500;
+    @apply w-full rounded-lg border px-3 py-2 placeholder:text-zinc-500;
+    @apply dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100;
+    @apply light:border-zinc-300 light:bg-white light:text-zinc-900;
   }
 
   input:focus,
   select:focus,
   textarea:focus {
-    @apply outline-none ring-2 ring-zinc-600;
+    @apply outline-none ring-2;
+    @apply dark:ring-zinc-600;
+    @apply light:ring-zinc-400;
   }
 
   label {
-    @apply text-sm text-zinc-300;
+    @apply text-sm;
+    @apply dark:text-zinc-300;
+    @apply light:text-zinc-700;
   }
 }
 
 @layer components {
   .ot-card {
-    @apply rounded-2xl border border-zinc-800 bg-zinc-950/60 p-4 shadow-sm;
+    @apply rounded-2xl border p-4 shadow-sm;
+    @apply dark:border-zinc-800 dark:bg-zinc-950/60;
+    @apply light:border-zinc-200 light:bg-white;
   }
 
   .ot-btn {
-    @apply inline-flex items-center justify-center rounded-xl border border-zinc-800 bg-zinc-900 px-3 py-2 text-sm text-zinc-100;
+    @apply inline-flex items-center justify-center rounded-xl border px-3 py-2 text-sm;
+    @apply dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100;
+    @apply light:border-zinc-300 light:bg-zinc-100 light:text-zinc-900;
   }
 
   .ot-btn:hover {
-    @apply bg-zinc-800;
+    @apply dark:bg-zinc-800;
+    @apply light:bg-zinc-200;
   }
 
   .ot-btn:active {
@@ -60,23 +79,29 @@
   }
 
   .ot-btn-primary {
-    @apply border-zinc-700 bg-zinc-100 text-zinc-900;
+    @apply dark:border-zinc-700 dark:bg-zinc-100 dark:text-zinc-900;
+    @apply light:border-zinc-900 light:bg-zinc-900 light:text-white;
   }
 
   .ot-btn-primary:hover {
-    @apply bg-white;
+    @apply dark:bg-white;
+    @apply light:bg-zinc-800;
   }
 
   .ot-btn-danger {
-    @apply border-red-900/40 bg-red-950/40 text-red-200;
+    @apply dark:border-red-900/40 dark:bg-red-950/40 dark:text-red-200;
+    @apply light:border-red-300 light:bg-red-50 light:text-red-700;
   }
 
   .ot-btn-danger:hover {
-    @apply bg-red-950/60;
+    @apply dark:bg-red-950/60;
+    @apply light:bg-red-100;
   }
 
   .ot-kbd {
-    @apply rounded-md border border-zinc-700 bg-zinc-900 px-2 py-1 font-mono text-xs text-zinc-200;
+    @apply rounded-md border px-2 py-1 font-mono text-xs;
+    @apply dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200;
+    @apply light:border-zinc-300 light:bg-zinc-100 light:text-zinc-700;
   }
 
   @keyframes slide-in-right {

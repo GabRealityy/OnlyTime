@@ -19,12 +19,14 @@ import { showToast } from '../components/Toast'
 import { OnboardingChecklist, type ChecklistItem } from '../components/OnboardingChecklist'
 import { loadExpensesForMonth } from '../lib/expenses'
 import { monthKeyFromDate } from '../lib/date'
+import { useTheme } from '../contexts/ThemeContext'
 
 export function SettingsScreen(props: {
   settings: Settings
   onChange: (next: Settings) => void
 }) {
   const { settings, onChange } = props
+  const { theme, toggleTheme } = useTheme()
   const [showAdvanced, setShowAdvanced] = useState(false)
   const [showAdditionalIncome, setShowAdditionalIncome] = useState(settings.additionalIncomeSources.length > 0)
   const [showCategoryManager, setShowCategoryManager] = useState(false)
@@ -113,6 +115,26 @@ export function SettingsScreen(props: {
 
   return (
     <div className="space-y-4">
+      {/* Theme Toggle */}
+      <div className="ot-card">
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="text-lg font-semibold">Design</div>
+            <div className="mt-1 text-sm text-zinc-400 dark:text-zinc-400 light:text-zinc-600">
+              Zwischen hellem und dunklem Modus wechseln
+            </div>
+          </div>
+          <button
+            type="button"
+            className="ot-btn flex items-center gap-2"
+            onClick={toggleTheme}
+          >
+            <span className="text-lg">{theme === 'dark' ? '☀️' : '🌙'}</span>
+            <span>{theme === 'dark' ? 'Hell' : 'Dunkel'}</span>
+          </button>
+        </div>
+      </div>
+
       {/* Haupteinkommen */}
       <div className="ot-card">
         <div className="text-lg font-semibold">Einkommen</div>

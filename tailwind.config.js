@@ -1,10 +1,11 @@
 /**
- * OnlyTime Tailwind config (dark-mode-only UI).
+ * OnlyTime Tailwind config (supports dark and light modes).
  * Tailwind v4 can run without a config, but we keep it explicit for this MVP.
  */
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ['./index.html', './src/**/*.{ts,tsx}'],
+  darkMode: 'class',
   theme: {
     extend: {
       fontFamily: {
