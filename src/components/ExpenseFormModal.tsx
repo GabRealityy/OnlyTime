@@ -144,7 +144,7 @@ export function ExpenseFormModal(props: {
             </label>
             <button
               type="button"
-              className="text-xs text-zinc-400 hover:text-zinc-300"
+              className="text-xs text-zinc-600 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300"
               onClick={() => setInputMode(inputMode === 'chf' ? 'time' : 'chf')}
             >
               ↔ {inputMode === 'chf' ? 'In Stunden eingeben' : 'In CHF eingeben'}
@@ -167,9 +167,9 @@ export function ExpenseFormModal(props: {
           
           {/* Preview */}
           {parsedAmount && parsedAmount > 0 && (
-            <div className="mt-2 rounded-lg border border-zinc-800 bg-zinc-950/40 p-2 text-xs">
+            <div className="mt-2 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-950/40 p-2 text-xs">
               <div className="flex items-center justify-between">
-                <span className="text-zinc-500">Entspricht:</span>
+                <span className="text-zinc-600 dark:text-zinc-500">Entspricht:</span>
                 <div className="text-right">
                   {inputMode === 'chf' && timeHours !== null && (
                     <div>{formatHoursMinutes(timeHours)} Arbeitszeit</div>
@@ -235,7 +235,7 @@ export function ExpenseFormModal(props: {
 
         {/* Optional Note */}
         <div>
-          <label htmlFor="expense-note" className="text-sm font-medium text-zinc-400">
+          <label htmlFor="expense-note" className="text-sm font-medium text-zinc-600 dark:text-zinc-400">
             Notiz (optional)
           </label>
           <textarea
@@ -265,7 +265,7 @@ export function ExpenseFormModal(props: {
           </button>
         </div>
 
-        <div className="text-xs text-zinc-500">
+        <div className="text-xs text-zinc-600 dark:text-zinc-500">
           Tipp: Drücke Enter zum Speichern
         </div>
       </div>

@@ -118,7 +118,7 @@ export function BudgetManager(props: {
   return (
     <Modal title="Kategorie-Budgets" open={open} onClose={onClose}>
       <div className="space-y-4">
-        <p className="text-sm text-zinc-400">
+        <p className="text-sm text-zinc-600 dark:text-zinc-400">
           Setze monatliche Budgets für einzelne Kategorien. Du wirst gewarnt, wenn du das Budget überschreitest.
         </p>
 
@@ -256,7 +256,7 @@ export function BudgetManager(props: {
         </div>
 
         {budgets.length === 0 && (
-          <div className="rounded-lg border border-zinc-800 bg-zinc-950/40 p-6 text-center text-sm text-zinc-500">
+          <div className="rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-950/40 p-6 text-center text-sm text-zinc-600 dark:text-zinc-500">
             Noch keine Budgets definiert.
             <br />
             Klicke auf "Budget setzen" bei einer Kategorie.

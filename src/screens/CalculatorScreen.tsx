@@ -61,7 +61,7 @@ export function CalculatorScreen(props: { settings: Settings }) {
     <div className="space-y-4">
       <div className="ot-card">
         <div className="text-lg font-semibold">Calculator</div>
-        <div className="mt-1 text-sm text-zinc-400">
+        <div className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
           Convert a price into time.
         </div>
 
@@ -138,7 +138,7 @@ export function CalculatorScreen(props: { settings: Settings }) {
             value={reflection}
             onChange={(e) => setReflection(e.target.value)}
           />
-          <div className="text-xs text-zinc-500">
+          <div className="text-xs text-zinc-600 dark:text-zinc-500">
             This text is not stored anywhere.
           </div>
         </div>

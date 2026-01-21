@@ -157,7 +157,7 @@ export function CategoryManager(props: {
           ))}
 
           {categories.length === 0 && (
-            <div className="rounded-lg border border-zinc-800 bg-zinc-950/40 p-6 text-center text-sm text-zinc-500">
+            <div className="rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-950/40 p-6 text-center text-sm text-zinc-600 dark:text-zinc-500">
               Noch keine benutzerdefinierten Kategorien.
               <br />
               Erstelle deine erste Kategorie!

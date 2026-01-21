@@ -219,17 +219,17 @@ export function CSVImportModal(props: {
     >
       {step === 'upload' && (
         <div className="space-y-4">
-          <p className="text-sm text-zinc-400">
+          <p className="text-sm text-zinc-600 dark:text-zinc-400">
             Lade eine CSV-Datei mit deinen Ausgaben hoch. Format: Datum, Betrag, Beschreibung (optional: Kategorie)
           </p>
-          <label className="block cursor-pointer rounded-lg border-2 border-dashed border-zinc-800 p-8 text-center hover:border-zinc-700 hover:bg-zinc-900/40 transition">
+          <label className="block cursor-pointer rounded-lg border-2 border-dashed border-zinc-300 dark:border-zinc-800 p-8 text-center hover:border-zinc-400 dark:hover:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-900/40 transition">
             <input
               type="file"
               accept=".csv"
               onChange={handleFileSelect}
               className="hidden"
             />
-            <div className="text-zinc-400">
+            <div className="text-zinc-600 dark:text-zinc-400">
               <div className="text-3xl mb-2">📄</div>
               <div className="font-medium">CSV-Datei auswählen</div>
               <div className="text-xs mt-1">oder hierher ziehen</div>
@@ -240,7 +240,7 @@ export function CSVImportModal(props: {
 
       {step === 'mapping' && (
         <div className="space-y-4">
-          <p className="text-sm text-zinc-400">
+          <p className="text-sm text-zinc-600 dark:text-zinc-400">
             Ordne die CSV-Spalten den Feldern zu:
           </p>
           
@@ -290,12 +290,12 @@ export function CSVImportModal(props: {
             </div>
           </div>
 
-          <div className="bg-zinc-950/60 rounded-lg p-3 text-xs text-zinc-400">
+          <div className="bg-zinc-100 dark:bg-zinc-950/60 rounded-lg p-3 text-xs text-zinc-600 dark:text-zinc-400">
             <div className="font-medium mb-1">Vorschau (erste Zeile):</div>
             {csvData[0] && (
               <div className="space-y-1">
                 {Object.entries(csvData[0]).map(([key, val]) => (
-                  <div key={key}><span className="text-zinc-500">{key}:</span> {val}</div>
+                  <div key={key}><span className="text-zinc-600 dark:text-zinc-500">{key}:</span> {val}</div>
                 ))}
               </div>
             )}
@@ -315,7 +315,7 @@ export function CSVImportModal(props: {
       {step === 'preview' && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <p className="text-sm text-zinc-400">
+            <p className="text-sm text-zinc-600 dark:text-zinc-400">
               {previewExpenses.length} Ausgabe(n) bereit zum Import
             </p>
             <div className="text-sm font-medium">
@@ -325,11 +325,11 @@ export function CSVImportModal(props: {
 
           <div className="max-h-60 overflow-y-auto space-y-2">
             {previewExpenses.slice(0, 10).map((exp, idx) => (
-              <div key={idx} className="rounded-lg bg-zinc-900/60 p-2 text-sm">
+              <div key={idx} className="rounded-lg bg-zinc-100 dark:bg-zinc-900/60 p-2 text-sm">
                 <div className="flex items-center justify-between">
                   <div>
                     <div className="font-medium">{exp.title}</div>
-                    <div className="text-xs text-zinc-500">
+                    <div className="text-xs text-zinc-600 dark:text-zinc-500">
                       {exp.date} · {exp.category}
                     </div>
                   </div>
@@ -338,7 +338,7 @@ export function CSVImportModal(props: {
               </div>
             ))}
             {previewExpenses.length > 10 && (
-              <div className="text-center text-xs text-zinc-500 py-2">
+              <div className="text-center text-xs text-zinc-600 dark:text-zinc-500 py-2">
                 ... und {previewExpenses.length - 10} weitere
               </div>
             )}

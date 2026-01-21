@@ -22,7 +22,7 @@ export function TopNav(props: {
       <div className="mx-auto flex max-w-3xl items-center gap-2 px-3 py-3">
         <div className="mr-auto">
           <div className="text-sm font-semibold tracking-wide">OnlyTime</div>
-          <div className="text-xs text-zinc-500">money, expressed as time</div>
+          <div className="text-xs text-zinc-600 dark:text-zinc-500">money, expressed as time</div>
         </div>
 
         <div className="flex gap-2">

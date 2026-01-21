@@ -199,7 +199,7 @@ export function SettingsScreen(props: {
                   }}
                 />
                 {settings.grossMonthlyIncomeCHF > 0 && settings.taxRatePercent > 0 && (
-                  <div className="mt-1 text-xs text-zinc-500">
+                  <div className="mt-1 text-xs text-zinc-600 dark:text-zinc-500">
                     ≈ {formatCHF(settings.grossMonthlyIncomeCHF * (1 - settings.taxRatePercent / 100))} netto
                   </div>
                 )}
@@ -231,7 +231,7 @@ export function SettingsScreen(props: {
       {/* Arbeitszeit */}
       <div className="ot-card">
         <div className="text-lg font-semibold">Arbeitszeit</div>
-        <div className="mt-1 text-sm text-zinc-400">
+        <div className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
           Reguläre Arbeitsstunden pro Woche
         </div>
 
@@ -280,7 +280,7 @@ export function SettingsScreen(props: {
         >
           <div>
             <div className="text-lg font-semibold">Zeitfaktoren</div>
-            <div className="mt-1 text-sm text-zinc-400">
+            <div className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
               Pendelzeit, Überstunden & Arbeitstage
             </div>
           </div>
@@ -318,7 +318,7 @@ export function SettingsScreen(props: {
                   = {commuteHours.toFixed(1)} h pro Woche, {(commuteHours * settings.weeksPerMonth).toFixed(1)} h pro Monat
                 </div>
               )}
-              <div className="mt-2 text-xs text-zinc-400">
+              <div className="mt-2 text-xs text-zinc-600 dark:text-zinc-500">
                 💡 Dein Arbeitsweg zählt zur Zeit, die du aufwendest, um dein Einkommen zu verdienen
               </div>
             </div>
@@ -383,7 +383,7 @@ export function SettingsScreen(props: {
                 <span className="ml-2 text-sm text-zinc-500">({settings.additionalIncomeSources.length})</span>
               )}
             </div>
-            <div className="mt-1 text-sm text-zinc-400">
+            <div className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
               Nebenjobs, passive Einkünfte, etc.
             </div>
           </div>
@@ -469,11 +469,11 @@ export function SettingsScreen(props: {
         </div>
         <div className="mt-3 grid grid-cols-1 gap-2 text-sm">
           <div className="flex items-center justify-between">
-            <div className="text-zinc-400">Gesamtes Netto-Einkommen</div>
+            <div className="text-zinc-600 dark:text-zinc-400">Gesamtes Netto-Einkommen</div>
             <div className="font-mono">{formatCHF(totalIncome)}/Monat</div>
           </div>
           <div className="flex items-center justify-between">
-            <div className="text-zinc-400">Gesamte Arbeitszeit</div>
+            <div className="text-zinc-600 dark:text-zinc-400">Gesamte Arbeitszeit</div>
             <div className="font-mono">{monthlyHours.toFixed(2)} h/Monat</div>
           </div>
           <div className="h-px bg-zinc-800 my-1"></div>
@@ -486,7 +486,7 @@ export function SettingsScreen(props: {
         </div>
 
         {hourlyRate <= 0 && (
-          <div className="mt-3 rounded-xl border border-zinc-800 bg-zinc-950/40 p-3 text-sm text-zinc-400">
+          <div className="mt-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-950/40 p-3 text-sm text-zinc-600 dark:text-zinc-400">
             Gib Einkommen und Arbeitszeit ein, um deinen effektiven Stundenlohn zu berechnen.
           </div>
         )}
@@ -501,7 +501,7 @@ export function SettingsScreen(props: {
       {/* Kategorien & Budgets */}
       <div className="ot-card">
         <div className="text-lg font-semibold">Kategorien & Budgets</div>
-        <div className="mt-1 text-sm text-zinc-400">
+        <div className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
           Verwalte benutzerdefinierte Kategorien und setze monatliche Budgets
         </div>
 

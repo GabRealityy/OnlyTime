@@ -44,7 +44,7 @@ export function ConfirmDialog(props: ConfirmDialogProps) {
             <div className="text-lg font-semibold">{title}</div>
           </div>
 
-          <div className="text-sm text-zinc-400 mb-6">
+          <div className="text-sm text-zinc-600 dark:text-zinc-400 mb-6">
             {message}
           </div>
 
