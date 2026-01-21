@@ -22,7 +22,11 @@ export function TopNav(props: {
     <nav className="sticky top-0 z-20 border-b border-zinc-900 bg-zinc-950/80 backdrop-blur">
       <div className="mx-auto flex max-w-3xl items-center gap-2 px-3 py-3">
         <div className="mr-auto flex items-center gap-3">
-          <img src={AppLogo} alt="OnlyTime" className="h-10 w-10" />
+          <img 
+            src={AppLogo} 
+            alt="OnlyTime" 
+            className="h-10 w-10 brightness-0 dark:brightness-0 dark:invert" 
+          />
           <div>
             <div className="text-sm font-semibold tracking-wide">OnlyTime</div>
             <div className="text-xs text-zinc-600 dark:text-zinc-500">money, expressed as time</div>
