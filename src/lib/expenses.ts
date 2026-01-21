@@ -42,11 +42,13 @@ export type CustomCategory = {
 }
 
 /**
- * Budget pro Kategorie (CHF pro Monat)
+ * Budget pro Kategorie (CHF oder Stunden pro Monat)
+ * Unterstützt Dual-Display: Budget kann in CHF ODER Stunden definiert werden
  */
 export type CategoryBudget = {
   categoryId: string
-  monthlyBudgetCHF: number
+  monthlyBudgetCHF?: number
+  monthlyBudgetHours?: number
 }
 
 export type Expense = {

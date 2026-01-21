@@ -78,17 +78,27 @@ export function StatusScreen(props: { settings: Settings }) {
   }, [expenses])
 
   const budgetWarnings = useMemo(() => {
-    const warnings: Array<{ category: string; spent: number; budget: number; percentage: number }> = []
+    const warnings: Array<{ 
+      category: string
+      spent: number
+      budgetCHF: number
+      budgetHours?: number
+      percentage: number 
+    }> = []
     
     for (const budget of props.settings.categoryBudgets) {
       const spent = categorySpending.get(budget.categoryId) || 0
-      const percentage = (spent / budget.monthlyBudgetCHF) * 100
+      
+      // Calculate budget in CHF (convert from hours if needed)
+      const budgetCHF = budget.monthlyBudgetCHF || (budget.monthlyBudgetHours ? budget.monthlyBudgetHours * hourly : 0)
+      const percentage = budgetCHF > 0 ? (spent / budgetCHF) * 100 : 0
       
       if (percentage >= 80) {
         warnings.push({
           category: budget.categoryId,
           spent,
-          budget: budget.monthlyBudgetCHF,
+          budgetCHF,
+          budgetHours: budget.monthlyBudgetHours,
           percentage,
         })
       }
@@ -300,11 +310,20 @@ export function StatusScreen(props: { settings: Settings }) {
                       <div className={`mt-1 text-sm ${
                         isExceeded ? 'text-rose-200/80' : 'text-amber-200/80'
                       }`}>
-                        {formatCHF(warning.spent)} von {formatCHF(warning.budget)} ausgegeben
+                        {formatCHF(warning.spent)} von {formatCHF(warning.budgetCHF)} ausgegeben
                         <span className="ml-2 font-semibold">
                           ({warning.percentage.toFixed(0)}%)
                         </span>
                       </div>
+                      
+                      {/* Dual display: show hours if budget was defined in hours */}
+                      {warning.budgetHours && hourly > 0 && (
+                        <div className={`mt-1 text-xs ${
+                          isExceeded ? 'text-rose-200/60' : 'text-amber-200/60'
+                        }`}>
+                          {formatHoursMinutes(toHours(warning.spent, hourly))} von {formatHoursMinutes(warning.budgetHours)}
+                        </div>
+                      )}
                       
                       {/* Progress bar */}
                       <div className="mt-2 h-2 overflow-hidden rounded-full bg-zinc-900">

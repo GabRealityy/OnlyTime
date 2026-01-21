@@ -11,19 +11,21 @@ import { Modal } from './Modal'
 import { ConfirmDialog } from './ConfirmDialog'
 import type { CategoryBudget, CustomCategory } from '../lib/expenses'
 import { expenseCategories } from '../lib/expenses'
-import { formatCHF } from '../lib/money'
+import { formatCHF, toHours, formatHoursMinutes } from '../lib/money'
 
 export function BudgetManager(props: {
   open: boolean
   onClose: () => void
   budgets: CategoryBudget[]
   customCategories: CustomCategory[]
+  hourlyRate: number
   onSave: (budgets: CategoryBudget[]) => void
 }) {
-  const { open, onClose, budgets, customCategories, onSave } = props
+  const { open, onClose, budgets, customCategories, hourlyRate, onSave } = props
 
   const [editingCategoryId, setEditingCategoryId] = useState<string | null>(null)
   const [budgetAmount, setBudgetAmount] = useState('')
+  const [budgetMode, setBudgetMode] = useState<'chf' | 'hours'>('chf')
   const [budgetToRemove, setBudgetToRemove] = useState<string | null>(null)
 
   const allCategories = [
@@ -38,7 +40,14 @@ export function BudgetManager(props: {
   const startEdit = (categoryId: string) => {
     const existing = getBudget(categoryId)
     setEditingCategoryId(categoryId)
-    setBudgetAmount(existing?.monthlyBudgetCHF?.toString() || '')
+    
+    if (existing?.monthlyBudgetHours) {
+      setBudgetMode('hours')
+      setBudgetAmount(existing.monthlyBudgetHours.toString())
+    } else {
+      setBudgetMode('chf')
+      setBudgetAmount(existing?.monthlyBudgetCHF?.toString() || '')
+    }
   }
 
   const saveBudget = () => {
@@ -59,14 +68,19 @@ export function BudgetManager(props: {
         // Update existing
         updatedBudgets = budgets.map(b =>
           b.categoryId === editingCategoryId
-            ? { ...b, monthlyBudgetCHF: amount }
+            ? budgetMode === 'hours'
+              ? { categoryId: editingCategoryId, monthlyBudgetHours: amount }
+              : { categoryId: editingCategoryId, monthlyBudgetCHF: amount }
             : b
         )
       }
     } else {
       if (amount > 0) {
         // Add new
-        updatedBudgets = [...budgets, { categoryId: editingCategoryId, monthlyBudgetCHF: amount }]
+        const newBudget = budgetMode === 'hours'
+          ? { categoryId: editingCategoryId, monthlyBudgetHours: amount }
+          : { categoryId: editingCategoryId, monthlyBudgetCHF: amount }
+        updatedBudgets = [...budgets, newBudget]
       } else {
         updatedBudgets = budgets
       }
@@ -75,6 +89,7 @@ export function BudgetManager(props: {
     onSave(updatedBudgets)
     setEditingCategoryId(null)
     setBudgetAmount('')
+    setBudgetMode('chf')
   }
 
   const removeBudget = (categoryId: string) => {
@@ -128,7 +143,28 @@ export function BudgetManager(props: {
                     <div className="flex items-center gap-2">
                       {budget ? (
                         <>
-                          <span className="font-mono text-sm">{formatCHF(budget.monthlyBudgetCHF)}</span>
+                          <div className="text-right">
+                            {budget.monthlyBudgetCHF && (
+                              <div className="font-mono text-sm">
+                                {formatCHF(budget.monthlyBudgetCHF)}
+                                {hourlyRate > 0 && (
+                                  <span className="ml-2 text-xs text-zinc-500 dark:text-zinc-500 light:text-zinc-600">
+                                    ({formatHoursMinutes(toHours(budget.monthlyBudgetCHF, hourlyRate))})
+                                  </span>
+                                )}
+                              </div>
+                            )}
+                            {budget.monthlyBudgetHours && (
+                              <div className="font-mono text-sm">
+                                {formatHoursMinutes(budget.monthlyBudgetHours)}
+                                {hourlyRate > 0 && (
+                                  <span className="ml-2 text-xs text-zinc-500 dark:text-zinc-500 light:text-zinc-600">
+                                    ({formatCHF(budget.monthlyBudgetHours * hourlyRate)})
+                                  </span>
+                                )}
+                              </div>
+                            )}
+                          </div>
                           <button
                             type="button"
                             className="ot-btn text-xs"
@@ -158,33 +194,60 @@ export function BudgetManager(props: {
                 </div>
 
                 {isEditing && (
-                  <div className="mt-3 flex gap-2">
-                    <input
-                      type="text"
-                      inputMode="decimal"
-                      placeholder="z.B. 200"
-                      value={budgetAmount}
-                      onChange={(e) => setBudgetAmount(e.target.value)}
-                      className="flex-1"
-                      autoFocus
-                    />
-                    <button
-                      type="button"
-                      className="ot-btn ot-btn-primary"
-                      onClick={saveBudget}
-                    >
-                      Speichern
-                    </button>
-                    <button
-                      type="button"
-                      className="ot-btn"
-                      onClick={() => {
-                        setEditingCategoryId(null)
-                        setBudgetAmount('')
-                      }}
-                    >
-                      Abbrechen
-                    </button>
+                  <div className="mt-3 space-y-2">
+                    <div className="flex gap-2 text-xs">
+                      <button
+                        type="button"
+                        className={`px-3 py-1 rounded-lg ${
+                          budgetMode === 'chf'
+                            ? 'bg-zinc-800 dark:bg-zinc-800 light:bg-zinc-200 text-zinc-100 dark:text-zinc-100 light:text-zinc-900'
+                            : 'bg-zinc-900/40 dark:bg-zinc-900/40 light:bg-zinc-100 text-zinc-500'
+                        }`}
+                        onClick={() => setBudgetMode('chf')}
+                      >
+                        CHF
+                      </button>
+                      <button
+                        type="button"
+                        className={`px-3 py-1 rounded-lg ${
+                          budgetMode === 'hours'
+                            ? 'bg-zinc-800 dark:bg-zinc-800 light:bg-zinc-200 text-zinc-100 dark:text-zinc-100 light:text-zinc-900'
+                            : 'bg-zinc-900/40 dark:bg-zinc-900/40 light:bg-zinc-100 text-zinc-500'
+                        }`}
+                        onClick={() => setBudgetMode('hours')}
+                      >
+                        Stunden
+                      </button>
+                    </div>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        inputMode="decimal"
+                        placeholder={budgetMode === 'chf' ? 'z.B. 200' : 'z.B. 15.5'}
+                        value={budgetAmount}
+                        onChange={(e) => setBudgetAmount(e.target.value)}
+                        className="flex-1"
+                        autoFocus
+                      />
+                      <button
+                        type="button"
+                        className="ot-btn ot-btn-primary"
+                        onClick={saveBudget}
+                      >
+                        Speichern
+                      </button>
+                      <button
+                        type="button"
+                        className="ot-btn"
+                        onClick={() => {
+                          setEditingCategoryId(null)
+                          setBudgetAmount('')
+                          setBudgetMode('chf')
+                        }}
+                      >
+                        Abbrechen
+                      </button>
+                    </div>
                   </div>
                 )}
               </div>

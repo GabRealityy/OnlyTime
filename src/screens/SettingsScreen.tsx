@@ -539,6 +539,7 @@ export function SettingsScreen(props: {
         onClose={() => setShowBudgetManager(false)}
         budgets={settings.categoryBudgets}
         customCategories={settings.customCategories}
+        hourlyRate={hourlyRate}
         onSave={(budgets) => {
           onChange({ ...settings, categoryBudgets: budgets })
           showToast(`${budgets.length} Budget(s) gespeichert`, 'success')
