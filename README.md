@@ -12,6 +12,10 @@ Anstatt einen Preis nur als Geldbetrag zu sehen, rechnet Only Time ihn in die Ze
 
 ## ✨ Features
 
+## 📝 Changelog
+
+Siehe [CHANGELOG.md](CHANGELOG.md) für Release Notes.
+
 ### Effektive Stundenlohn-Berechnung
 
 Die App berechnet Ihren **effektiven Stundenlohn** unter Berücksichtigung aller relevanten Faktoren:
