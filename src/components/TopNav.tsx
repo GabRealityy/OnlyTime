@@ -29,7 +29,7 @@ export function TopNav(props: {
           />
           <div>
             <div className="text-sm font-semibold tracking-wide">OnlyTime</div>
-            <div className="text-xs text-zinc-600 dark:text-zinc-500">money, expressed as time</div>
+            <div className="text-xs text-zinc-600 dark:text-zinc-500">Money means Time.</div>
           </div>
         </div>
 
