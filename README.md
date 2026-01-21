@@ -1,4 +1,141 @@
-# React + TypeScript + Vite
+# Only Time
+
+**Only Time** ist eine Web-App, die Geldbeträge in Lebenszeit umrechnet. Basierend auf Ihrem persönlichen Stundenlohn zeigt sie Ihnen, wie viele Stunden oder Tage Arbeit ein Produkt oder eine Dienstleistung wirklich kostet.
+
+## 🎯 Konzept
+
+Anstatt einen Preis nur als Geldbetrag zu sehen, rechnet Only Time ihn in die Zeit um, die Sie arbeiten müssen, um diesen Betrag zu verdienen. Dies hilft Ihnen:
+
+- **Bewusster zu konsumieren**: Ist das neue Smartphone wirklich 80 Arbeitsstunden wert?
+- **Bessere finanzielle Entscheidungen zu treffen**: Vergleichen Sie Anschaffungen in einer einheitlichen Währung – Ihrer Lebenszeit
+- **Den wahren Wert Ihrer Zeit zu verstehen**: Berücksichtigen Sie alle Faktoren, die Ihren effektiven Stundenlohn beeinflussen
+
+## ✨ Features
+
+### Effektive Stundenlohn-Berechnung
+
+Die App berechnet Ihren **effektiven Stundenlohn** unter Berücksichtigung aller relevanten Faktoren:
+
+- ✅ **Brutto- oder Netto-Einkommen** - Wählen Sie, was für Sie passt
+- ✅ **Pendelzeit** - Wird als Arbeitszeit gezählt
+- ✅ **Unbezahlte Überstunden** - Senken Ihren effektiven Stundenlohn
+- ✅ **Mehrere Einkommensquellen** - Nebenjobs, passive Einkünfte
+- ✅ **Flexible Arbeitsmodelle** - 4-Tage-Woche, Teilzeit, etc.
+
+[→ Detaillierte Dokumentation zur Stundenlohn-Berechnung](docs/STUNDENLOHN-BERECHNUNG.md)
+
+### Calculator
+
+Rechnen Sie beliebige Geldbeträge in Lebenszeit um:
+- CHF → Stunden/Tage/Wochen
+- Live-Berechnung während der Eingabe
+- Visualisierung als Diagramm
+
+### Status-Übersicht
+
+Sehen Sie auf einen Blick:
+- Ihre monatlichen/jährlichen Ausgaben
+- In Lebenszeit umgerechnet
+- Historische Entwicklung
+
+## 🚀 Installation & Start
+
+```bash
+# Dependencies installieren
+npm install
+
+# Development Server starten
+npm run dev
+
+# Production Build erstellen
+npm run build
+
+# Tests ausführen
+npm test
+```
+
+## 🧪 Tests
+
+Das Projekt enthält umfassende Unit Tests für die Berechnungslogik:
+
+```bash
+# Tests im Watch-Modus
+npm test
+
+# Tests einmalig ausführen
+npm run test:run
+```
+
+Alle Tests finden Sie in [src/lib/__tests__/settings.test.ts](src/lib/__tests__/settings.test.ts).
+
+## 📖 Verwendung
+
+1. **Settings konfigurieren**: Geben Sie Ihr Einkommen und Ihre Arbeitszeit ein
+2. **Erweiterte Optionen** (optional): Pendelzeit, Überstunden, Nebeneinkünfte
+3. **Calculator nutzen**: Rechnen Sie beliebige Beträge in Lebenszeit um
+4. **Status prüfen**: Sehen Sie Ihre Ausgaben in Zeiteinheiten
+
+### Beispiel
+
+```
+Netto: 5500 CHF/Monat
+Arbeitszeit: 40 h/Woche
+Pendelzeit: 60 Min/Tag
+
+→ Effektiver Stundenlohn: 28,23 CHF/h
+
+Ein iPhone für 1200 CHF kostet Sie also:
+1200 / 28,23 = 42,5 Arbeitsstunden
+= 5,3 Arbeitstage à 8 Stunden
+```
+
+## 🛠️ Tech Stack
+
+- **React 19** mit TypeScript
+- **Vite** für schnelle Entwicklung
+- **Tailwind CSS** für Styling
+- **Vitest** für Unit Tests
+- **LocalStorage** für Datenpersistenz
+
+## 📁 Projekt-Struktur
+
+```
+src/
+├── components/          # UI-Komponenten
+│   ├── LineChart.tsx
+│   ├── Modal.tsx
+│   └── TopNav.tsx
+├── screens/             # Haupt-Screens
+│   ├── CalculatorScreen.tsx
+│   ├── SettingsScreen.tsx
+│   └── StatusScreen.tsx
+├── lib/                 # Business Logic
+│   ├── settings.ts      # Stundenlohn-Berechnung
+│   ├── expenses.ts
+│   ├── money.ts
+│   └── __tests__/       # Unit Tests
+└── hooks/               # Custom Hooks
+    └── useLocalStorageState.ts
+```
+
+## 🎨 Design-Prinzipien
+
+- **Minimalismus**: Fokus auf das Wesentliche
+- **Transparenz**: Alle Berechnungen sind nachvollziehbar
+- **Flexibilität**: Passt sich verschiedenen Lebensmodellen an
+- **Privacy**: Alle Daten bleiben lokal im Browser
+
+## 🤝 Contributing
+
+Verbesserungsvorschläge und Pull Requests sind willkommen!
+
+## 📜 Lizenz
+
+MIT License - siehe [LICENSE](LICENSE) Datei für Details.
+
+---
+
+## React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
