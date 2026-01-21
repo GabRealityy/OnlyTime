@@ -113,7 +113,7 @@ export function normalizeSettings(input: unknown): Settings {
           amountCHF: toNumber(p.amountCHF, 0),
           category: typeof p.category === 'string' ? p.category : 'Other',
           emoji: typeof p.emoji === 'string' ? p.emoji : undefined,
-        }
+        } as QuickAddPreset
       })
       .filter((p): p is QuickAddPreset => p !== null)
   }
@@ -130,7 +130,7 @@ export function normalizeSettings(input: unknown): Settings {
           name: typeof c.name === 'string' ? c.name : '',
           color: typeof c.color === 'string' ? c.color : undefined,
           emoji: typeof c.emoji === 'string' ? c.emoji : undefined,
-        }
+        } as CustomCategory
       })
       .filter((c): c is CustomCategory => c !== null)
   }
@@ -142,12 +142,15 @@ export function normalizeSettings(input: unknown): Settings {
       .map((budget: unknown) => {
         if (typeof budget !== 'object' || budget === null) return null
         const b = budget as Record<string, unknown>
+        const categoryId = typeof b.categoryId === 'string' ? b.categoryId : (typeof b.category === 'string' ? b.category : '')
+        if (!categoryId) return null
         return {
-          category: typeof b.category === 'string' ? b.category : '',
-          hoursPerMonth: toNumber(b.hoursPerMonth, 0),
-        }
+          categoryId,
+          monthlyBudgetCHF: typeof b.monthlyBudgetCHF === 'number' ? b.monthlyBudgetCHF : undefined,
+          monthlyBudgetHours: typeof b.monthlyBudgetHours === 'number' ? b.monthlyBudgetHours : undefined,
+        } as CategoryBudget
       })
-      .filter((b): b is CategoryBudget => b !== null && b.category !== '')
+      .filter((b): b is CategoryBudget => b !== null)
   }
 
   return {

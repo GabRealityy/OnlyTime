@@ -141,7 +141,7 @@ export function CSVImportModal(props: {
   onImport: (expenses: Omit<Expense, 'id'>[]) => void
   customCategories?: Array<{ id: string; name: string }>
 }) {
-  const { open, onClose, onImport, customCategories = [] } = props
+  const { open, onClose, onImport } = props
 
   const [csvData, setCSVData] = useState<CSVRow[]>([])
   const [headers, setHeaders] = useState<string[]>([])
@@ -185,9 +185,10 @@ export function CSVImportModal(props: {
         const amountCHF = mapping.amount ? parseAmount(row[mapping.amount]) : 0
         const title = mapping.title ? row[mapping.title] : 'Unbekannt'
         const date = mapping.date ? parseDate(row[mapping.date]) : isoDateLocal(new Date())
-        const category = mapping.category 
-          ? row[mapping.category] 
+        const categoryStr = mapping.category 
+          ? row[mapping.category]
           : guessCategory(title, defaultRules)
+        const category = categoryStr as ExpenseCategory
 
         return { amountCHF, title, category, date, createdAt: Date.now() }
       })
