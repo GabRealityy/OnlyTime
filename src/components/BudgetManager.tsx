@@ -148,7 +148,7 @@ export function BudgetManager(props: {
                               <div className="font-mono text-sm">
                                 {formatCHF(budget.monthlyBudgetCHF)}
                                 {hourlyRate > 0 && (
-                                  <span className="ml-2 text-xs text-zinc-500 dark:text-zinc-500 light:text-zinc-600">
+                                  <span className="ml-2 text-xs text-zinc-600 dark:text-zinc-500">
                                     ({formatHoursMinutes(toHours(budget.monthlyBudgetCHF, hourlyRate))})
                                   </span>
                                 )}
@@ -158,7 +158,7 @@ export function BudgetManager(props: {
                               <div className="font-mono text-sm">
                                 {formatHoursMinutes(budget.monthlyBudgetHours)}
                                 {hourlyRate > 0 && (
-                                  <span className="ml-2 text-xs text-zinc-500 dark:text-zinc-500 light:text-zinc-600">
+                                  <span className="ml-2 text-xs text-zinc-600 dark:text-zinc-500">
                                     ({formatCHF(budget.monthlyBudgetHours * hourlyRate)})
                                   </span>
                                 )}
@@ -200,8 +200,8 @@ export function BudgetManager(props: {
                         type="button"
                         className={`px-3 py-1 rounded-lg ${
                           budgetMode === 'chf'
-                            ? 'bg-zinc-800 dark:bg-zinc-800 light:bg-zinc-200 text-zinc-100 dark:text-zinc-100 light:text-zinc-900'
-                            : 'bg-zinc-900/40 dark:bg-zinc-900/40 light:bg-zinc-100 text-zinc-500'
+                            ? 'bg-zinc-200 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100'
+                            : 'bg-zinc-100 dark:bg-zinc-900/40 text-zinc-500'
                         }`}
                         onClick={() => setBudgetMode('chf')}
                       >
@@ -211,8 +211,8 @@ export function BudgetManager(props: {
                         type="button"
                         className={`px-3 py-1 rounded-lg ${
                           budgetMode === 'hours'
-                            ? 'bg-zinc-800 dark:bg-zinc-800 light:bg-zinc-200 text-zinc-100 dark:text-zinc-100 light:text-zinc-900'
-                            : 'bg-zinc-900/40 dark:bg-zinc-900/40 light:bg-zinc-100 text-zinc-500'
+                            ? 'bg-zinc-200 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100'
+                            : 'bg-zinc-100 dark:bg-zinc-900/40 text-zinc-500'
                         }`}
                         onClick={() => setBudgetMode('hours')}
                       >

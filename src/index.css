@@ -9,14 +9,14 @@
     color-scheme: light dark;
   }
 
-  /* Dark Mode (default) */
-  html.dark {
-    @apply bg-zinc-950 text-zinc-100;
+  /* Light Mode (default) */
+  html {
+    @apply bg-zinc-50 text-zinc-900;
   }
 
-  /* Light Mode */
-  html.light {
-    @apply bg-zinc-50 text-zinc-900;
+  /* Dark Mode */
+  html.dark {
+    @apply bg-zinc-950 text-zinc-100;
   }
 
   body {
@@ -24,54 +24,77 @@
   }
 
   a {
-    @apply text-zinc-100 underline decoration-zinc-700 underline-offset-4 dark:text-zinc-100 dark:decoration-zinc-700;
-    @apply light:text-zinc-900 light:decoration-zinc-300;
+    @apply text-zinc-900 underline decoration-zinc-300 underline-offset-4;
+  }
+
+  html.dark a {
+    @apply text-zinc-100 decoration-zinc-700;
   }
 
   a:hover {
-    @apply decoration-zinc-400 dark:decoration-zinc-400;
-    @apply light:decoration-zinc-600;
+    @apply decoration-zinc-600;
+  }
+
+  html.dark a:hover {
+    @apply decoration-zinc-400;
   }
 
   input,
   select,
   textarea {
-    @apply w-full rounded-lg border px-3 py-2 placeholder:text-zinc-500;
-    @apply dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100;
-    @apply light:border-zinc-300 light:bg-white light:text-zinc-900;
+    @apply w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-zinc-900 placeholder:text-zinc-500;
+  }
+
+  html.dark input,
+  html.dark select,
+  html.dark textarea {
+    @apply border-zinc-800 bg-zinc-900 text-zinc-100;
   }
 
   input:focus,
   select:focus,
   textarea:focus {
-    @apply outline-none ring-2;
-    @apply dark:ring-zinc-600;
-    @apply light:ring-zinc-400;
+    @apply outline-none ring-2 ring-zinc-400;
+  }
+
+  html.dark input:focus,
+  html.dark select:focus,
+  html.dark textarea:focus {
+    @apply ring-zinc-600;
   }
 
   label {
-    @apply text-sm;
-    @apply dark:text-zinc-300;
-    @apply light:text-zinc-700;
+    @apply text-sm text-zinc-700;
+  }
+
+  html.dark label {
+    @apply text-zinc-300;
   }
 }
 
 @layer components {
   .ot-card {
-    @apply rounded-2xl border p-4 shadow-sm;
-    @apply dark:border-zinc-800 dark:bg-zinc-950/60;
-    @apply light:border-zinc-200 light:bg-white;
+    @apply rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm;
+  }
+
+  html.dark .ot-card {
+    @apply border-zinc-800 bg-zinc-950/60;
   }
 
   .ot-btn {
-    @apply inline-flex items-center justify-center rounded-xl border px-3 py-2 text-sm;
-    @apply dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100;
-    @apply light:border-zinc-300 light:bg-zinc-100 light:text-zinc-900;
+    @apply inline-flex items-center justify-center rounded-xl border border-zinc-300 bg-zinc-100 px-3 py-2 text-sm text-zinc-900;
+  }
+
+  html.dark .ot-btn {
+    @apply border-zinc-800 bg-zinc-900 text-zinc-100;
   }
 
   .ot-btn:hover {
-    @apply dark:bg-zinc-800;
-    @apply light:bg-zinc-200;
+    @apply bg-zinc-200;
+  }
+
+  html.dark .ot-btn:hover {
+    @apply bg-zinc-800;
   }
 
   .ot-btn:active {
@@ -79,29 +102,43 @@
   }
 
   .ot-btn-primary {
-    @apply dark:border-zinc-700 dark:bg-zinc-100 dark:text-zinc-900;
-    @apply light:border-zinc-900 light:bg-zinc-900 light:text-white;
+    @apply border-zinc-900 bg-zinc-900 text-white;
+  }
+
+  html.dark .ot-btn-primary {
+    @apply border-zinc-700 bg-zinc-100 text-zinc-900;
   }
 
   .ot-btn-primary:hover {
-    @apply dark:bg-white;
-    @apply light:bg-zinc-800;
+    @apply bg-zinc-800;
+  }
+
+  html.dark .ot-btn-primary:hover {
+    @apply bg-white;
   }
 
   .ot-btn-danger {
-    @apply dark:border-red-900/40 dark:bg-red-950/40 dark:text-red-200;
-    @apply light:border-red-300 light:bg-red-50 light:text-red-700;
+    @apply border-red-300 bg-red-50 text-red-700;
+  }
+
+  html.dark .ot-btn-danger {
+    @apply border-red-900/40 bg-red-950/40 text-red-200;
   }
 
   .ot-btn-danger:hover {
-    @apply dark:bg-red-950/60;
-    @apply light:bg-red-100;
+    @apply bg-red-100;
+  }
+
+  html.dark .ot-btn-danger:hover {
+    @apply bg-red-950/60;
   }
 
   .ot-kbd {
-    @apply rounded-md border px-2 py-1 font-mono text-xs;
-    @apply dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200;
-    @apply light:border-zinc-300 light:bg-zinc-100 light:text-zinc-700;
+    @apply rounded-md border border-zinc-300 bg-zinc-100 px-2 py-1 font-mono text-xs text-zinc-700;
+  }
+
+  html.dark .ot-kbd {
+    @apply border-zinc-700 bg-zinc-900 text-zinc-200;
   }
 
   @keyframes slide-in-right {

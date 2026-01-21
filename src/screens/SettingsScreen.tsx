@@ -120,7 +120,7 @@ export function SettingsScreen(props: {
         <div className="flex items-center justify-between">
           <div>
             <div className="text-lg font-semibold">Design</div>
-            <div className="mt-1 text-sm text-zinc-400 dark:text-zinc-400 light:text-zinc-600">
+            <div className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
               Zwischen hellem und dunklem Modus wechseln
             </div>
           </div>
