@@ -20,6 +20,7 @@ import {
   type Settings,
   type IncomeSource,
 } from '../settings'
+import { toHours, formatHoursMinutes } from '../money'
 
 describe('settings - Erweiterte Stundenlohn-Berechnung', () => {
   // Basis-Settings für Tests
@@ -337,6 +338,188 @@ describe('settings - Erweiterte Stundenlohn-Berechnung', () => {
       })
       expect(settings.netMonthlyIncomeCHF).toBe(5500.5)
       expect(settings.weeklyWorkingHours).toBe(42.5)
+    })
+  })
+
+  describe('Zeit-Berechnungen Integration', () => {
+    it('sollte earned/spent Hours korrekt mit erweitertem Stundenlohn berechnen', () => {
+      const settings: Settings = {
+        ...baseSettings,
+        netMonthlyIncomeCHF: 6000,
+        weeklyWorkingHours: 40,
+        commuteMinutesPerDay: 60,
+        workingDaysPerWeek: 5,
+        overtimeHoursPerWeek: 5,
+      }
+      
+      const rate = hourlyRateCHF(settings)
+      // Pendelzeit: 60 * 5 / 60 = 5h/Woche
+      // Total: (40 + 5 + 5) * 4.33 = 216.5h
+      // Stundenlohn: 6000 / 216.5 ≈ 27.71
+      expect(rate).toBeCloseTo(27.71, 2)
+      
+      // Beispiel: 3000 CHF verdient, 1500 CHF ausgegeben
+      const earnedCHF = 3000
+      const spentCHF = 1500
+      
+      const earnedHours = toHours(earnedCHF, rate)
+      const spentHours = toHours(spentCHF, rate)
+      const availableHours = earnedHours - spentHours
+      
+      // 3000 / 27.71 ≈ 108.27h verdient
+      // 1500 / 27.71 ≈ 54.13h ausgegeben
+      // Verfügbar: ≈ 54.14h
+      expect(earnedHours).toBeCloseTo(108.27, 1)
+      expect(spentHours).toBeCloseTo(54.13, 1)
+      expect(availableHours).toBeCloseTo(54.14, 1)
+    })
+
+    it('sollte Zeitüberschreitung erkennen', () => {
+      const settings: Settings = {
+        ...baseSettings,
+        netMonthlyIncomeCHF: 4000,
+        weeklyWorkingHours: 40,
+      }
+      
+      const rate = hourlyRateCHF(settings)
+      
+      // Beispiel: mehr ausgegeben als verdient
+      const earnedCHF = 2000
+      const spentCHF = 3000
+      
+      const earnedHours = toHours(earnedCHF, rate)
+      const spentHours = toHours(spentCHF, rate)
+      
+      expect(spentHours).toBeGreaterThan(earnedHours)
+      expect(earnedHours - spentHours).toBeLessThan(0)
+    })
+
+    it('sollte Auswirkung von Pendelzeit auf Kaufkraft zeigen', () => {
+      // Szenario 1: ohne Pendelzeit
+      const settingsWithoutCommute: Settings = {
+        ...baseSettings,
+        netMonthlyIncomeCHF: 5000,
+        weeklyWorkingHours: 40,
+        commuteMinutesPerDay: 0,
+      }
+      
+      const rateWithoutCommute = hourlyRateCHF(settingsWithoutCommute)
+      
+      // Szenario 2: mit 60 Min Pendelzeit pro Tag
+      const settingsWithCommute: Settings = {
+        ...baseSettings,
+        netMonthlyIncomeCHF: 5000,
+        weeklyWorkingHours: 40,
+        commuteMinutesPerDay: 60,
+        workingDaysPerWeek: 5,
+      }
+      
+      const rateWithCommute = hourlyRateCHF(settingsWithCommute)
+      
+      // Der Stundenlohn sinkt durch Pendelzeit
+      expect(rateWithCommute).toBeLessThan(rateWithoutCommute)
+      
+      // Beispiel: 100 CHF Kauf
+      const purchaseAmount = 100
+      const hoursWithoutCommute = toHours(purchaseAmount, rateWithoutCommute)
+      const hoursWithCommute = toHours(purchaseAmount, rateWithCommute)
+      
+      // Mit Pendelzeit kostet der Kauf mehr Lebenszeit
+      expect(hoursWithCommute).toBeGreaterThan(hoursWithoutCommute)
+      
+      // Konkret: ohne Pendeln ~3.46h, mit Pendeln ~3.89h
+      expect(hoursWithoutCommute).toBeCloseTo(3.46, 1)
+      expect(hoursWithCommute).toBeCloseTo(3.89, 1)
+    })
+
+    it('sollte komplexes Real-World-Szenario korrekt durchrechnen', () => {
+      // Realitätsnahes Szenario
+      const additionalSources: IncomeSource[] = [
+        { id: '1', name: 'Freelance', amountCHF: 800, hoursPerMonth: 30 },
+      ]
+      
+      const settings: Settings = {
+        ...baseSettings,
+        useGrossIncome: true,
+        grossMonthlyIncomeCHF: 7500,
+        taxRatePercent: 22,
+        weeklyWorkingHours: 42,
+        commuteMinutesPerDay: 45,
+        workingDaysPerWeek: 5,
+        overtimeHoursPerWeek: 4,
+        additionalIncomeSources: additionalSources,
+      }
+      
+      // Einkommen berechnen
+      // netPrimary = 7500 * 0.78 = 5850
+      // totalIncome = 5850 + 800 = 6650
+      expect(effectiveNetMonthlyIncome(settings)).toBe(6650)
+      
+      // Stunden berechnen
+      // commuteWeekly = 45 * 5 / 60 = 3.75h
+      // weeklyTotal = 42 + 4 + 3.75 = 49.75h
+      // monthlyTotal = 49.75 * 4.33 + 30 = 245.4175h
+      expect(monthlyWorkingHours(settings)).toBeCloseTo(245.42, 2)
+      
+      // Stundenlohn
+      const rate = 6650 / 245.4175 // ~27.10
+      expect(hourlyRateCHF(settings)).toBeCloseTo(27.10, 2)
+      
+      // Ausgaben-Beispiel: monatlich verdient und ausgegeben
+      const earnedThisMonth = 6650
+      const spentThisMonth = 4200
+      
+      const earnedHours = toHours(earnedThisMonth, rate)
+      const spentHours = toHours(spentThisMonth, rate)
+      const availableHours = earnedHours - spentHours
+      
+      // Verdient: 6650 / 27.10 ≈ 245.39h (≈ monatliche Arbeitszeit)
+      // Ausgegeben: 4200 / 27.10 ≈ 154.98h
+      // Verfügbar: ≈ 90.41h
+      expect(earnedHours).toBeCloseTo(245.39, 1)
+      expect(spentHours).toBeCloseTo(154.98, 1)
+      expect(availableHours).toBeCloseTo(90.41, 1)
+      
+      // Formatierte Ausgabe prüfen
+      const formattedHours = formatHoursMinutes(availableHours)
+      expect(formattedHours).toContain('90h')
+      expect(formattedHours).toMatch(/2[0-9]m/) // ~24-25 Minuten je nach Rundung
+    })
+
+    it('sollte zeigen wie Überstunden die Zeit-Kosten erhöhen', () => {
+      // Basis ohne Überstunden
+      const settingsBase: Settings = {
+        ...baseSettings,
+        netMonthlyIncomeCHF: 5000,
+        weeklyWorkingHours: 40,
+        overtimeHoursPerWeek: 0,
+      }
+      
+      // Mit 10h unbezahlten Überstunden
+      const settingsOvertime: Settings = {
+        ...baseSettings,
+        netMonthlyIncomeCHF: 5000,
+        weeklyWorkingHours: 40,
+        overtimeHoursPerWeek: 10,
+      }
+      
+      const rateBase = hourlyRateCHF(settingsBase)
+      const rateOvertime = hourlyRateCHF(settingsOvertime)
+      
+      // Überstunden senken den effektiven Stundenlohn
+      expect(rateOvertime).toBeLessThan(rateBase)
+      
+      // Beispiel: 200 CHF Kauf
+      const purchase = 200
+      const hoursBase = toHours(purchase, rateBase)
+      const hoursOvertime = toHours(purchase, rateOvertime)
+      
+      // Mit Überstunden kostet der Kauf mehr Zeit
+      expect(hoursOvertime).toBeGreaterThan(hoursBase)
+      
+      // Differenz zeigt den "versteckten" Zeitverlust
+      const extraHours = hoursOvertime - hoursBase
+      expect(extraHours).toBeGreaterThan(0)
     })
   })
 })

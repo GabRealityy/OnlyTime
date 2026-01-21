@@ -31,3 +31,19 @@ export function formatHoursMinutes(hoursFloat: number): string {
   const h = Math.abs(hours)
   return `${sign}${h}h ${minutes}m`
 }
+
+/**
+ * Konvertiert einen CHF-Betrag in Stunden basierend auf dem Stundenlohn.
+ */
+export function toHours(amountCHF: number, hourlyRateCHF: number): number {
+  if (hourlyRateCHF <= 0 || !Number.isFinite(amountCHF)) return 0
+  return amountCHF / hourlyRateCHF
+}
+
+/**
+ * Konvertiert Stunden in Minuten.
+ */
+export function toMinutes(hours: number): number {
+  if (!Number.isFinite(hours)) return 0
+  return Math.round(hours * 60)
+}

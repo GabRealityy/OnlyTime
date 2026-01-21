@@ -12,7 +12,7 @@ import { useEffect, useMemo, useState } from 'react'
 import type { Settings } from '../lib/settings'
 import { hourlyRateCHF } from '../lib/settings'
 import { dayOfMonth, daysInMonth, isoDateLocal, monthKeyFromDate, monthLabel } from '../lib/date'
-import { formatCHF, formatHoursMinutes } from '../lib/money'
+import { formatCHF, formatHoursMinutes, toHours } from '../lib/money'
 import { addExpense, deleteExpense, expenseCategories, loadExpensesForMonth, type Expense, type ExpenseCategory } from '../lib/expenses'
 import { LineChart, type DailyPoint } from '../components/LineChart'
 
@@ -55,10 +55,15 @@ export function StatusScreen(props: { settings: Settings }) {
 
   const spent = useMemo(() => sumSpent(expenses), [expenses])
 
+  // Zeit-Berechnungen mit erweitertem Stundenlohn
+  const earnedHours = toHours(earned, hourly)
+  const spentHours = toHours(spent, hourly)
+  const availableHours = earnedHours - spentHours
+
   const balanceCHF = earned - spent
-  const balanceHours = hourly > 0 ? balanceCHF / hourly : 0
 
   const isAhead = balanceCHF >= 0
+  const timeOverspent = spentHours > earnedHours
 
   const dailyPoints: DailyPoint[] = useMemo(() => {
     const monthly = props.settings.netMonthlyIncomeCHF
@@ -75,14 +80,17 @@ export function StatusScreen(props: { settings: Settings }) {
     const pts: DailyPoint[] = []
     for (let d = 1; d <= dim; d++) {
       spentCum += spentByDay.get(d) ?? 0
+      const earnedCum = earnedPerDay * d
       pts.push({
         day: d,
-        earned: earnedPerDay * d,
+        earned: earnedCum,
         spent: spentCum,
+        earnedHours: toHours(earnedCum, hourly),
+        spentHours: toHours(spentCum, hourly),
       })
     }
     return pts
-  }, [props.settings.netMonthlyIncomeCHF, dim, expenses])
+  }, [props.settings.netMonthlyIncomeCHF, dim, expenses, hourly])
 
   const onAddExpense = () => {
     const parsedAmount = Number(amount.replace(',', '.'))
@@ -133,10 +141,20 @@ export function StatusScreen(props: { settings: Settings }) {
           <div className="rounded-xl border border-zinc-800 bg-zinc-950/40 p-3">
             <div className="text-xs text-zinc-500">Earned so far</div>
             <div className="mt-1 text-xl font-semibold">{formatCHF(earned)}</div>
+            {hourly > 0 && (
+              <div className="mt-1 text-sm text-zinc-400">
+                {formatHoursMinutes(earnedHours)} verdient
+              </div>
+            )}
           </div>
           <div className="rounded-xl border border-zinc-800 bg-zinc-950/40 p-3">
             <div className="text-xs text-zinc-500">Spent this month</div>
             <div className="mt-1 text-xl font-semibold">{formatCHF(spent)}</div>
+            {hourly > 0 && (
+              <div className="mt-1 text-sm text-zinc-400">
+                {formatHoursMinutes(spentHours)} ausgegeben
+              </div>
+            )}
           </div>
           <div className="rounded-xl border border-zinc-800 bg-zinc-950/40 p-3">
             <div className="text-xs text-zinc-500">Balance</div>
@@ -146,13 +164,40 @@ export function StatusScreen(props: { settings: Settings }) {
               </div>
             </div>
             <div className="mt-1 text-sm text-zinc-400">
-              {hourly > 0 ? `${formatHoursMinutes(balanceHours)} at your hourly rate` : 'Set hourly rate in Settings'}
+              {hourly > 0 ? (
+                <>
+                  {formatHoursMinutes(availableHours)} verfügbare Zeit
+                  <br />
+                  <span className="text-xs text-zinc-500">
+                    Stundenlohn: {formatCHF(hourly)}/h
+                  </span>
+                </>
+              ) : (
+                'Stundenlohn in Einstellungen festlegen'
+              )}
             </div>
           </div>
         </div>
+
+        {timeOverspent && hourly > 0 && (
+          <div className="mt-4 rounded-xl border border-rose-800 bg-rose-950/40 p-3">
+            <div className="flex items-start gap-2">
+              <span className="text-lg">⚠️</span>
+              <div>
+                <div className="text-sm font-semibold text-rose-300">
+                  Zeitüberschreitung
+                </div>
+                <div className="mt-1 text-sm text-rose-200/80">
+                  Du hast deine verdiente Zeit für diesen Monat bereits überschritten. 
+                  Kommende Ausgaben nehmen dir Zeit aus zukünftigen Monaten.
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
-      <LineChart points={dailyPoints} />
+      <LineChart points={dailyPoints} hourlyRate={hourly} showTimeAxis={hourly > 0} />
 
       <div className="ot-card">
         <div className="flex items-start justify-between gap-3">
@@ -251,33 +296,43 @@ export function StatusScreen(props: { settings: Settings }) {
             </div>
           )}
 
-          {expenses.map((e) => (
-            <div
-              key={e.id}
-              className="flex items-center justify-between gap-3 rounded-xl border border-zinc-800 bg-zinc-950/40 p-3"
-            >
-              <div className="min-w-0">
-                <div className="flex items-center gap-2">
-                  <div className="truncate text-sm font-medium">
-                    {e.title?.trim() ? e.title : 'Untitled'}
+          {expenses.map((e) => {
+            const expenseHours = toHours(e.amountCHF, hourly)
+            return (
+              <div
+                key={e.id}
+                className="flex items-center justify-between gap-3 rounded-xl border border-zinc-800 bg-zinc-950/40 p-3"
+              >
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2">
+                    <div className="truncate text-sm font-medium">
+                      {e.title?.trim() ? e.title : 'Untitled'}
+                    </div>
+                    <div className="shrink-0 rounded-md border border-zinc-800 bg-zinc-950 px-2 py-0.5 text-xs text-zinc-400">
+                      {e.category}
+                    </div>
                   </div>
-                  <div className="shrink-0 rounded-md border border-zinc-800 bg-zinc-950 px-2 py-0.5 text-xs text-zinc-400">
-                    {e.category}
+                  <div className="mt-1 text-xs text-zinc-500">
+                    {e.date}
                   </div>
                 </div>
-                <div className="mt-1 text-xs text-zinc-500">
-                  {e.date}
-                </div>
-              </div>
 
-              <div className="flex shrink-0 items-center gap-2">
-                <div className="font-mono text-sm">{formatCHF(e.amountCHF)}</div>
-                <button type="button" className="ot-btn ot-btn-danger" onClick={() => onDeleteExpense(e.id)}>
-                  Delete
-                </button>
+                <div className="flex shrink-0 items-center gap-3">
+                  <div className="text-right">
+                    <div className="font-mono text-sm">{formatCHF(e.amountCHF)}</div>
+                    {hourly > 0 && (
+                      <div className="text-xs text-zinc-500">
+                        {formatHoursMinutes(expenseHours)}
+                      </div>
+                    )}
+                  </div>
+                  <button type="button" className="ot-btn ot-btn-danger" onClick={() => onDeleteExpense(e.id)}>
+                    Delete
+                  </button>
+                </div>
               </div>
-            </div>
-          ))}
+            )
+          })}
         </div>
       </div>
     </div>

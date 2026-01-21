@@ -28,6 +28,8 @@ export type Expense = {
   title: string
   category: ExpenseCategory
   createdAt: number
+  // Optional: berechnete Stundenanzahl (wird dynamisch aus amountCHF / hourlyRate berechnet)
+  amountHours?: number
 }
 
 export function monthKeyFromIsoDate(isoDate: string): string {

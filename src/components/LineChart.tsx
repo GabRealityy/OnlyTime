@@ -9,11 +9,15 @@
 */
 
 import { clamp01, inverseLerp, lerp } from '../lib/math'
+import { formatCHF, formatHoursMinutes } from '../lib/money'
+import { useState } from 'react'
 
 export type DailyPoint = {
   day: number // 1..daysInMonth
   earned: number
   spent: number
+  earnedHours?: number
+  spentHours?: number
 }
 
 function buildPath(points: { x: number; y: number }[]): string {
@@ -26,9 +30,15 @@ export function LineChart(props: {
   points: DailyPoint[]
   width?: number
   height?: number
+  hourlyRate?: number
+  showTimeAxis?: boolean
 }) {
   const width = props.width ?? 720
   const height = props.height ?? 220
+  const hourlyRate = props.hourlyRate ?? 0
+  const showTimeAxis = props.showTimeAxis ?? (hourlyRate > 0)
+
+  const [hoverDay, setHoverDay] = useState<number | null>(null)
 
   const pad = 18
   const innerW = width - pad * 2
@@ -79,6 +89,10 @@ export function LineChart(props: {
   const earnedPath = buildPath(earnedPts)
   const spentPath = buildPath(spentPts)
 
+  // Finde Hover-Point
+  const hoverPoint = hoverDay !== null ? props.points.find(p => p.day === hoverDay) : null
+  const hoverX = hoverDay !== null ? xForDay(hoverDay) : null
+
   // A simple grid (subtle) to read the slope.
   const gridLines = 4
   const gridYs = Array.from({ length: gridLines + 1 }, (_, i) => pad + (innerH * i) / gridLines)
@@ -96,6 +110,9 @@ export function LineChart(props: {
             <span className="inline-block h-2 w-2 rounded-full bg-rose-500" />
             <span>spent</span>
           </div>
+          {showTimeAxis && (
+            <span className="text-[10px]">(Zeitwerte berücksichtigt)</span>
+          )}
         </div>
       </div>
 
@@ -104,6 +121,25 @@ export function LineChart(props: {
         className="h-[220px] w-full"
         role="img"
         aria-label="Earned vs spent chart"
+        onMouseMove={(e) => {
+          const svg = e.currentTarget
+          const rect = svg.getBoundingClientRect()
+          const x = ((e.clientX - rect.left) / rect.width) * width
+          
+          // Finde den nächsten Tag
+          let closestDay: number | null = null
+          let minDist = Infinity
+          for (const pt of props.points) {
+            const ptX = xForDay(pt.day)
+            const dist = Math.abs(x - ptX)
+            if (dist < minDist) {
+              minDist = dist
+              closestDay = pt.day
+            }
+          }
+          setHoverDay(closestDay)
+        }}
+        onMouseLeave={() => setHoverDay(null)}
       >
         <defs>
           <linearGradient id="earnedGlow" x1="0" y1="0" x2="0" y2="1">
@@ -164,6 +200,21 @@ export function LineChart(props: {
           </g>
         )}
 
+        {/* hover marker */}
+        {hoverX !== null && hoverPoint && (
+          <g>
+            <line
+              x1={hoverX}
+              x2={hoverX}
+              y1={pad}
+              y2={height - pad}
+              stroke="#71717a"
+              strokeDasharray="2 4"
+              opacity={0.5}
+            />
+          </g>
+        )}
+
         {/* frame */}
         <rect
           x={pad}
@@ -175,6 +226,28 @@ export function LineChart(props: {
           rx={10}
         />
       </svg>
+
+      {hoverPoint && (
+        <div className="mt-2 rounded-lg border border-zinc-800 bg-zinc-950 p-2 text-xs">
+          <div className="font-semibold text-zinc-300">Tag {hoverPoint.day}</div>
+          <div className="mt-1 grid grid-cols-2 gap-2">
+            <div>
+              <span className="text-zinc-500">Verdient:</span>{' '}
+              <span className="text-emerald-400">{formatCHF(hoverPoint.earned)}</span>
+              {showTimeAxis && hoverPoint.earnedHours !== undefined && (
+                <span className="ml-1 text-zinc-500">({formatHoursMinutes(hoverPoint.earnedHours)})</span>
+              )}
+            </div>
+            <div>
+              <span className="text-zinc-500">Ausgegeben:</span>{' '}
+              <span className="text-rose-400">{formatCHF(hoverPoint.spent)}</span>
+              {showTimeAxis && hoverPoint.spentHours !== undefined && (
+                <span className="ml-1 text-zinc-500">({formatHoursMinutes(hoverPoint.spentHours)})</span>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="mt-2 text-xs text-zinc-500">
         Crossing marker appears when spending overtakes earning.
