@@ -16,6 +16,9 @@ import { formatCHF } from '../lib/money'
 import { CategoryManager } from '../components/CategoryManager'
 import { BudgetManager } from '../components/BudgetManager'
 import { showToast } from '../components/Toast'
+import { OnboardingChecklist, type ChecklistItem } from '../components/OnboardingChecklist'
+import { loadExpensesForMonth } from '../lib/expenses'
+import { monthKeyFromDate } from '../lib/date'
 
 export function SettingsScreen(props: {
   settings: Settings
@@ -59,6 +62,59 @@ export function SettingsScreen(props: {
       ...settings,
       additionalIncomeSources: settings.additionalIncomeSources.filter(source => source.id !== id),
     })
+  }
+
+  // Onboarding Checklist Items
+  const checklistItems: ChecklistItem[] = [
+    {Onboarding Checklist */}
+      <OnboardingChecklist 
+        items={checklistItems}
+        onItemClick={handleChecklistClick}
+      />
+
+      {/* 
+      id: 'hourly-rate',
+      label: 'Stundenlohn einrichten',
+      description: 'Monatseinkommen und Arbeitszeit angeben',
+      completed: hourlyRate > 0,
+    },
+    {
+      id: 'category',
+      label: 'Erste eigene Kategorie anlegen',
+      description: 'Individuelle Ausgabenkategorie erstellen',
+      completed: settings.customCategories.length > 0,
+    },
+    {
+      id: 'budget',
+      label: 'Erstes Budget festlegen',
+      description: 'Monatliches Limit für eine Kategorie setzen',
+      completed: settings.categoryBudgets.length > 0,
+    },
+    {
+      id: 'expense',
+      label: 'Erste Ausgabe erfassen',
+      description: 'Ausgabe manuell oder per Quick-Add speichern',
+      completed: loadExpensesForMonth(monthKeyFromDate(new Date())).length > 0,
+    },
+  ]
+
+  const handleChecklistClick = (id: string) => {
+    // Scroll to relevant section or open modal
+    switch (id) {
+      case 'hourly-rate':
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+        break
+      case 'category':
+        setShowCategoryManager(true)
+        break
+      case 'budget':
+        setShowBudgetManager(true)
+        break
+      case 'expense':
+        // Could navigate to status screen, but not possible from here
+        showToast('Gehe zum Status-Screen, um eine Ausgabe zu erfassen', 'info')
+        break
+    }
   }
 
   return (

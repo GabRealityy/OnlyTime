@@ -10,10 +10,11 @@ export function TopNav(props: {
 }) {
   const { active, onNavigate } = props
 
-  const items: { id: Screen; label: string }[] = [
-    { id: 'status', label: 'Status' },
-    { id: 'calculator', label: 'Calculator' },
-    { id: 'settings', label: 'Settings' },
+  const items: { id: Screen; label: string; icon?: string }[] = [
+    { id: 'status', label: 'Status', icon: '📊' },
+    { id: 'calculator', label: 'Rechner', icon: '🧮' },
+    { id: 'settings', label: 'Einstellungen', icon: '⚙️' },
+    { id: 'help', label: 'Hilfe', icon: '❓' },
   ]
 
   return (
@@ -33,15 +34,18 @@ export function TopNav(props: {
                 type="button"
                 className={
                   isActive
-                    ? 'ot-btn ot-btn-primary'
-                    : 'ot-btn'
+                    ? 'ot-btn ot-btn-primary text-sm'
+                    : 'ot-btn text-sm'
                 }
                 onClick={() => onNavigate(it.id)}
+                aria-label={it.label}
+                aria-current={isActive ? 'page' : undefined}
               >
-                {it.label}
+                {it.icon && <span className="mr-1">{it.icon}</span>}
+                <span className="hidden sm:inline">{it.label}</span>
               </button>
-            )}
-          )}
+            )
+          })}
         </div>
       </div>
     </nav>
