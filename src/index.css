@@ -1,0 +1,81 @@
+/*
+  Tailwind v4 entrypoint.
+  Dark mode only: we set <html class="dark"> in index.html.
+*/
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  html {
+    @apply bg-zinc-950 text-zinc-100;
+  }
+
+  body {
+    @apply min-h-screen;
+  }
+
+  a {
+    @apply text-zinc-100 underline decoration-zinc-700 underline-offset-4;
+  }
+
+  a:hover {
+    @apply decoration-zinc-400;
+  }
+
+  input,
+  select,
+  textarea {
+    @apply w-full rounded-lg border border-zinc-800 bg-zinc-900 px-3 py-2 text-zinc-100 placeholder:text-zinc-500;
+  }
+
+  input:focus,
+  select:focus,
+  textarea:focus {
+    @apply outline-none ring-2 ring-zinc-600;
+  }
+
+  label {
+    @apply text-sm text-zinc-300;
+  }
+}
+
+@layer components {
+  .ot-card {
+    @apply rounded-2xl border border-zinc-800 bg-zinc-950/60 p-4 shadow-sm;
+  }
+
+  .ot-btn {
+    @apply inline-flex items-center justify-center rounded-xl border border-zinc-800 bg-zinc-900 px-3 py-2 text-sm text-zinc-100;
+  }
+
+  .ot-btn:hover {
+    @apply bg-zinc-800;
+  }
+
+  .ot-btn:active {
+    @apply translate-y-px;
+  }
+
+  .ot-btn-primary {
+    @apply border-zinc-700 bg-zinc-100 text-zinc-900;
+  }
+
+  .ot-btn-primary:hover {
+    @apply bg-white;
+  }
+
+  .ot-btn-danger {
+    @apply border-red-900/40 bg-red-950/40 text-red-200;
+  }
+
+  .ot-btn-danger:hover {
+    @apply bg-red-950/60;
+  }
+
+  .ot-kbd {
+    @apply rounded-md border border-zinc-700 bg-zinc-900 px-2 py-1 font-mono text-xs text-zinc-200;
+  }
+}
