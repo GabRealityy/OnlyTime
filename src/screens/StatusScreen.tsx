@@ -10,7 +10,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import type { Settings } from '../lib/settings'
-import { hourlyRateCHF } from '../lib/settings'
+import { hourlyRateCHF, effectiveNetMonthlyIncome } from '../lib/settings'
 import { dayOfMonth, daysInMonth, isoDateLocal, monthKeyFromDate, monthLabel } from '../lib/date'
 import { formatCHF, formatHoursMinutes, toHours } from '../lib/money'
 import { addExpense, deleteExpense, loadExpensesForMonth, type Expense, type ExpenseCategory, type QuickAddPreset } from '../lib/expenses'
@@ -50,10 +50,10 @@ export function StatusScreen(props: { settings: Settings }) {
   const hourly = hourlyRateCHF(props.settings)
 
   const earned = useMemo(() => {
-    const monthly = props.settings.netMonthlyIncomeCHF
+    const monthly = effectiveNetMonthlyIncome(props.settings)
     if (monthly <= 0) return 0
     return (monthly / dim) * today
-  }, [props.settings.netMonthlyIncomeCHF, dim, today])
+  }, [props.settings, dim, today])
 
   const spent = useMemo(() => sumSpent(expenses), [expenses])
 
@@ -108,7 +108,7 @@ export function StatusScreen(props: { settings: Settings }) {
   }, [props.settings.categoryBudgets, categorySpending])
 
   const dailyPoints: DailyPoint[] = useMemo(() => {
-    const monthly = props.settings.netMonthlyIncomeCHF
+    const monthly = effectiveNetMonthlyIncome(props.settings)
     const earnedPerDay = dim > 0 ? monthly / dim : 0
 
     // Pre-sum expenses by day.
@@ -132,7 +132,7 @@ export function StatusScreen(props: { settings: Settings }) {
       })
     }
     return pts
-  }, [props.settings.netMonthlyIncomeCHF, dim, expenses, hourly])
+  }, [props.settings, dim, expenses, hourly])
 
   const onSaveExpense = (data: ExpenseFormData) => {
     const dateMonthKey = data.date.slice(0, 7)
