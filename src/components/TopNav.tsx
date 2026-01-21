@@ -13,6 +13,7 @@ export function TopNav(props: {
 
   const items: { id: Screen; label: string; icon?: string }[] = [
     { id: 'status', label: 'Status', icon: '📊' },
+    { id: 'reports', label: 'Berichte', icon: '📈' },
     { id: 'calculator', label: 'Rechner', icon: '🧮' },
     { id: 'settings', label: 'Einstellungen', icon: '⚙️' },
     { id: 'help', label: 'Hilfe', icon: '❓' },

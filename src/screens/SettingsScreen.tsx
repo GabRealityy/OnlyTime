@@ -10,13 +10,15 @@ import {
   effectiveNetMonthlyIncome,
   weeklyCommuteHours,
   type Settings,
-  type IncomeSource 
+  type IncomeSource,
+  defaultSettings,
 } from '../lib/settings'
 import { formatCHF } from '../lib/money'
 import { CategoryManager } from '../components/CategoryManager'
 import { BudgetManager } from '../components/BudgetManager'
 import { showToast } from '../components/Toast'
 import { OnboardingChecklist, type ChecklistItem } from '../components/OnboardingChecklist'
+import { expenseCategories, type QuickAddPreset } from '../lib/expenses'
 import { loadExpensesForMonth } from '../lib/expenses'
 import { monthKeyFromDate } from '../lib/date'
 import { useTheme } from '../contexts/ThemeContext'
@@ -36,6 +38,51 @@ export function SettingsScreen(props: {
   const hourlyRate = hourlyRateCHF(settings)
   const totalIncome = effectiveNetMonthlyIncome(settings)
   const commuteHours = weeklyCommuteHours(settings)
+
+  const categoryOptions = [
+    ...expenseCategories.map((cat) => ({ id: cat, name: cat, emoji: undefined as string | undefined })),
+    ...settings.customCategories.map((cat) => ({ id: cat.id, name: cat.name, emoji: cat.emoji })),
+  ]
+
+  const updateQuickAddPreset = (id: string, patch: Partial<QuickAddPreset>) => {
+    onChange({
+      ...settings,
+      quickAddPresets: settings.quickAddPresets.map((p) => (p.id === id ? { ...p, ...patch } : p)),
+    })
+  }
+
+  const addQuickAddPreset = () => {
+    const next: QuickAddPreset = {
+      id: `qa-${Date.now()}`,
+      title: 'Neue Schnellerfassung',
+      amountCHF: 0,
+      category: 'Other',
+      emoji: '⚡',
+    }
+    onChange({ ...settings, quickAddPresets: [...settings.quickAddPresets, next] })
+    showToast('Schnellerfassung hinzugefügt', 'success', 2000)
+  }
+
+  const removeQuickAddPreset = (id: string) => {
+    const idx = settings.quickAddPresets.findIndex((p) => p.id === id)
+    if (idx < 0) return
+    const removed = settings.quickAddPresets[idx]
+    const next = settings.quickAddPresets.filter((p) => p.id !== id)
+    onChange({ ...settings, quickAddPresets: next })
+
+    showToast(
+      `Schnellerfassung gelöscht: ${removed.title || 'Ohne Titel'}`,
+      'info',
+      5000,
+      'Rückgängig',
+      () => {
+        const restored = [...next]
+        restored.splice(idx, 0, removed)
+        onChange({ ...settings, quickAddPresets: restored })
+        showToast('Wiederhergestellt', 'success', 2000)
+      },
+    )
+  }
 
   const addIncomeSource = () => {
     const newSource: IncomeSource = {
@@ -134,6 +181,12 @@ export function SettingsScreen(props: {
           </button>
         </div>
       </div>
+
+      {/* Setup Checklist */}
+      <OnboardingChecklist
+        items={checklistItems}
+        onItemClick={handleChecklistClick}
+      />
 
       {/* Haupteinkommen */}
       <div className="ot-card">
@@ -496,6 +549,109 @@ export function SettingsScreen(props: {
             ✓ Dein Stundenlohn ist berechnet. Die App kann jetzt Preise in Arbeitszeit umrechnen.
           </div>
         )}
+      </div>
+
+      {/* Schnellerfassung (Quick-Add) */}
+      <div className="ot-card">
+        <div className="text-lg font-semibold">Schnellerfassung</div>
+        <div className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+          Diese Buttons erscheinen im Status und erfassen Ausgaben mit einem Klick.
+        </div>
+
+        <div className="mt-4 space-y-2">
+          {settings.quickAddPresets.length === 0 && (
+            <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-950/40 p-3 text-sm text-zinc-600 dark:text-zinc-400">
+              Noch keine Schnellerfassungen. Füge unten einen Button hinzu.
+            </div>
+          )}
+
+          {settings.quickAddPresets.map((p) => (
+            <div
+              key={p.id}
+              className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/40 p-3"
+            >
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-12 sm:items-end">
+                <div className="sm:col-span-2">
+                  <label className="text-xs text-zinc-600 dark:text-zinc-500">Emoji</label>
+                  <input
+                    value={p.emoji ?? ''}
+                    onChange={(e) => updateQuickAddPreset(p.id, { emoji: e.target.value || undefined })}
+                    placeholder="☕"
+                    className="w-full text-sm"
+                  />
+                </div>
+
+                <div className="sm:col-span-4">
+                  <label className="text-xs text-zinc-600 dark:text-zinc-500">Titel</label>
+                  <input
+                    value={p.title}
+                    onChange={(e) => updateQuickAddPreset(p.id, { title: e.target.value })}
+                    placeholder="z.B. Kaffee"
+                    className="w-full text-sm"
+                  />
+                </div>
+
+                <div className="sm:col-span-3">
+                  <label className="text-xs text-zinc-600 dark:text-zinc-500">Betrag (CHF)</label>
+                  <input
+                    inputMode="decimal"
+                    value={String(p.amountCHF ?? 0)}
+                    onChange={(e) =>
+                      updateQuickAddPreset(p.id, {
+                        amountCHF: Number(e.target.value.replace(',', '.')) || 0,
+                      })
+                    }
+                    className="w-full text-sm"
+                  />
+                </div>
+
+                <div className="sm:col-span-3">
+                  <label className="text-xs text-zinc-600 dark:text-zinc-500">Kategorie</label>
+                  <select
+                    value={String(p.category ?? 'Other')}
+                    onChange={(e) => updateQuickAddPreset(p.id, { category: e.target.value })}
+                    className="w-full text-sm"
+                  >
+                    {categoryOptions.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.emoji ? `${c.emoji} ` : ''}{c.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="mt-3 flex items-center justify-between">
+                <div className="text-xs text-zinc-600 dark:text-zinc-500">
+                  Vorschau: {p.emoji ? `${p.emoji} ` : ''}{p.title || 'Ohne Titel'} · {formatCHF(p.amountCHF || 0)}
+                </div>
+                <button
+                  type="button"
+                  className="ot-btn ot-btn-danger text-xs"
+                  onClick={() => removeQuickAddPreset(p.id)}
+                >
+                  Löschen
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-4 flex flex-wrap gap-2">
+          <button type="button" className="ot-btn ot-btn-primary" onClick={addQuickAddPreset}>
+            ➕ Button hinzufügen
+          </button>
+          <button
+            type="button"
+            className="ot-btn"
+            onClick={() => {
+              onChange({ ...settings, quickAddPresets: defaultSettings.quickAddPresets })
+              showToast('Schnellerfassung auf Standard zurückgesetzt', 'success', 2500)
+            }}
+          >
+            ↩️ Standard wiederherstellen
+          </button>
+        </div>
       </div>
 
       {/* Kategorien & Budgets */}

@@ -57,7 +57,8 @@ export type Expense = {
   date: string
   amountCHF: number
   title: string
-  category: ExpenseCategory
+  // Built-in category (ExpenseCategory) or a custom category id
+  category: string
   createdAt: number
   // Optional: berechnete Stundenanzahl (wird dynamisch aus amountCHF / hourlyRate berechnet)
   amountHours?: number
@@ -114,12 +115,11 @@ function normalizeExpense(input: unknown): Expense | undefined {
   const id = typeof obj.id === 'string' ? obj.id : undefined
   const date = typeof obj.date === 'string' ? obj.date : undefined
   const title = typeof obj.title === 'string' ? obj.title : ''
-  const category = (typeof obj.category === 'string' ? obj.category : 'Other') as ExpenseCategory
+  const category = typeof obj.category === 'string' && obj.category.trim() ? obj.category.trim() : 'Other'
   const amountCHF = toNumber(obj.amountCHF)
   const createdAt = typeof obj.createdAt === 'number' && Number.isFinite(obj.createdAt) ? obj.createdAt : Date.now()
 
   if (!id || !date) return undefined
-  if (!expenseCategories.includes(category)) return undefined
   if (!Number.isFinite(amountCHF)) return undefined
 
   return {

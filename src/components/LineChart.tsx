@@ -18,6 +18,8 @@ export type DailyPoint = {
   spent: number
   earnedHours?: number
   spentHours?: number
+  /** Optional display label for the x-value (e.g., month name for multi-month charts) */
+  dayLabel?: string
 }
 
 function buildPath(points: { x: number; y: number }[]): string {
@@ -32,11 +34,13 @@ export function LineChart(props: {
   height?: number
   hourlyRate?: number
   showTimeAxis?: boolean
+  title?: string
 }) {
   const width = props.width ?? 720
   const height = props.height ?? 220
   const hourlyRate = props.hourlyRate ?? 0
   const showTimeAxis = props.showTimeAxis ?? (hourlyRate > 0)
+  const title = props.title ?? 'This month'
 
   const [hoverDay, setHoverDay] = useState<number | null>(null)
 
@@ -100,7 +104,7 @@ export function LineChart(props: {
   return (
     <div className="ot-card">
       <div className="mb-2 flex items-center justify-between">
-        <div className="text-sm font-semibold">This month</div>
+        <div className="text-sm font-semibold">{title}</div>
         <div className="flex items-center gap-3 text-xs text-zinc-600 dark:text-zinc-400">
           <div className="flex items-center gap-2">
             <span className="inline-block h-2 w-2 rounded-full bg-emerald-500" />
@@ -229,7 +233,9 @@ export function LineChart(props: {
 
       {hoverPoint && (
         <div className="mt-2 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 p-2 text-xs">
-          <div className="font-semibold text-zinc-700 dark:text-zinc-300">Tag {hoverPoint.day}</div>
+          <div className="font-semibold text-zinc-700 dark:text-zinc-300">
+            {hoverPoint.dayLabel ? hoverPoint.dayLabel : `Tag ${hoverPoint.day}`}
+          </div>
           <div className="mt-1 grid grid-cols-2 gap-2">
             <div>
               <span className="text-zinc-600 dark:text-zinc-500">Verdient:</span>{' '}

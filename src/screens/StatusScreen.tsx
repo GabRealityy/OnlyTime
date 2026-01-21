@@ -13,12 +13,18 @@ import type { Settings } from '../lib/settings'
 import { hourlyRateCHF, effectiveNetMonthlyIncome } from '../lib/settings'
 import { dayOfMonth, daysInMonth, isoDateLocal, monthKeyFromDate, monthLabel } from '../lib/date'
 import { formatCHF, formatHoursMinutes, toHours } from '../lib/money'
-import { addExpense, deleteExpense, loadExpensesForMonth, type Expense, type ExpenseCategory, type QuickAddPreset } from '../lib/expenses'
+import { addExpense, deleteExpense, loadExpensesForMonth, type Expense, type QuickAddPreset } from '../lib/expenses'
 import { LineChart, type DailyPoint } from '../components/LineChart'
 import { QuickAddButtons } from '../components/QuickAddButtons'
 import { ExpenseFormModal, type ExpenseFormData } from '../components/ExpenseFormModal'
 import { CSVImportModal } from '../components/CSVImportModal'
 import { showToast } from '../components/Toast'
+import {
+  buildMonthlyData,
+  summarizeMonthlyData,
+  timeRangeButtons,
+  type TimeRange,
+} from '../lib/rangeAnalytics'
 
 function sumSpent(expenses: Expense[]): number {
   return expenses.reduce((acc, e) => acc + (Number.isFinite(e.amountCHF) ? e.amountCHF : 0), 0)
@@ -37,6 +43,8 @@ export function StatusScreen(props: { settings: Settings }) {
   const dim = daysInMonth(now)
   const label = monthLabel(now)
 
+  const [timeRange, setTimeRange] = useState<TimeRange>('1M')
+
   const [expenses, setExpenses] = useState<Expense[]>(() => loadExpensesForMonth(monthKey))
 
   useEffect(() => {
@@ -49,6 +57,19 @@ export function StatusScreen(props: { settings: Settings }) {
 
   const hourly = hourlyRateCHF(props.settings)
 
+  const rangeMonthlyData = useMemo(
+    () => buildMonthlyData(props.settings, timeRange, now),
+    [props.settings, timeRange, now],
+  )
+  const rangeTotalStats = useMemo(
+    () => summarizeMonthlyData(rangeMonthlyData, hourly),
+    [rangeMonthlyData, hourly],
+  )
+
+  const timeRangeLabel = useMemo(() => {
+    return timeRangeButtons.find((b) => b.id === timeRange)?.label ?? timeRange
+  }, [timeRange])
+
   const earned = useMemo(() => {
     const monthly = effectiveNetMonthlyIncome(props.settings)
     if (monthly <= 0) return 0
@@ -60,11 +81,9 @@ export function StatusScreen(props: { settings: Settings }) {
   // Zeit-Berechnungen mit erweitertem Stundenlohn
   const earnedHours = toHours(earned, hourly)
   const spentHours = toHours(spent, hourly)
-  const availableHours = earnedHours - spentHours
+  // keep month-scoped values for warnings/budgets
 
-  const balanceCHF = earned - spent
-
-  const isAhead = balanceCHF >= 0
+  const isAhead = rangeTotalStats.balance >= 0
   const timeOverspent = spentHours > earnedHours
 
   // Budget tracking per category
@@ -134,6 +153,26 @@ export function StatusScreen(props: { settings: Settings }) {
     return pts
   }, [props.settings, dim, expenses, hourly])
 
+  const rangePoints: DailyPoint[] = useMemo(() => {
+    // For 1M, keep the detailed daily chart.
+    if (timeRange === '1M') return dailyPoints
+
+    let earnedCum = 0
+    let spentCum = 0
+    return rangeMonthlyData.map((m, idx) => {
+      earnedCum += m.earned
+      spentCum += m.spent
+      return {
+        day: idx + 1,
+        dayLabel: m.label,
+        earned: earnedCum,
+        spent: spentCum,
+        earnedHours: toHours(earnedCum, hourly),
+        spentHours: toHours(spentCum, hourly),
+      }
+    })
+  }, [timeRange, dailyPoints, rangeMonthlyData, hourly])
+
   const onSaveExpense = (data: ExpenseFormData) => {
     const dateMonthKey = data.date.slice(0, 7)
     if (dateMonthKey !== monthKey) {
@@ -145,7 +184,7 @@ export function StatusScreen(props: { settings: Settings }) {
       date: data.date,
       amountCHF: data.amountCHF,
       title: data.title,
-      category: data.category as ExpenseCategory,
+      category: data.category,
     })
 
     setExpenses(updated)
@@ -157,7 +196,7 @@ export function StatusScreen(props: { settings: Settings }) {
       date: isoDateLocal(now),
       amountCHF: preset.amountCHF,
       title: preset.title,
-      category: preset.category as ExpenseCategory,
+      category: preset.category,
     })
     setExpenses(updated)
     showToast(`${preset.title} erfasst: ${formatCHF(preset.amountCHF)}`, 'success', 2000)
@@ -213,7 +252,7 @@ export function StatusScreen(props: { settings: Settings }) {
           <div>
             <div className="text-lg font-semibold">Status</div>
             <div className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-              {label} · {now.toLocaleDateString()}
+              {label} · Zeitraum: {timeRangeLabel} · {now.toLocaleDateString()}
             </div>
           </div>
           <div className="text-right">
@@ -224,36 +263,54 @@ export function StatusScreen(props: { settings: Settings }) {
           </div>
         </div>
 
+        {/* Zeitraum-Filter */}
+        <div className="mt-3 flex flex-wrap gap-2">
+          {timeRangeButtons.map((btn) => (
+            <button
+              key={btn.id}
+              type="button"
+              onClick={() => setTimeRange(btn.id)}
+              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                timeRange === btn.id
+                  ? 'bg-emerald-600 text-white'
+                  : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-300 dark:hover:bg-zinc-700'
+              }`}
+            >
+              {btn.label}
+            </button>
+          ))}
+        </div>
+
         <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
           <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-950/40 p-3">
-            <div className="text-xs text-zinc-600 dark:text-zinc-500">Earned so far</div>
-            <div className="mt-1 text-xl font-semibold">{formatCHF(earned)}</div>
+            <div className="text-xs text-zinc-600 dark:text-zinc-500">Verdient ({timeRangeLabel})</div>
+            <div className="mt-1 text-xl font-semibold">{formatCHF(rangeTotalStats.earned)}</div>
             {hourly > 0 && (
               <div className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-                {formatHoursMinutes(earnedHours)} verdient
+                {formatHoursMinutes(rangeTotalStats.earnedHours)} verdient
               </div>
             )}
           </div>
           <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-950/40 p-3">
-            <div className="text-xs text-zinc-600 dark:text-zinc-500">Spent this month</div>
-            <div className="mt-1 text-xl font-semibold">{formatCHF(spent)}</div>
+            <div className="text-xs text-zinc-600 dark:text-zinc-500">Ausgegeben ({timeRangeLabel})</div>
+            <div className="mt-1 text-xl font-semibold">{formatCHF(rangeTotalStats.spent)}</div>
             {hourly > 0 && (
               <div className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-                {formatHoursMinutes(spentHours)} ausgegeben
+                {formatHoursMinutes(rangeTotalStats.spentHours)} ausgegeben
               </div>
             )}
           </div>
           <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-950/40 p-3">
-            <div className="text-xs text-zinc-600 dark:text-zinc-500">Balance</div>
+            <div className="text-xs text-zinc-600 dark:text-zinc-500">Bilanz ({timeRangeLabel})</div>
             <div className="mt-1 flex items-baseline gap-2">
               <div className="text-2xl font-semibold">
-                {isAhead ? '🟢' : '🔴'} {formatCHF(balanceCHF)}
+                {isAhead ? '🟢' : '🔴'} {formatCHF(rangeTotalStats.balance)}
               </div>
             </div>
             <div className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
               {hourly > 0 ? (
                 <>
-                  {formatHoursMinutes(availableHours)} verfügbare Zeit
+                  {formatHoursMinutes(rangeTotalStats.balanceHours)} verfügbare Zeit
                   <br />
                   <span className="text-xs text-zinc-600 dark:text-zinc-500">
                     Stundenlohn: {formatCHF(hourly)}/h
@@ -343,7 +400,12 @@ export function StatusScreen(props: { settings: Settings }) {
         )}
       </div>
 
-      <LineChart points={dailyPoints} hourlyRate={hourly} showTimeAxis={hourly > 0} />
+      <LineChart
+        points={rangePoints}
+        hourlyRate={hourly}
+        showTimeAxis={hourly > 0}
+        title={timeRange === '1M' ? 'Dieser Monat' : `Zeitraum: ${timeRangeLabel}`}
+      />
 
       <QuickAddButtons 
         presets={props.settings.quickAddPresets}

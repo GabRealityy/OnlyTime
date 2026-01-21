@@ -2,5 +2,5 @@
   Shared app-level types.
 */
 
-export type Screen = 'status' | 'calculator' | 'settings' | 'help'
+export type Screen = 'status' | 'reports' | 'calculator' | 'settings' | 'help'
 

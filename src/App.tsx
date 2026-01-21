@@ -10,6 +10,7 @@ import { SettingsScreen } from './screens/SettingsScreen'
 import { StatusScreen } from './screens/StatusScreen'
 import { CalculatorScreen } from './screens/CalculatorScreen'
 import { HelpScreen } from './screens/HelpScreen'
+import { ReportsScreen } from './screens/ReportsScreen'
 import { loadSettings, saveSettings } from './lib/settings'
 import { storageKeys } from './lib/storage'
 import { useLocalStorageState } from './hooks/useLocalStorageState'
@@ -54,6 +55,8 @@ export default function App() {
         return <SettingsScreen settings={settings} onChange={setSettings} />
       case 'calculator':
         return <CalculatorScreen settings={settings} />
+      case 'reports':
+        return <ReportsScreen settings={settings} />
       case 'help':
         return <HelpScreen />
       case 'status':

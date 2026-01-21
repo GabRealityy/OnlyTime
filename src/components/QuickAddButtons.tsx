@@ -42,7 +42,7 @@ export function QuickAddButtons(props: {
         })}
       </div>
       <div className="mt-2 text-xs text-zinc-500">
-        Tipp: Konfiguriere deine häufigsten Ausgaben in den Einstellungen
+        Tipp: Konfiguriere diese Buttons in Einstellungen → Schnellerfassung
       </div>
     </div>
   )
