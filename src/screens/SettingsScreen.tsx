@@ -13,6 +13,9 @@ import {
   type IncomeSource 
 } from '../lib/settings'
 import { formatCHF } from '../lib/money'
+import { CategoryManager } from '../components/CategoryManager'
+import { BudgetManager } from '../components/BudgetManager'
+import { showToast } from '../components/Toast'
 
 export function SettingsScreen(props: {
   settings: Settings
@@ -21,6 +24,8 @@ export function SettingsScreen(props: {
   const { settings, onChange } = props
   const [showAdvanced, setShowAdvanced] = useState(false)
   const [showAdditionalIncome, setShowAdditionalIncome] = useState(settings.additionalIncomeSources.length > 0)
+  const [showCategoryManager, setShowCategoryManager] = useState(false)
+  const [showBudgetManager, setShowBudgetManager] = useState(false)
 
   const monthlyHours = monthlyWorkingHours(settings)
   const hourlyRate = hourlyRateCHF(settings)
@@ -420,6 +425,53 @@ export function SettingsScreen(props: {
           </div>
         )}
       </div>
+
+      {/* Kategorien & Budgets */}
+      <div className="ot-card">
+        <div className="text-lg font-semibold">Kategorien & Budgets</div>
+        <div className="mt-1 text-sm text-zinc-400">
+          Verwalte benutzerdefinierte Kategorien und setze monatliche Budgets
+        </div>
+
+        <div className="mt-4 space-y-3">
+          <button
+            type="button"
+            className="ot-btn ot-btn-primary w-full"
+            onClick={() => setShowCategoryManager(true)}
+          >
+            📁 Kategorien verwalten ({settings.customCategories.length})
+          </button>
+
+          <button
+            type="button"
+            className="ot-btn w-full"
+            onClick={() => setShowBudgetManager(true)}
+          >
+            💰 Budgets verwalten ({settings.categoryBudgets.length})
+          </button>
+        </div>
+      </div>
+
+      <CategoryManager
+        open={showCategoryManager}
+        onClose={() => setShowCategoryManager(false)}
+        categories={settings.customCategories}
+        onSave={(categories) => {
+          onChange({ ...settings, customCategories: categories })
+          showToast(`${categories.length} Kategorie(n) gespeichert`, 'success')
+        }}
+      />
+
+      <BudgetManager
+        open={showBudgetManager}
+        onClose={() => setShowBudgetManager(false)}
+        budgets={settings.categoryBudgets}
+        customCategories={settings.customCategories}
+        onSave={(budgets) => {
+          onChange({ ...settings, categoryBudgets: budgets })
+          showToast(`${budgets.length} Budget(s) gespeichert`, 'success')
+        }}
+      />
     </div>
   )
 }

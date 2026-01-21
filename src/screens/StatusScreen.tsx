@@ -67,6 +67,36 @@ export function StatusScreen(props: { settings: Settings }) {
   const isAhead = balanceCHF >= 0
   const timeOverspent = spentHours > earnedHours
 
+  // Budget tracking per category
+  const categorySpending = useMemo(() => {
+    const spending = new Map<string, number>()
+    for (const exp of expenses) {
+      const cat = exp.category
+      spending.set(cat, (spending.get(cat) || 0) + exp.amountCHF)
+    }
+    return spending
+  }, [expenses])
+
+  const budgetWarnings = useMemo(() => {
+    const warnings: Array<{ category: string; spent: number; budget: number; percentage: number }> = []
+    
+    for (const budget of props.settings.categoryBudgets) {
+      const spent = categorySpending.get(budget.categoryId) || 0
+      const percentage = (spent / budget.monthlyBudgetCHF) * 100
+      
+      if (percentage >= 80) {
+        warnings.push({
+          category: budget.categoryId,
+          spent,
+          budget: budget.monthlyBudgetCHF,
+          percentage,
+        })
+      }
+    }
+    
+    return warnings.sort((a, b) => b.percentage - a.percentage)
+  }, [props.settings.categoryBudgets, categorySpending])
+
   const dailyPoints: DailyPoint[] = useMemo(() => {
     const monthly = props.settings.netMonthlyIncomeCHF
     const earnedPerDay = dim > 0 ? monthly / dim : 0
@@ -219,6 +249,56 @@ export function StatusScreen(props: { settings: Settings }) {
                 </div>
               </div>
             </div>
+          </div>
+        )}
+
+        {/* Budget Warnings */}
+        {budgetWarnings.length > 0 && (
+          <div className="mt-4 space-y-2">
+            {budgetWarnings.map((warning) => {
+              const isExceeded = warning.percentage >= 100
+              const categoryName = props.settings.customCategories.find(c => c.id === warning.category)?.name || warning.category
+              
+              return (
+                <div
+                  key={warning.category}
+                  className={`rounded-xl border p-3 ${
+                    isExceeded
+                      ? 'border-rose-800 bg-rose-950/40'
+                      : 'border-amber-800 bg-amber-950/40'
+                  }`}
+                >
+                  <div className="flex items-start gap-2">
+                    <span className="text-lg">{isExceeded ? '🚫' : '⚠️'}</span>
+                    <div className="flex-1">
+                      <div className={`text-sm font-semibold ${
+                        isExceeded ? 'text-rose-300' : 'text-amber-300'
+                      }`}>
+                        {isExceeded ? 'Budget überschritten' : 'Budget-Warnung'}: {categoryName}
+                      </div>
+                      <div className={`mt-1 text-sm ${
+                        isExceeded ? 'text-rose-200/80' : 'text-amber-200/80'
+                      }`}>
+                        {formatCHF(warning.spent)} von {formatCHF(warning.budget)} ausgegeben
+                        <span className="ml-2 font-semibold">
+                          ({warning.percentage.toFixed(0)}%)
+                        </span>
+                      </div>
+                      
+                      {/* Progress bar */}
+                      <div className="mt-2 h-2 overflow-hidden rounded-full bg-zinc-900">
+                        <div
+                          className={`h-full transition-all ${
+                            isExceeded ? 'bg-rose-500' : 'bg-amber-500'
+                          }`}
+                          style={{ width: `${Math.min(100, warning.percentage)}%` }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )
+            })}
           </div>
         )}
       </div>
