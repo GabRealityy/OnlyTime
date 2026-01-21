@@ -493,7 +493,7 @@ export function SettingsScreen(props: {
         
         {hourlyRate > 0 && monthlyHours > 0 && (
           <div className="mt-3 rounded-xl border border-emerald-900/30 bg-emerald-950/20 p-3 text-sm text-emerald-300">
-            ✓ Dein Stundenlohn ist berechnet. Die App kann jetzt Preise in Lebenszeit umrechnen.
+            ✓ Dein Stundenlohn ist berechnet. Die App kann jetzt Preise in Arbeitszeit umrechnen.
           </div>
         )}
       </div>

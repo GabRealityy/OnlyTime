@@ -65,11 +65,11 @@ export function OnboardingFlow(props: {
               OnlyTime hilft dir, Geld als das zu verstehen, was es wirklich ist:
               <br />
               <span className="text-xl font-semibold text-white mt-2 block">
-                Deine Lebenszeit
+                Deine Arbeitszeit
               </span>
             </p>
             <div className="rounded-xl border border-emerald-800 bg-emerald-950/40 p-4 text-sm text-emerald-300">
-              💡 Jeder Kauf kostet dich nicht nur CHF, sondern auch Stunden deines Lebens.
+              💡 Jeder Kauf kostet dich nicht nur CHF, sondern auch Stunden deiner Arbeit.
             </div>
           </div>
         )
@@ -91,7 +91,7 @@ export function OnboardingFlow(props: {
                 <div className="font-semibold mb-1">2. Ausgaben = Zeit</div>
                 <p className="text-zinc-400">
                   Jede Ausgabe wird in Arbeitsstunden umgerechnet. Ein Kaffee für CHF 4.50
-                  bei einem Stundenlohn von CHF 30 kostet dich 9 Minuten Lebenszeit.
+                  bei einem Stundenlohn von CHF 30 kostet dich 9 Minuten Arbeitszeit.
                 </p>
               </div>
               <div className="rounded-lg bg-zinc-900/60 p-3">
@@ -270,7 +270,7 @@ export function OnboardingFlow(props: {
             <div className="rounded-xl border border-zinc-800 bg-zinc-950/40 p-4 text-left space-y-2 text-sm">
               <div className="flex items-center gap-2">
                 <span className="text-emerald-400">✓</span>
-                <span>Konzept verstanden: Geld = Lebenszeit</span>
+                <span>Konzept verstanden: Geld = Arbeitszeit</span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-emerald-400">✓</span>

@@ -60,9 +60,9 @@ export function CalculatorScreen(props: { settings: Settings }) {
   return (
     <div className="space-y-4">
       <div className="ot-card">
-        <div className="text-lg font-semibold">Calculator</div>
+        <div className="text-lg font-semibold">Rechner</div>
         <div className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-          Convert a price into time.
+          Rechne Preise in Arbeitszeit um.
         </div>
 
         <div className="mt-4 grid grid-cols-1 gap-3">
@@ -78,12 +78,12 @@ export function CalculatorScreen(props: { settings: Settings }) {
           </div>
 
           <div className="rounded-xl border border-zinc-800 bg-zinc-950/40 p-3">
-            <div className="text-xs text-zinc-600 dark:text-zinc-500">Hourly rate</div>
+            <div className="text-xs text-zinc-600 dark:text-zinc-500">Stundenlohn</div>
             <div className="mt-1 font-mono text-sm">
-              {hourlyRate > 0 ? `${formatCHF(hourlyRate)}/h` : 'Set it in Settings'}
+              {hourlyRate > 0 ? `${formatCHF(hourlyRate)}/h` : 'In Einstellungen festlegen'}
             </div>
 
-            <div className="mt-3 text-xs text-zinc-600 dark:text-zinc-500">Time cost</div>
+            <div className="mt-3 text-xs text-zinc-600 dark:text-zinc-500">Zeitkosten</div>
             <div className="mt-1 text-2xl font-semibold">
               {time === null ? '—' : formatHoursMinutes(time)}
             </div>

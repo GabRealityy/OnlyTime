@@ -18,7 +18,7 @@ const FAQ_ITEMS: FAQItem[] = [
     answer: (
       <>
         OnlyTime rechnet deine Ausgaben in <strong>Arbeitszeit</strong> um. Statt nur zu sehen,
-        dass ein Kaffee CHF 4.50 kostet, siehst du, dass er dich z.B. 9 Minuten Lebenszeit kostet.
+        dass ein Kaffee CHF 4.50 kostet, siehst du, dass er dich z.B. 9 Minuten Arbeitszeit kostet.
         Das macht Kaufentscheidungen bewusster.
       </>
     ),

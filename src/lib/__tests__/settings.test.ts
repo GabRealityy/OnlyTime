@@ -427,7 +427,7 @@ describe('settings - Erweiterte Stundenlohn-Berechnung', () => {
       const hoursWithoutCommute = toHours(purchaseAmount, rateWithoutCommute)
       const hoursWithCommute = toHours(purchaseAmount, rateWithCommute)
       
-      // Mit Pendelzeit kostet der Kauf mehr Lebenszeit
+      // Mit Pendelzeit kostet der Kauf mehr Arbeitszeit
       expect(hoursWithCommute).toBeGreaterThan(hoursWithoutCommute)
       
       // Konkret: ohne Pendeln ~3.46h, mit Pendeln ~3.89h
