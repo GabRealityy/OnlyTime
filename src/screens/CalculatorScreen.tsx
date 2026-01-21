@@ -78,12 +78,12 @@ export function CalculatorScreen(props: { settings: Settings }) {
           </div>
 
           <div className="rounded-xl border border-zinc-800 bg-zinc-950/40 p-3">
-            <div className="text-xs text-zinc-500">Hourly rate</div>
+            <div className="text-xs text-zinc-600 dark:text-zinc-500">Hourly rate</div>
             <div className="mt-1 font-mono text-sm">
               {hourlyRate > 0 ? `${formatCHF(hourlyRate)}/h` : 'Set it in Settings'}
             </div>
 
-            <div className="mt-3 text-xs text-zinc-500">Time cost</div>
+            <div className="mt-3 text-xs text-zinc-600 dark:text-zinc-500">Time cost</div>
             <div className="mt-1 text-2xl font-semibold">
               {time === null ? '—' : formatHoursMinutes(time)}
             </div>
@@ -129,7 +129,7 @@ export function CalculatorScreen(props: { settings: Settings }) {
         onClose={() => setReflectionOpen(false)}
       >
         <div className="space-y-3">
-          <div className="text-sm text-zinc-400">
+          <div className="text-sm text-zinc-600 dark:text-zinc-400">
             Not a budget. Just a check-in.
           </div>
           <textarea
@@ -154,10 +154,10 @@ export function CalculatorScreen(props: { settings: Settings }) {
       >
         <div className="space-y-3">
           <div className="rounded-xl border border-zinc-800 bg-zinc-950/40 p-3">
-            <div className="text-xs text-zinc-500">Betrag</div>
+            <div className="text-xs text-zinc-600 dark:text-zinc-500">Betrag</div>
             <div className="mt-1 text-xl font-semibold">{formatCHF(parsedPrice)}</div>
             {time !== null && (
-              <div className="mt-1 text-sm text-zinc-400">
+              <div className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
                 {formatHoursMinutes(time)} Arbeitszeit
               </div>
             )}

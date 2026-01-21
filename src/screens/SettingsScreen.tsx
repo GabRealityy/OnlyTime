@@ -138,7 +138,7 @@ export function SettingsScreen(props: {
       {/* Haupteinkommen */}
       <div className="ot-card">
         <div className="text-lg font-semibold">Einkommen</div>
-        <div className="mt-1 text-sm text-zinc-400">
+        <div className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
           Wähle zwischen Netto- oder Bruttoeinkommen
         </div>
 
@@ -165,7 +165,7 @@ export function SettingsScreen(props: {
               <div>
                 <label htmlFor="grossMonthlyIncome">
                   Brutto-Monatseinkommen (CHF)
-                  <span className="ml-2 text-xs text-zinc-500">vor Steuern/Abgaben</span>
+                  <span className="ml-2 text-xs text-zinc-600 dark:text-zinc-500">vor Steuern/Abgaben</span>
                 </label>
                 <input
                   id="grossMonthlyIncome"
@@ -183,7 +183,7 @@ export function SettingsScreen(props: {
               <div>
                 <label htmlFor="taxRate">
                   Steuern & Sozialabgaben (%)
-                  <span className="ml-2 text-xs text-zinc-500">ca. 15-35%</span>
+                  <span className="ml-2 text-xs text-zinc-600 dark:text-zinc-500">ca. 15-35%</span>
                 </label>
                 <input
                   id="taxRate"
@@ -209,7 +209,7 @@ export function SettingsScreen(props: {
             <div>
               <label htmlFor="netMonthlyIncome">
                 Netto-Monatseinkommen (CHF)
-                <span className="ml-2 text-xs text-zinc-500">nach allen Abzügen</span>
+                <span className="ml-2 text-xs text-zinc-600 dark:text-zinc-500">nach allen Abzügen</span>
               </label>
               <input
                 id="netMonthlyIncome"
@@ -254,7 +254,7 @@ export function SettingsScreen(props: {
           <div>
             <label htmlFor="weeksPerMonth">
               Wochen pro Monat
-              <span className="ml-2 text-xs text-zinc-500">Standard: 4.33</span>
+              <span className="ml-2 text-xs text-zinc-600 dark:text-zinc-500">Standard: 4.33</span>
             </label>
             <input
               id="weeksPerMonth"

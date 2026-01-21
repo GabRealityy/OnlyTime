@@ -35,7 +35,7 @@ const FAQ_ITEMS: FAQItem[] = [
           <li>Pendelzeit (geht von deiner verfügbaren Zeit ab)</li>
           <li>Zusätzliche Einkommensquellen mit eigener Stundenangabe</li>
         </ul>
-        <div className="mt-2 text-xs text-zinc-500">
+        <div className="mt-2 text-xs text-zinc-600 dark:text-zinc-500">
           Formel: Gesamteinkommen ÷ (Arbeitsstunden + Pendelstunden)
         </div>
       </>
@@ -157,7 +157,7 @@ export function HelpScreen() {
         <div className="flex items-start justify-between gap-3">
           <div>
             <div className="text-lg font-semibold">Hilfe & FAQ</div>
-            <div className="mt-1 text-sm text-zinc-400">
+            <div className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
               Häufige Fragen zu OnlyTime
             </div>
           </div>
@@ -210,14 +210,14 @@ export function HelpScreen() {
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="font-medium text-sm">{item.question}</div>
-                    <div className="text-zinc-500 shrink-0">
+                    <div className="text-zinc-600 dark:text-zinc-500 shrink-0">
                       {isExpanded ? '▼' : '▶'}
                     </div>
                   </div>
                 </button>
                 
                 {isExpanded && (
-                  <div className="px-4 pb-4 text-sm text-zinc-400">
+                  <div className="px-4 pb-4 text-sm text-zinc-700 dark:text-zinc-400">
                     {item.answer}
                   </div>
                 )}
@@ -230,7 +230,7 @@ export function HelpScreen() {
       {/* Contact */}
       <div className="ot-card">
         <div className="text-sm font-medium mb-2">Weitere Fragen?</div>
-        <p className="text-sm text-zinc-400 mb-3">
+        <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-3">
           Wenn du etwas nicht findest, kontaktiere uns gerne!
         </p>
         <button

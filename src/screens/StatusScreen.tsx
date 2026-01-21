@@ -212,12 +212,12 @@ export function StatusScreen(props: { settings: Settings }) {
         <div className="flex items-start justify-between gap-3">
           <div>
             <div className="text-lg font-semibold">Status</div>
-            <div className="mt-1 text-sm text-zinc-400">
+            <div className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
               {label} · {now.toLocaleDateString()}
             </div>
           </div>
           <div className="text-right">
-            <div className="text-xs text-zinc-500">Today</div>
+            <div className="text-xs text-zinc-600 dark:text-zinc-500">Today</div>
             <div className="font-mono text-sm">
               day {today}/{dim}
             </div>
@@ -225,37 +225,37 @@ export function StatusScreen(props: { settings: Settings }) {
         </div>
 
         <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
-          <div className="rounded-xl border border-zinc-800 bg-zinc-950/40 p-3">
-            <div className="text-xs text-zinc-500">Earned so far</div>
+          <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-950/40 p-3">
+            <div className="text-xs text-zinc-600 dark:text-zinc-500">Earned so far</div>
             <div className="mt-1 text-xl font-semibold">{formatCHF(earned)}</div>
             {hourly > 0 && (
-              <div className="mt-1 text-sm text-zinc-400">
+              <div className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
                 {formatHoursMinutes(earnedHours)} verdient
               </div>
             )}
           </div>
-          <div className="rounded-xl border border-zinc-800 bg-zinc-950/40 p-3">
-            <div className="text-xs text-zinc-500">Spent this month</div>
+          <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-950/40 p-3">
+            <div className="text-xs text-zinc-600 dark:text-zinc-500">Spent this month</div>
             <div className="mt-1 text-xl font-semibold">{formatCHF(spent)}</div>
             {hourly > 0 && (
-              <div className="mt-1 text-sm text-zinc-400">
+              <div className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
                 {formatHoursMinutes(spentHours)} ausgegeben
               </div>
             )}
           </div>
-          <div className="rounded-xl border border-zinc-800 bg-zinc-950/40 p-3">
-            <div className="text-xs text-zinc-500">Balance</div>
+          <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-950/40 p-3">
+            <div className="text-xs text-zinc-600 dark:text-zinc-500">Balance</div>
             <div className="mt-1 flex items-baseline gap-2">
               <div className="text-2xl font-semibold">
                 {isAhead ? '🟢' : '🔴'} {formatCHF(balanceCHF)}
               </div>
             </div>
-            <div className="mt-1 text-sm text-zinc-400">
+            <div className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
               {hourly > 0 ? (
                 <>
                   {formatHoursMinutes(availableHours)} verfügbare Zeit
                   <br />
-                  <span className="text-xs text-zinc-500">
+                  <span className="text-xs text-zinc-600 dark:text-zinc-500">
                     Stundenlohn: {formatCHF(hourly)}/h
                   </span>
                 </>
@@ -326,7 +326,7 @@ export function StatusScreen(props: { settings: Settings }) {
                       )}
                       
                       {/* Progress bar */}
-                      <div className="mt-2 h-2 overflow-hidden rounded-full bg-zinc-900">
+                      <div className="mt-2 h-2 overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-900">
                         <div
                           className={`h-full transition-all duration-500 ease-out ${
                             isExceeded ? 'bg-rose-500' : 'bg-amber-500'
@@ -355,9 +355,9 @@ export function StatusScreen(props: { settings: Settings }) {
         <div className="flex items-start justify-between gap-3">
           <div>
             <div className="text-sm font-semibold">Ausgabe erfassen</div>
-            <div className="mt-1 text-xs text-zinc-500">Nur für aktuellen Monat</div>
+            <div className="mt-1 text-xs text-zinc-600 dark:text-zinc-500">Nur für aktuellen Monat</div>
           </div>
-          <div className="text-xs text-zinc-500">localStorage</div>
+          <div className="text-xs text-zinc-600 dark:text-zinc-500">localStorage</div>
         </div>
 
         <div className="mt-3 flex gap-2">
@@ -407,7 +407,7 @@ export function StatusScreen(props: { settings: Settings }) {
 
         <div className="mt-3 space-y-2">
           {expenses.length === 0 && (
-            <div className="rounded-xl border border-zinc-800 bg-zinc-950/40 p-3 text-sm text-zinc-400">
+            <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-950/40 p-3 text-sm text-zinc-600 dark:text-zinc-400">
               No expenses recorded this month.
             </div>
           )}
@@ -417,18 +417,18 @@ export function StatusScreen(props: { settings: Settings }) {
             return (
               <div
                 key={e.id}
-                className="flex items-center justify-between gap-3 rounded-xl border border-zinc-800 bg-zinc-950/40 p-3"
+                className="flex items-center justify-between gap-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-950/40 p-3"
               >
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">
                     <div className="truncate text-sm font-medium">
                       {e.title?.trim() ? e.title : 'Untitled'}
                     </div>
-                    <div className="shrink-0 rounded-md border border-zinc-800 bg-zinc-950 px-2 py-0.5 text-xs text-zinc-400">
+                    <div className="shrink-0 rounded-md border border-zinc-300 dark:border-zinc-800 bg-zinc-200 dark:bg-zinc-950 px-2 py-0.5 text-xs text-zinc-700 dark:text-zinc-400">
                       {e.category}
                     </div>
                   </div>
-                  <div className="mt-1 text-xs text-zinc-500">
+                  <div className="mt-1 text-xs text-zinc-600 dark:text-zinc-500">
                     {e.date}
                   </div>
                 </div>
@@ -437,7 +437,7 @@ export function StatusScreen(props: { settings: Settings }) {
                   <div className="text-right">
                     <div className="font-mono text-sm">{formatCHF(e.amountCHF)}</div>
                     {hourly > 0 && (
-                      <div className="text-xs text-zinc-500">
+                      <div className="text-xs text-zinc-600 dark:text-zinc-500">
                         {formatHoursMinutes(expenseHours)}
                       </div>
                     )}
