@@ -9,6 +9,7 @@
 
 import { useState } from 'react'
 import { Modal } from './Modal'
+import { ConfirmDialog } from './ConfirmDialog'
 import type { CustomCategory } from '../lib/expenses'
 
 const AVAILABLE_EMOJIS = [
@@ -46,6 +47,7 @@ export function CategoryManager(props: {
   const [emoji, setEmoji] = useState('📁')
   const [color, setColor] = useState('#6b7280')
   const [showEmojiPicker, setShowEmojiPicker] = useState(false)
+  const [categoryToDelete, setCategoryToDelete] = useState<string | null>(null)
 
   const startEdit = (category: CustomCategory) => {
     setEditingId(category.id)
@@ -94,8 +96,24 @@ export function CategoryManager(props: {
   }
 
   const deleteCategory = (id: string) => {
-    if (confirm('Kategorie wirklich löschen?')) {
-      onSave(categories.filter(cat => cat.id !== id))
+    const deletedCategory = categories.find(cat => cat.id === id)
+    if (!deletedCategory) return
+    
+    onSave(categories.filter(cat => cat.id !== id))
+    setCategoryToDelete(null)
+    
+    // Show toast with undo option (if showToast is available)
+    if (typeof (window as any).showToast === 'function') {
+      (window as any).showToast(
+        `Kategorie "${deletedCategory.name}" gelöscht`,
+        'info',
+        5000,
+        'Rückgängig',
+        () => {
+          onSave([...categories, deletedCategory])
+          ;(window as any).showToast(`Kategorie wiederhergestellt`, 'success', 2000)
+        }
+      )
     }
   }
 
@@ -130,7 +148,7 @@ export function CategoryManager(props: {
                 <button
                   type="button"
                   className="ot-btn ot-btn-danger text-xs"
-                  onClick={() => deleteCategory(cat.id)}
+                  onClick={() => setCategoryToDelete(cat.id)}
                 >
                   Löschen
                 </button>
@@ -268,6 +286,17 @@ export function CategoryManager(props: {
           Fertig
         </button>
       </div>
+
+      <ConfirmDialog
+        open={!!categoryToDelete}
+        title="Kategorie löschen?"
+        message="Diese Kategorie wird dauerhaft entfernt. Ausgaben mit dieser Kategorie bleiben erhalten, können aber nicht mehr gefiltert werden."
+        confirmLabel="Löschen"
+        cancelLabel="Abbrechen"
+        dangerous
+        onConfirm={() => categoryToDelete && deleteCategory(categoryToDelete)}
+        onCancel={() => setCategoryToDelete(null)}
+      />
     </Modal>
   )
 }

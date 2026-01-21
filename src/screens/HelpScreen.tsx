@@ -7,7 +7,7 @@ import { useState } from 'react'
 
 type FAQItem = {
   question: string
-  answer: string | JSX.Element
+  answer: string | React.ReactNode
   category: 'basics' | 'hourly-rate' | 'categories' | 'budgets' | 'features'
 }
 

@@ -13,7 +13,7 @@ import type { Settings } from '../lib/settings'
 import { hourlyRateCHF } from '../lib/settings'
 import { dayOfMonth, daysInMonth, isoDateLocal, monthKeyFromDate, monthLabel } from '../lib/date'
 import { formatCHF, formatHoursMinutes, toHours } from '../lib/money'
-import { addExpense, deleteExpense, expenseCategories, loadExpensesForMonth, type Expense, type ExpenseCategory, type QuickAddPreset } from '../lib/expenses'
+import { addExpense, deleteExpense, loadExpensesForMonth, type Expense, type ExpenseCategory, type QuickAddPreset } from '../lib/expenses'
 import { LineChart, type DailyPoint } from '../components/LineChart'
 import { QuickAddButtons } from '../components/QuickAddButtons'
 import { ExpenseFormModal, type ExpenseFormData } from '../components/ExpenseFormModal'
@@ -170,9 +170,30 @@ export function StatusScreen(props: { settings: Settings }) {
   }
 
   const onDeleteExpense = (id: string, title: string) => {
+    // Store the deleted expense for undo
+    const deletedExpense = expenses.find(e => e.id === id)
+    if (!deletedExpense) return
+    
     const updated = deleteExpense(monthKey, id)
     setExpenses(updated)
-    showToast(`${title} gelöscht`, 'info', 2000)
+    
+    showToast(
+      `${title} gelöscht`,
+      'info',
+      5000,
+      'Rückgängig',
+      () => {
+        // Restore the expense
+        const restored = addExpense(monthKey, {
+          date: deletedExpense.date,
+          amountCHF: deletedExpense.amountCHF,
+          title: deletedExpense.title,
+          category: deletedExpense.category,
+        })
+        setExpenses(restored)
+        showToast(`${title} wiederhergestellt`, 'success', 2000)
+      }
+    )
   }
 
   return (
@@ -262,7 +283,7 @@ export function StatusScreen(props: { settings: Settings }) {
               return (
                 <div
                   key={warning.category}
-                  className={`rounded-xl border p-3 ${
+                  className={`rounded-xl border p-3 animate-in slide-in-from-right-4 fade-in duration-300 ${
                     isExceeded
                       ? 'border-rose-800 bg-rose-950/40'
                       : 'border-amber-800 bg-amber-950/40'
@@ -288,7 +309,7 @@ export function StatusScreen(props: { settings: Settings }) {
                       {/* Progress bar */}
                       <div className="mt-2 h-2 overflow-hidden rounded-full bg-zinc-900">
                         <div
-                          className={`h-full transition-all ${
+                          className={`h-full transition-all duration-500 ease-out ${
                             isExceeded ? 'bg-rose-500' : 'bg-amber-500'
                           }`}
                           style={{ width: `${Math.min(100, warning.percentage)}%` }}

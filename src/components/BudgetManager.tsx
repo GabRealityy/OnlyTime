@@ -8,7 +8,8 @@
 
 import { useState } from 'react'
 import { Modal } from './Modal'
-import type { CategoryBudget, CustomCategory, ExpenseCategory } from '../lib/expenses'
+import { ConfirmDialog } from './ConfirmDialog'
+import type { CategoryBudget, CustomCategory } from '../lib/expenses'
 import { expenseCategories } from '../lib/expenses'
 import { formatCHF } from '../lib/money'
 
@@ -23,6 +24,7 @@ export function BudgetManager(props: {
 
   const [editingCategoryId, setEditingCategoryId] = useState<string | null>(null)
   const [budgetAmount, setBudgetAmount] = useState('')
+  const [budgetToRemove, setBudgetToRemove] = useState<string | null>(null)
 
   const allCategories = [
     ...expenseCategories.map(cat => ({ id: cat, name: cat, emoji: undefined, color: undefined })),
@@ -76,7 +78,26 @@ export function BudgetManager(props: {
   }
 
   const removeBudget = (categoryId: string) => {
+    const deletedBudget = budgets.find(b => b.categoryId === categoryId)
+    if (!deletedBudget) return
+    
     onSave(budgets.filter(b => b.categoryId !== categoryId))
+    setBudgetToRemove(null)
+    
+    // Show toast with undo option
+    const categoryName = allCategories.find(c => c.id === categoryId)?.name || categoryId
+    if (typeof (window as any).showToast === 'function') {
+      (window as any).showToast(
+        `Budget für "${categoryName}" gelöscht`,
+        'info',
+        5000,
+        'Rückgängig',
+        () => {
+          onSave([...budgets, deletedBudget])
+          ;(window as any).showToast(`Budget wiederhergestellt`, 'success', 2000)
+        }
+      )
+    }
   }
 
   return (
@@ -118,7 +139,7 @@ export function BudgetManager(props: {
                           <button
                             type="button"
                             className="ot-btn ot-btn-danger text-xs"
-                            onClick={() => removeBudget(cat.id)}
+                            onClick={() => setBudgetToRemove(cat.id)}
                           >
                             Entfernen
                           </button>
@@ -187,6 +208,17 @@ export function BudgetManager(props: {
           Fertig
         </button>
       </div>
+
+      <ConfirmDialog
+        open={!!budgetToRemove}
+        title="Budget entfernen?"
+        message="Das monatliche Budget für diese Kategorie wird gelöscht. Bisherige Ausgaben bleiben unverändert."
+        confirmLabel="Entfernen"
+        cancelLabel="Abbrechen"
+        dangerous
+        onConfirm={() => budgetToRemove && removeBudget(budgetToRemove)}
+        onCancel={() => setBudgetToRemove(null)}
+      />
     </Modal>
   )
 }

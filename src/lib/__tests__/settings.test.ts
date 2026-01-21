@@ -35,6 +35,9 @@ describe('settings - Erweiterte Stundenlohn-Berechnung', () => {
     overtimeHoursPerWeek: 0,
     workingDaysPerWeek: 5,
     additionalIncomeSources: [],
+    quickAddPresets: [],
+    customCategories: [],
+    categoryBudgets: [],
   }
 
   describe('monthlyWorkingHours', () => {

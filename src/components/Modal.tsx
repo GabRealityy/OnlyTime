@@ -24,14 +24,14 @@ export function Modal(props: {
   if (!open) return null
 
   return (
-    <div className="fixed inset-0 z-50">
+    <div className="fixed inset-0 z-50 animate-in fade-in duration-200">
       <button
         type="button"
         aria-label="Close"
-        className="absolute inset-0 bg-black/70"
+        className="absolute inset-0 bg-black/70 animate-in fade-in duration-300"
         onClick={onClose}
       />
-      <div className="relative mx-auto mt-20 w-[min(560px,calc(100%-24px))]">
+      <div className="relative mx-auto mt-20 w-[min(560px,calc(100%-24px))] animate-in zoom-in-95 slide-in-from-bottom-4 duration-300">
         <div className="ot-card">
           <div className="flex items-start justify-between gap-3">
             <div>

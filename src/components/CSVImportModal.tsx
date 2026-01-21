@@ -9,7 +9,7 @@
 
 import { useState } from 'react'
 import { Modal } from './Modal'
-import { type Expense, type ExpenseCategory, expenseCategories } from '../lib/expenses'
+import { type Expense, type ExpenseCategory } from '../lib/expenses'
 import { formatCHF } from '../lib/money'
 import { isoDateLocal } from '../lib/date'
 
@@ -189,7 +189,7 @@ export function CSVImportModal(props: {
           ? row[mapping.category] 
           : guessCategory(title, defaultRules)
 
-        return { amountCHF, title, category, date }
+        return { amountCHF, title, category, date, createdAt: Date.now() }
       })
       .filter(exp => exp.amountCHF > 0)
 

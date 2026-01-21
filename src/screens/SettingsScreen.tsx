@@ -66,13 +66,7 @@ export function SettingsScreen(props: {
 
   // Onboarding Checklist Items
   const checklistItems: ChecklistItem[] = [
-    {Onboarding Checklist */}
-      <OnboardingChecklist 
-        items={checklistItems}
-        onItemClick={handleChecklistClick}
-      />
-
-      {/* 
+    {
       id: 'hourly-rate',
       label: 'Stundenlohn einrichten',
       description: 'Monatseinkommen und Arbeitszeit angeben',

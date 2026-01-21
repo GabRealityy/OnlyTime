@@ -42,11 +42,11 @@ export type CustomCategory = {
 }
 
 /**
- * Budget pro Kategorie (in Stunden pro Monat)
+ * Budget pro Kategorie (CHF pro Monat)
  */
 export type CategoryBudget = {
-  category: string
-  hoursPerMonth: number
+  categoryId: string
+  monthlyBudgetCHF: number
 }
 
 export type Expense = {

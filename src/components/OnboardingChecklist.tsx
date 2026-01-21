@@ -3,8 +3,6 @@
   Shows progress of setup tasks
 */
 
-import { formatCHF } from '../lib/money'
-
 export type ChecklistItem = {
   id: string
   label: string
