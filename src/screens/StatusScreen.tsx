@@ -13,8 +13,12 @@ import type { Settings } from '../lib/settings'
 import { hourlyRateCHF } from '../lib/settings'
 import { dayOfMonth, daysInMonth, isoDateLocal, monthKeyFromDate, monthLabel } from '../lib/date'
 import { formatCHF, formatHoursMinutes, toHours } from '../lib/money'
-import { addExpense, deleteExpense, expenseCategories, loadExpensesForMonth, type Expense, type ExpenseCategory } from '../lib/expenses'
+import { addExpense, deleteExpense, expenseCategories, loadExpensesForMonth, type Expense, type ExpenseCategory, type QuickAddPreset } from '../lib/expenses'
 import { LineChart, type DailyPoint } from '../components/LineChart'
+import { QuickAddButtons } from '../components/QuickAddButtons'
+import { ExpenseFormModal, type ExpenseFormData } from '../components/ExpenseFormModal'
+import { CSVImportModal } from '../components/CSVImportModal'
+import { showToast } from '../components/Toast'
 
 function sumSpent(expenses: Expense[]): number {
   return expenses.reduce((acc, e) => acc + (Number.isFinite(e.amountCHF) ? e.amountCHF : 0), 0)
@@ -39,11 +43,9 @@ export function StatusScreen(props: { settings: Settings }) {
     setExpenses(loadExpensesForMonth(monthKey))
   }, [monthKey])
 
-  // Expense form state
-  const [date, setDate] = useState<string>(isoDateLocal(now))
-  const [amount, setAmount] = useState<string>('')
-  const [title, setTitle] = useState<string>('')
-  const [category, setCategory] = useState<ExpenseCategory>('Food')
+  // Modal states
+  const [showExpenseForm, setShowExpenseForm] = useState(false)
+  const [showCSVImport, setShowCSVImport] = useState(false)
 
   const hourly = hourlyRateCHF(props.settings)
 
@@ -92,31 +94,55 @@ export function StatusScreen(props: { settings: Settings }) {
     return pts
   }, [props.settings.netMonthlyIncomeCHF, dim, expenses, hourly])
 
-  const onAddExpense = () => {
-    const parsedAmount = Number(amount.replace(',', '.'))
-    if (!Number.isFinite(parsedAmount) || parsedAmount <= 0) return
-
-    const nextMonthKey = date.slice(0, 7)
-    if (nextMonthKey !== monthKey) {
-      // MVP: only manage the current month.
+  const onSaveExpense = (data: ExpenseFormData) => {
+    const dateMonthKey = data.date.slice(0, 7)
+    if (dateMonthKey !== monthKey) {
+      showToast('Nur Ausgaben für den aktuellen Monat können erfasst werden.', 'error')
       return
     }
 
     const updated = addExpense(monthKey, {
-      date,
-      amountCHF: parsedAmount,
-      title: title.trim(),
-      category,
+      date: data.date,
+      amountCHF: data.amountCHF,
+      title: data.title,
+      category: data.category as ExpenseCategory,
     })
 
     setExpenses(updated)
-    setAmount('')
-    setTitle('')
+    showToast(`${data.title} erfolgreich gespeichert`, 'success')
   }
 
-  const onDeleteExpense = (id: string) => {
+  const onQuickAdd = (preset: QuickAddPreset) => {
+    const updated = addExpense(monthKey, {
+      date: isoDateLocal(now),
+      amountCHF: preset.amountCHF,
+      title: preset.title,
+      category: preset.category as ExpenseCategory,
+    })
+    setExpenses(updated)
+    showToast(`${preset.title} erfasst: ${formatCHF(preset.amountCHF)}`, 'success', 2000)
+  }
+
+  const onCSVImport = (importedExpenses: Omit<Expense, 'id'>[]) => {
+    let updated = expenses
+    let importCount = 0
+    
+    for (const exp of importedExpenses) {
+      const expMonthKey = exp.date.slice(0, 7)
+      if (expMonthKey === monthKey) {
+        updated = addExpense(monthKey, exp)
+        importCount++
+      }
+    }
+    
+    setExpenses(updated)
+    showToast(`${importCount} von ${importedExpenses.length} Ausgaben importiert`, 'success')
+  }
+
+  const onDeleteExpense = (id: string, title: string) => {
     const updated = deleteExpense(monthKey, id)
     setExpenses(updated)
+    showToast(`${title} gelöscht`, 'info', 2000)
   }
 
   return (
@@ -199,83 +225,53 @@ export function StatusScreen(props: { settings: Settings }) {
 
       <LineChart points={dailyPoints} hourlyRate={hourly} showTimeAxis={hourly > 0} />
 
+      <QuickAddButtons 
+        presets={props.settings.quickAddPresets}
+        hourlyRate={hourly}
+        onAddExpense={onQuickAdd}
+      />
+
       <div className="ot-card">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <div className="text-sm font-semibold">Add expense</div>
-            <div className="mt-1 text-xs text-zinc-500">Current month only.</div>
+            <div className="text-sm font-semibold">Ausgabe erfassen</div>
+            <div className="mt-1 text-xs text-zinc-500">Nur für aktuellen Monat</div>
           </div>
-          <div className="text-xs text-zinc-500">Stored in localStorage</div>
+          <div className="text-xs text-zinc-500">localStorage</div>
         </div>
 
-        <div className="mt-3 grid grid-cols-1 gap-3">
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label htmlFor="exp-date">Date</label>
-              <input id="exp-date" type="date" value={date} onChange={(e) => setDate(e.target.value)} />
-            </div>
-            <div>
-              <label htmlFor="exp-amount">Amount (CHF)</label>
-              <input
-                id="exp-amount"
-                inputMode="decimal"
-                placeholder="e.g. 12.50"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-              />
-            </div>
-          </div>
-
-          <div>
-            <label htmlFor="exp-title">Title</label>
-            <input
-              id="exp-title"
-              placeholder="e.g. groceries"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-            />
-          </div>
-
-          <div>
-            <label htmlFor="exp-category">Category</label>
-            <select
-              id="exp-category"
-              value={category}
-              onChange={(e) => setCategory(e.target.value as ExpenseCategory)}
-            >
-              {expenseCategories.map((c) => (
-                <option key={c} value={c}>
-                  {c}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="flex gap-2">
-            <button type="button" className="ot-btn ot-btn-primary" onClick={onAddExpense}>
-              Add
-            </button>
-            <button
-              type="button"
-              className="ot-btn"
-              onClick={() => {
-                setDate(isoDateLocal(new Date()))
-                setAmount('')
-                setTitle('')
-                setCategory('Food')
-              }}
-            >
-              Clear
-            </button>
-          </div>
-
-          {date.slice(0, 7) !== monthKey && (
-            <div className="rounded-xl border border-zinc-800 bg-zinc-950/40 p-3 text-sm text-zinc-400">
-              Only current-month expenses are shown in this MVP.
-            </div>
-          )}
+        <div className="mt-3 flex gap-2">
+          <button 
+            type="button" 
+            className="ot-btn ot-btn-primary flex-1" 
+            onClick={() => setShowExpenseForm(true)}
+          >
+            ➕ Manuelle Eingabe
+          </button>
+          <button 
+            type="button" 
+            className="ot-btn" 
+            onClick={() => setShowCSVImport(true)}
+          >
+            📄 CSV-Import
+          </button>
         </div>
       </div>
+
+      <ExpenseFormModal
+        open={showExpenseForm}
+        onClose={() => setShowExpenseForm(false)}
+        onSave={onSaveExpense}
+        hourlyRate={hourly}
+        customCategories={props.settings.customCategories}
+      />
+
+      <CSVImportModal
+        open={showCSVImport}
+        onClose={() => setShowCSVImport(false)}
+        onImport={onCSVImport}
+        customCategories={props.settings.customCategories}
+      />
 
       <div className="ot-card">
         <div className="flex items-start justify-between gap-3">
@@ -326,7 +322,7 @@ export function StatusScreen(props: { settings: Settings }) {
                       </div>
                     )}
                   </div>
-                  <button type="button" className="ot-btn ot-btn-danger" onClick={() => onDeleteExpense(e.id)}>
+                  <button type="button" className="ot-btn ot-btn-danger" onClick={() => onDeleteExpense(e.id, e.title)}>
                     Delete
                   </button>
                 </div>

@@ -20,6 +20,7 @@
 */
 
 import { loadFromStorage, saveToStorage, storageKeys } from './storage'
+import type { QuickAddPreset, CustomCategory, CategoryBudget } from './expenses'
 
 export type IncomeSource = {
   id: string
@@ -44,6 +45,10 @@ export type Settings = {
   workingDaysPerWeek: number
   // Zusätzliche Einkommen
   additionalIncomeSources: IncomeSource[]
+  // Quick-Add & Kategorien (Schritt 3)
+  quickAddPresets: QuickAddPreset[]
+  customCategories: CustomCategory[]
+  categoryBudgets: CategoryBudget[]
 }
 
 export const defaultSettings: Settings = {
@@ -57,6 +62,13 @@ export const defaultSettings: Settings = {
   overtimeHoursPerWeek: 0,
   workingDaysPerWeek: 5,
   additionalIncomeSources: [],
+  quickAddPresets: [
+    { id: '1', title: 'Kaffee', amountCHF: 4.50, category: 'Food', emoji: '☕' },
+    { id: '2', title: 'Mittagessen', amountCHF: 15, category: 'Food', emoji: '🍽️' },
+    { id: '3', title: 'ÖV-Ticket', amountCHF: 3.40, category: 'Transport', emoji: '🚌' },
+  ],
+  customCategories: [],
+  categoryBudgets: [],
 }
 
 export function normalizeSettings(input: unknown): Settings {
@@ -88,6 +100,56 @@ export function normalizeSettings(input: unknown): Settings {
       .filter((s): s is IncomeSource => s !== null)
   }
 
+  // Quick-Add Presets
+  let quickAddPresets: QuickAddPreset[] = defaultSettings.quickAddPresets
+  if (Array.isArray(obj.quickAddPresets)) {
+    quickAddPresets = obj.quickAddPresets
+      .map((preset: unknown) => {
+        if (typeof preset !== 'object' || preset === null) return null
+        const p = preset as Record<string, unknown>
+        return {
+          id: typeof p.id === 'string' ? p.id : String(Math.random()),
+          title: typeof p.title === 'string' ? p.title : '',
+          amountCHF: toNumber(p.amountCHF, 0),
+          category: typeof p.category === 'string' ? p.category : 'Other',
+          emoji: typeof p.emoji === 'string' ? p.emoji : undefined,
+        }
+      })
+      .filter((p): p is QuickAddPreset => p !== null)
+  }
+
+  // Custom Categories
+  let customCategories: CustomCategory[] = []
+  if (Array.isArray(obj.customCategories)) {
+    customCategories = obj.customCategories
+      .map((cat: unknown) => {
+        if (typeof cat !== 'object' || cat === null) return null
+        const c = cat as Record<string, unknown>
+        return {
+          id: typeof c.id === 'string' ? c.id : String(Math.random()),
+          name: typeof c.name === 'string' ? c.name : '',
+          color: typeof c.color === 'string' ? c.color : undefined,
+          emoji: typeof c.emoji === 'string' ? c.emoji : undefined,
+        }
+      })
+      .filter((c): c is CustomCategory => c !== null)
+  }
+
+  // Category Budgets
+  let categoryBudgets: CategoryBudget[] = []
+  if (Array.isArray(obj.categoryBudgets)) {
+    categoryBudgets = obj.categoryBudgets
+      .map((budget: unknown) => {
+        if (typeof budget !== 'object' || budget === null) return null
+        const b = budget as Record<string, unknown>
+        return {
+          category: typeof b.category === 'string' ? b.category : '',
+          hoursPerMonth: toNumber(b.hoursPerMonth, 0),
+        }
+      })
+      .filter((b): b is CategoryBudget => b !== null && b.category !== '')
+  }
+
   return {
     netMonthlyIncomeCHF: Math.max(0, netMonthlyIncomeCHF),
     grossMonthlyIncomeCHF: Math.max(0, grossMonthlyIncomeCHF),
@@ -99,6 +161,9 @@ export function normalizeSettings(input: unknown): Settings {
     overtimeHoursPerWeek: Math.max(0, overtimeHoursPerWeek),
     workingDaysPerWeek: Math.max(1, Math.min(7, workingDaysPerWeek)),
     additionalIncomeSources,
+    quickAddPresets,
+    customCategories,
+    categoryBudgets,
   }
 }
 

@@ -20,6 +20,35 @@ export const expenseCategories = [
 
 export type ExpenseCategory = (typeof expenseCategories)[number]
 
+/**
+ * Quick-Add Preset: Häufige Ausgaben mit einem Klick erfassen
+ */
+export type QuickAddPreset = {
+  id: string
+  title: string
+  amountCHF: number
+  category: ExpenseCategory | string // string für custom categories
+  emoji?: string
+}
+
+/**
+ * Benutzerdefinierte Kategorie mit optionaler Farbe/Icon
+ */
+export type CustomCategory = {
+  id: string
+  name: string
+  color?: string
+  emoji?: string
+}
+
+/**
+ * Budget pro Kategorie (in Stunden pro Monat)
+ */
+export type CategoryBudget = {
+  category: string
+  hoursPerMonth: number
+}
+
 export type Expense = {
   id: string
   // YYYY-MM-DD (local date, matches <input type="date">)

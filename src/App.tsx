@@ -12,6 +12,7 @@ import { CalculatorScreen } from './screens/CalculatorScreen'
 import { loadSettings, saveSettings } from './lib/settings'
 import { storageKeys } from './lib/storage'
 import { useLocalStorageState } from './hooks/useLocalStorageState'
+import { ToastContainer } from './components/Toast'
 
 export default function App() {
   const [screen, setScreen] = useState<Screen>('status')
@@ -44,6 +45,8 @@ export default function App() {
           OnlyTime runs locally. Nothing leaves this device.
         </footer>
       </main>
+
+      <ToastContainer />
     </div>
   )
 }
