@@ -51,7 +51,7 @@ export function TopNav(props: {
     <nav className="sticky top-0 z-50 border-b border-zinc-100 dark:border-zinc-800 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-xl">
       <div className="mx-auto flex max-w-3xl items-center justify-between px-6 py-4">
         <div
-          className="flex cursor-pointer items-center gap-3 transition-opacity hover:opacity-70"
+          className="flex cursor-pointer items-center gap-8 transition-opacity hover:opacity-70"
           onClick={() => onNavigate('status')}
         >
           <img
@@ -59,9 +59,8 @@ export function TopNav(props: {
             alt="OnlyTime"
             className="h-8 w-8 dark:invert"
           />
-          <div className="hidden xs:block leading-tight">
-            <div className="text-base font-black tracking-tight">OnlyTime</div>
-            <div className="text-[10px] uppercase tracking-[0.2em] font-bold text-zinc-400">Time is Capital</div>
+          <div className="text-2xl font-black tracking-tighter text-zinc-950 dark:text-white h-8 flex items-center">
+            OnlyTime
           </div>
         </div>
 
