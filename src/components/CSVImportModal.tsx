@@ -112,7 +112,7 @@ function guessCategory(title: string, rules: CategoryRule[]): ExpenseCategory | 
 function parseDate(dateStr: string): string {
   // Try various formats: YYYY-MM-DD, DD.MM.YYYY, DD/MM/YYYY
   if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr
-  
+
   const parts = dateStr.split(/[./-]/)
   if (parts.length === 3) {
     const [a, b, c] = parts.map(Number)
@@ -125,12 +125,33 @@ function parseDate(dateStr: string): string {
       return `${c}-${String(a).padStart(2, '0')}-${String(b).padStart(2, '0')}`
     }
   }
-  
+
   return isoDateLocal(new Date())
 }
 
 function parseAmount(amountStr: string): number {
-  const cleaned = amountStr.replace(/[^0-9.,-]/g, '').replace(',', '.')
+  if (!amountStr) return 0
+
+  // Entferne alle Zeichen außer Ziffern, Komma, Punkt und Minus
+  let cleaned = amountStr.replace(/[^0-9.,-]/g, '')
+
+  // Wenn sowohl Komma als auch Punkt vorhanden sind (z.B. 1.234,56 oder 1,234.56)
+  if (cleaned.includes(',') && cleaned.includes('.')) {
+    const lastComma = cleaned.lastIndexOf(',')
+    const lastDot = cleaned.lastIndexOf('.')
+
+    if (lastComma > lastDot) {
+      // Format 1.234,56 -> Punkt ist Tausendertrennzeichen
+      cleaned = cleaned.replace(/\./g, '').replace(',', '.')
+    } else {
+      // Format 1,234.56 -> Komma ist Tausendertrennzeichen
+      cleaned = cleaned.replace(/,/g, '')
+    }
+  } else if (cleaned.includes(',')) {
+    // Nur Komma (z.B. 12,50 oder 1234,56) -> Komma ist vermutlich Dezimaltrenner
+    cleaned = cleaned.replace(',', '.')
+  }
+
   const num = parseFloat(cleaned)
   return isNaN(num) ? 0 : Math.abs(num)
 }
@@ -157,7 +178,7 @@ export function CSVImportModal(props: {
     reader.onload = (event) => {
       const text = event.target?.result as string
       const rows = parseCSV(text)
-      
+
       if (rows.length === 0) {
         alert('Keine gültigen Daten gefunden')
         return
@@ -185,7 +206,7 @@ export function CSVImportModal(props: {
         const amountCHF = mapping.amount ? parseAmount(row[mapping.amount]) : 0
         const title = mapping.title ? row[mapping.title] : 'Unbekannt'
         const date = mapping.date ? parseDate(row[mapping.date]) : isoDateLocal(new Date())
-        const categoryStr = mapping.category 
+        const categoryStr = mapping.category
           ? row[mapping.category]
           : guessCategory(title, defaultRules)
         const category = categoryStr as ExpenseCategory
@@ -244,7 +265,7 @@ export function CSVImportModal(props: {
           <p className="text-sm text-zinc-600 dark:text-zinc-400">
             Ordne die CSV-Spalten den Feldern zu:
           </p>
-          
+
           <div className="grid gap-3">
             <div>
               <label className="text-sm font-medium">Datum</label>

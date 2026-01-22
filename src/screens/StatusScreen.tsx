@@ -21,6 +21,7 @@ import { CSVImportModal } from '../components/CSVImportModal'
 import { showToast } from '../components/Toast'
 import {
   buildMonthlyData,
+  getMonthKeys,
   summarizeMonthlyData,
   timeRangeButtons,
   type TimeRange,
@@ -45,11 +46,12 @@ export function StatusScreen(props: { settings: Settings }) {
 
   const [timeRange, setTimeRange] = useState<TimeRange>('1M')
 
+  const [lastUpdate, setLastUpdate] = useState(Date.now())
   const [expenses, setExpenses] = useState<Expense[]>(() => loadExpensesForMonth(monthKey))
 
   useEffect(() => {
     setExpenses(loadExpensesForMonth(monthKey))
-  }, [monthKey])
+  }, [monthKey, lastUpdate])
 
   // Modal states
   const [showExpenseForm, setShowExpenseForm] = useState(false)
@@ -125,6 +127,21 @@ export function StatusScreen(props: { settings: Settings }) {
     return warnings.sort((a, b) => b.percentage - a.percentage)
   }, [props.settings.categoryBudgets, categorySpending])
 
+  const allRangeExpenses = useMemo(() => {
+    // Force re-evaluation on lastUpdate
+    lastUpdate
+
+    if (timeRange === '1M') return expenses
+
+    // Load expenses for all months in range
+    const keys = getMonthKeys(timeRange, now)
+    const all: Expense[] = []
+    for (const key of keys) {
+      all.push(...loadExpensesForMonth(key))
+    }
+    return all
+  }, [timeRange, now, expenses])
+
   const dailyPoints: DailyPoint[] = useMemo(() => {
     const monthly = effectiveNetMonthlyIncome(props.settings)
     const earnedPerDay = dim > 0 ? monthly / dim : 0
@@ -174,47 +191,37 @@ export function StatusScreen(props: { settings: Settings }) {
 
   const onSaveExpense = (data: ExpenseFormData) => {
     const dateMonthKey = data.date.slice(0, 7)
-    if (dateMonthKey !== monthKey) {
-      showToast('Nur Ausgaben für den aktuellen Monat können erfasst werden.', 'error')
-      return
-    }
 
-    const updated = addExpense(monthKey, {
+    addExpense(dateMonthKey, {
       date: data.date,
       amountCHF: data.amountCHF,
       title: data.title,
       category: data.category,
     })
 
-    setExpenses(updated)
+    setLastUpdate(Date.now())
     showToast(`${data.title} erfolgreich gespeichert`, 'success')
   }
 
   const onQuickAdd = (preset: QuickAddPreset) => {
-    const updated = addExpense(monthKey, {
+    addExpense(monthKey, {
       date: isoDateLocal(now),
       amountCHF: preset.amountCHF,
       title: preset.title,
       category: preset.category,
     })
-    setExpenses(updated)
+    setLastUpdate(Date.now())
     showToast(`${preset.title} erfasst: ${formatCHF(preset.amountCHF)}`, 'success', 2000)
   }
 
   const onCSVImport = (importedExpenses: Omit<Expense, 'id'>[]) => {
-    let updated = expenses
-    let importCount = 0
-
     for (const exp of importedExpenses) {
       const expMonthKey = exp.date.slice(0, 7)
-      if (expMonthKey === monthKey) {
-        updated = addExpense(monthKey, exp)
-        importCount++
-      }
+      addExpense(expMonthKey, exp)
     }
 
-    setExpenses(updated)
-    showToast(`${importCount} von ${importedExpenses.length} Ausgaben importiert`, 'success')
+    setLastUpdate(Date.now())
+    showToast(`${importedExpenses.length} Ausgaben importiert`, 'success')
   }
 
   const onDeleteExpense = (id: string, title: string) => {
@@ -222,8 +229,9 @@ export function StatusScreen(props: { settings: Settings }) {
     const deletedExpense = expenses.find(e => e.id === id)
     if (!deletedExpense) return
 
-    const updated = deleteExpense(monthKey, id)
-    setExpenses(updated)
+    const expMonthKey = deletedExpense.date.slice(0, 7)
+    deleteExpense(expMonthKey, id)
+    setLastUpdate(Date.now())
 
     showToast(
       `${title} gelöscht`,
@@ -232,13 +240,13 @@ export function StatusScreen(props: { settings: Settings }) {
       'Rückgängig',
       () => {
         // Restore the expense
-        const restored = addExpense(monthKey, {
+        addExpense(expMonthKey, {
           date: deletedExpense.date,
           amountCHF: deletedExpense.amountCHF,
           title: deletedExpense.title,
           category: deletedExpense.category,
         })
-        setExpenses(restored)
+        setLastUpdate(Date.now())
         showToast(`${title} wiederhergestellt`, 'success', 2000)
       }
     )
@@ -280,33 +288,33 @@ export function StatusScreen(props: { settings: Settings }) {
         </div>
 
         <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
-          <div className="rounded-[1.5rem] border border-zinc-100 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/40 p-5">
+          <div className="rounded-[1.5rem] border border-zinc-100 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800/40 p-5">
             <div className="text-[10px] font-black uppercase tracking-widest text-zinc-500 dark:text-zinc-400 mb-2 whitespace-nowrap">Verdienst ({timeRangeLabel})</div>
-            <div className="text-2xl font-black tracking-tight">{formatCHF(rangeTotalStats.earned)}</div>
+            <div className="text-2xl font-black tracking-tight text-zinc-950 dark:text-white">{formatCHF(rangeTotalStats.earned)}</div>
             {hourly > 0 && (
-              <div className="mt-1 text-xs font-bold text-zinc-400">
+              <div className="mt-1 text-xs font-bold text-zinc-500 dark:text-zinc-400">
                 {formatHoursMinutes(rangeTotalStats.earnedHours)}
               </div>
             )}
           </div>
-          <div className="rounded-[1.5rem] border border-zinc-100 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/40 p-5">
+          <div className="rounded-[1.5rem] border border-zinc-100 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800/40 p-5">
             <div className="text-[10px] font-black uppercase tracking-widest text-zinc-500 dark:text-zinc-400 mb-2 whitespace-nowrap">Ausgaben ({timeRangeLabel})</div>
-            <div className="text-2xl font-black tracking-tight">{formatCHF(rangeTotalStats.spent)}</div>
+            <div className="text-2xl font-black tracking-tight text-zinc-950 dark:text-white">{formatCHF(rangeTotalStats.spent)}</div>
             {hourly > 0 && (
               <div className="mt-1 text-xs font-bold text-zinc-500 dark:text-zinc-400">
                 {formatHoursMinutes(rangeTotalStats.spentHours)}
               </div>
             )}
           </div>
-          <div className="rounded-[1.5rem] border border-zinc-950 bg-zinc-950 dark:bg-white p-5 text-white dark:text-zinc-950 shadow-xl shadow-zinc-900/20 dark:shadow-none">
-            <div className="text-[10px] font-black uppercase tracking-widest text-zinc-600 dark:text-zinc-400 mb-2 whitespace-nowrap">Bilanz ({timeRangeLabel})</div>
+          <div className="rounded-[1.5rem] border border-zinc-950 bg-zinc-950 dark:border-zinc-200 dark:bg-zinc-50 p-5 text-zinc-50 dark:text-zinc-950 shadow-xl shadow-zinc-900/20 dark:shadow-none">
+            <div className="text-[10px] font-black uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-2 whitespace-nowrap">Bilanz ({timeRangeLabel})</div>
             <div className="flex items-center gap-2">
               <div className="text-3xl font-black tracking-tighter">
                 {formatCHF(rangeTotalStats.balance)}
               </div>
             </div>
             {hourly > 0 && (
-              <div className="mt-1 text-xs font-bold text-zinc-300 dark:text-zinc-400">
+              <div className="mt-1 text-xs font-bold text-zinc-300 dark:text-zinc-600">
                 {formatHoursMinutes(rangeTotalStats.balanceHours)} Zeit
               </div>
             )}
@@ -447,23 +455,23 @@ export function StatusScreen(props: { settings: Settings }) {
       <div className="ot-card">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <div className="text-sm font-semibold">Expenses ({label})</div>
-            <div className="mt-1 text-xs text-zinc-500">{expenses.length} item(s)</div>
+            <div className="text-sm font-semibold">Expenses ({timeRange === '1M' ? label : timeRangeLabel})</div>
+            <div className="mt-1 text-xs text-zinc-500">{allRangeExpenses.length} item(s)</div>
           </div>
           <div className="text-right">
             <div className="text-xs text-zinc-500">Total</div>
-            <div className="font-mono text-sm">{formatCHF(spent)}</div>
+            <div className="font-mono text-sm">{formatCHF(allRangeExpenses.reduce((sum, e) => sum + e.amountCHF, 0))}</div>
           </div>
         </div>
 
         <div className="mt-3 space-y-2">
-          {expenses.length === 0 && (
+          {allRangeExpenses.length === 0 && (
             <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-950/40 p-3 text-sm text-zinc-600 dark:text-zinc-400">
-              No expenses recorded this month.
+              No expenses recorded in this period.
             </div>
           )}
 
-          {expenses.map((e) => {
+          {allRangeExpenses.map((e) => {
             const expenseHours = toHours(e.amountCHF, hourly)
             return (
               <div

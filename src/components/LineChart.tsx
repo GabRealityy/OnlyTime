@@ -51,10 +51,10 @@ export function LineChart(props: {
   const hoursTickFormat = new Intl.NumberFormat(undefined, { maximumFractionDigits: 1 })
 
   // Extra margins so labels never overlap the plot/grid.
-  const marginTop = 18
-  const marginBottom = showXAxis ? 34 : 18
-  const marginLeft = showHoursAxis ? 52 : 18
-  const marginRight = 58
+  const marginTop = 30
+  const marginBottom = showXAxis ? 40 : 30
+  const marginLeft = showHoursAxis ? 65 : 40
+  const marginRight = 65
 
   const innerW = Math.max(1, width - marginLeft - marginRight)
   const innerH = Math.max(1, height - marginTop - marginBottom)
@@ -154,7 +154,7 @@ export function LineChart(props: {
           const svg = e.currentTarget
           const rect = svg.getBoundingClientRect()
           const x = ((e.clientX - rect.left) / rect.width) * width
-          
+
           // Finde den nächsten Tag
           let closestDay: number | null = null
           let minDist = Infinity
@@ -205,7 +205,7 @@ export function LineChart(props: {
             <g key={`yTick-${y}`}>
               {showHoursAxis && (
                 <text
-                  x={marginLeft - 8}
+                  x={marginLeft - 12}
                   y={y}
                   fill="currentColor"
                   fontSize={12}
@@ -216,7 +216,7 @@ export function LineChart(props: {
                 </text>
               )}
               <text
-                x={width - marginRight + 8}
+                x={width - marginRight + 12}
                 y={y}
                 fill="currentColor"
                 fontSize={12}
@@ -231,11 +231,11 @@ export function LineChart(props: {
 
         {/* y-axis unit labels */}
         {showHoursAxis && (
-          <text x={marginLeft - 8} y={12} fill="currentColor" fontSize={12} textAnchor="end">
+          <text x={marginLeft - 12} y={15} fill="currentColor" fontSize={12} fontWeight="bold" textAnchor="end">
             h
           </text>
         )}
-        <text x={width - marginRight + 8} y={12} fill="currentColor" fontSize={12} textAnchor="start">
+        <text x={width - marginRight + 12} y={15} fill="currentColor" fontSize={12} fontWeight="bold" textAnchor="start">
           CHF
         </text>
 
