@@ -11,17 +11,18 @@ import {
   weeklyCommuteHours,
   type Settings,
   type IncomeSource,
-  defaultSettings,
 } from '../lib/settings'
 import { formatCHF } from '../lib/money'
 import { CategoryManager } from '../components/CategoryManager'
 import { BudgetManager } from '../components/BudgetManager'
+import { ConfirmDialog } from '../components/ConfirmDialog'
 import { showToast } from '../components/Toast'
 import { OnboardingChecklist, type ChecklistItem } from '../components/OnboardingChecklist'
-import { expenseCategories, type QuickAddPreset } from '../lib/expenses'
+import { expenseCategories, type QuickAddPreset, categoryEmojis, AVAILABLE_EMOJIS } from '../lib/expenses'
 import { loadExpensesForMonth } from '../lib/expenses'
 import { monthKeyFromDate } from '../lib/date'
 import { useTheme } from '../contexts/ThemeContext'
+import { clearAllData } from '../lib/storage'
 
 export function SettingsScreen(props: {
   settings: Settings
@@ -33,6 +34,8 @@ export function SettingsScreen(props: {
   const [showAdditionalIncome, setShowAdditionalIncome] = useState(settings.additionalIncomeSources.length > 0)
   const [showCategoryManager, setShowCategoryManager] = useState(false)
   const [showBudgetManager, setShowBudgetManager] = useState(false)
+  const [showConfirmReset, setShowConfirmReset] = useState(false)
+  const [showEmojiPickerFor, setShowEmojiPickerFor] = useState<string | null>(null)
 
   const monthlyHours = monthlyWorkingHours(settings)
   const hourlyRate = hourlyRateCHF(settings)
@@ -40,7 +43,7 @@ export function SettingsScreen(props: {
   const commuteHours = weeklyCommuteHours(settings)
 
   const categoryOptions = [
-    ...expenseCategories.map((cat) => ({ id: cat, name: cat, emoji: undefined as string | undefined })),
+    ...expenseCategories.map((cat) => ({ id: cat, name: cat, emoji: categoryEmojis[cat] })),
     ...settings.customCategories.map((cat) => ({ id: cat.id, name: cat.name, emoji: cat.emoji })),
   ]
 
@@ -56,7 +59,7 @@ export function SettingsScreen(props: {
       id: `qa-${Date.now()}`,
       title: 'Neue Schnellerfassung',
       amountCHF: 0,
-      category: 'Other',
+      category: 'Sonstiges',
       emoji: '⚡',
     }
     onChange({ ...settings, quickAddPresets: [...settings.quickAddPresets, next] })
@@ -571,14 +574,35 @@ export function SettingsScreen(props: {
               className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/40 p-3"
             >
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-12 sm:items-end">
-                <div className="sm:col-span-2">
+                <div className="sm:col-span-2 relative">
                   <label className="text-xs text-zinc-600 dark:text-zinc-500">Emoji</label>
-                  <input
-                    value={p.emoji ?? ''}
-                    onChange={(e) => updateQuickAddPreset(p.id, { emoji: e.target.value || undefined })}
-                    placeholder="☕"
-                    className="w-full text-sm"
-                  />
+                  <button
+                    type="button"
+                    className="flex h-10 w-full items-center justify-center rounded-lg border-2 border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 text-xl hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors"
+                    onClick={() => setShowEmojiPickerFor(showEmojiPickerFor === p.id ? null : p.id)}
+                  >
+                    {p.emoji || '⚡'}
+                  </button>
+
+                  {showEmojiPickerFor === p.id && (
+                    <div className="absolute top-full left-0 z-50 mt-2 w-64 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-2 shadow-2xl">
+                      <div className="grid grid-cols-6 gap-1 max-h-48 overflow-y-auto custom-scrollbar p-1">
+                        {AVAILABLE_EMOJIS.map((em) => (
+                          <button
+                            key={em}
+                            type="button"
+                            className="flex h-9 w-9 items-center justify-center rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-lg transition-colors"
+                            onClick={() => {
+                              updateQuickAddPreset(p.id, { emoji: em })
+                              setShowEmojiPickerFor(null)
+                            }}
+                          >
+                            {em}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 <div className="sm:col-span-4">
@@ -586,6 +610,7 @@ export function SettingsScreen(props: {
                   <input
                     value={p.title}
                     onChange={(e) => updateQuickAddPreset(p.id, { title: e.target.value })}
+                    onFocus={(e) => e.target.select()}
                     placeholder="z.B. Kaffee"
                     className="w-full text-sm"
                   />
@@ -641,16 +666,6 @@ export function SettingsScreen(props: {
           <button type="button" className="ot-btn ot-btn-primary" onClick={addQuickAddPreset}>
             ➕ Button hinzufügen
           </button>
-          <button
-            type="button"
-            className="ot-btn"
-            onClick={() => {
-              onChange({ ...settings, quickAddPresets: defaultSettings.quickAddPresets })
-              showToast('Schnellerfassung auf Standard zurückgesetzt', 'success', 2500)
-            }}
-          >
-            ↩️ Standard wiederherstellen
-          </button>
         </div>
       </div>
 
@@ -680,6 +695,24 @@ export function SettingsScreen(props: {
         </div>
       </div>
 
+      {/* Daten zurücksetzen */}
+      <div className="ot-card border-rose-900/20 bg-rose-950/5">
+        <div className="text-lg font-semibold text-rose-500">Gefahrenzone</div>
+        <div className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+          Lösche alle Einstellungen und Ausgaben dauerhaft
+        </div>
+
+        <div className="mt-4">
+          <button
+            type="button"
+            className="ot-btn ot-btn-danger w-full"
+            onClick={() => setShowConfirmReset(true)}
+          >
+            🗑️ Alle Daten löschen
+          </button>
+        </div>
+      </div>
+
       <CategoryManager
         open={showCategoryManager}
         onClose={() => setShowCategoryManager(false)}
@@ -700,6 +733,20 @@ export function SettingsScreen(props: {
           onChange({ ...settings, categoryBudgets: budgets })
           showToast(`${budgets.length} Budget(s) gespeichert`, 'success')
         }}
+      />
+
+      <ConfirmDialog
+        open={showConfirmReset}
+        title="Alle Daten löschen?"
+        message="Bist du sicher? Dies löscht alle deine Ausgaben und Einstellungen unwiderruflich. Die App wird danach neu geladen."
+        confirmLabel="Ja, alles löschen"
+        cancelLabel="Abbrechen"
+        dangerous
+        onConfirm={() => {
+          clearAllData()
+          window.location.reload()
+        }}
+        onCancel={() => setShowConfirmReset(false)}
       />
     </div>
   )

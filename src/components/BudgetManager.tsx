@@ -10,7 +10,7 @@ import { useState } from 'react'
 import { Modal } from './Modal'
 import { ConfirmDialog } from './ConfirmDialog'
 import type { CategoryBudget, CustomCategory } from '../lib/expenses'
-import { expenseCategories } from '../lib/expenses'
+import { expenseCategories, categoryEmojis } from '../lib/expenses'
 import { formatCHF, toHours, formatHoursMinutes } from '../lib/money'
 
 export function BudgetManager(props: {
@@ -29,7 +29,7 @@ export function BudgetManager(props: {
   const [budgetToRemove, setBudgetToRemove] = useState<string | null>(null)
 
   const allCategories = [
-    ...expenseCategories.map(cat => ({ id: cat, name: cat, emoji: undefined, color: undefined })),
+    ...expenseCategories.map(cat => ({ id: cat, name: cat, emoji: categoryEmojis[cat] })),
     ...customCategories,
   ]
 
@@ -40,7 +40,7 @@ export function BudgetManager(props: {
   const startEdit = (categoryId: string) => {
     const existing = getBudget(categoryId)
     setEditingCategoryId(categoryId)
-    
+
     if (existing?.monthlyBudgetHours) {
       setBudgetMode('hours')
       setBudgetAmount(existing.monthlyBudgetHours.toString())
@@ -95,10 +95,10 @@ export function BudgetManager(props: {
   const removeBudget = (categoryId: string) => {
     const deletedBudget = budgets.find(b => b.categoryId === categoryId)
     if (!deletedBudget) return
-    
+
     onSave(budgets.filter(b => b.categoryId !== categoryId))
     setBudgetToRemove(null)
-    
+
     // Show toast with undo option
     const categoryName = allCategories.find(c => c.id === categoryId)?.name || categoryId
     if (typeof (window as any).showToast === 'function') {
@@ -109,7 +109,7 @@ export function BudgetManager(props: {
         'Rückgängig',
         () => {
           onSave([...budgets, deletedBudget])
-          ;(window as any).showToast(`Budget wiederhergestellt`, 'success', 2000)
+            ; (window as any).showToast(`Budget wiederhergestellt`, 'success', 2000)
         }
       )
     }
@@ -198,22 +198,20 @@ export function BudgetManager(props: {
                     <div className="flex gap-2 text-xs">
                       <button
                         type="button"
-                        className={`px-3 py-1 rounded-lg ${
-                          budgetMode === 'chf'
-                            ? 'bg-zinc-200 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100'
-                            : 'bg-zinc-100 dark:bg-zinc-900/40 text-zinc-500'
-                        }`}
+                        className={`px-3 py-1 rounded-lg ${budgetMode === 'chf'
+                          ? 'bg-zinc-200 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100'
+                          : 'bg-zinc-100 dark:bg-zinc-900/40 text-zinc-500'
+                          }`}
                         onClick={() => setBudgetMode('chf')}
                       >
                         CHF
                       </button>
                       <button
                         type="button"
-                        className={`px-3 py-1 rounded-lg ${
-                          budgetMode === 'hours'
-                            ? 'bg-zinc-200 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100'
-                            : 'bg-zinc-100 dark:bg-zinc-900/40 text-zinc-500'
-                        }`}
+                        className={`px-3 py-1 rounded-lg ${budgetMode === 'hours'
+                          ? 'bg-zinc-200 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100'
+                          : 'bg-zinc-100 dark:bg-zinc-900/40 text-zinc-500'
+                          }`}
                         onClick={() => setBudgetMode('hours')}
                       >
                         Stunden

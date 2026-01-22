@@ -38,3 +38,13 @@ export function saveToStorage<T extends JsonValue>(key: string, value: T): void 
 export function removeFromStorage(key: string): void {
   localStorage.removeItem(key)
 }
+
+export function clearAllData(): void {
+  const keys = Object.keys(localStorage)
+  const prefix = 'onlytime:'
+  for (const key of keys) {
+    if (key.startsWith(prefix)) {
+      localStorage.removeItem(key)
+    }
+  }
+}

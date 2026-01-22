@@ -13,7 +13,7 @@ import type { Settings } from '../lib/settings'
 import { hourlyRateCHF, effectiveNetMonthlyIncome } from '../lib/settings'
 import { dayOfMonth, daysInMonth, isoDateLocal, monthKeyFromDate, monthLabel } from '../lib/date'
 import { formatCHF, formatHoursMinutes, toHours } from '../lib/money'
-import { addExpense, deleteExpense, loadExpensesForMonth, type Expense, type QuickAddPreset } from '../lib/expenses'
+import { addExpense, deleteExpense, loadExpensesForMonth, type Expense, type QuickAddPreset, categoryEmojis } from '../lib/expenses'
 import { LineChart, type DailyPoint } from '../components/LineChart'
 import { QuickAddButtons } from '../components/QuickAddButtons'
 import { ExpenseFormModal, type ExpenseFormData } from '../components/ExpenseFormModal'
@@ -280,6 +280,12 @@ export function StatusScreen(props: { settings: Settings }) {
     )
   }
 
+  const getCategoryInfo = (catId: string) => {
+    const custom = props.settings.customCategories.find((c) => c.id === catId)
+    if (custom) return { name: custom.name, emoji: custom.emoji }
+    return { name: catId, emoji: categoryEmojis[catId] }
+  }
+
   return (
     <div className="space-y-6">
       <div className="ot-card">
@@ -444,7 +450,6 @@ export function StatusScreen(props: { settings: Settings }) {
             <div className="text-sm font-semibold">Ausgabe erfassen</div>
             <div className="mt-1 text-xs text-zinc-600 dark:text-zinc-500">Nur für aktuellen Monat</div>
           </div>
-          <div className="text-xs text-zinc-600 dark:text-zinc-500">localStorage</div>
         </div>
 
         <div className="mt-3 flex gap-2">
@@ -515,8 +520,8 @@ export function StatusScreen(props: { settings: Settings }) {
               type="button"
               onClick={() => setSelectedCategory('all')}
               className={`whitespace-nowrap rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-widest transition-all ${selectedCategory === 'all'
-                  ? 'bg-zinc-950 text-white dark:bg-zinc-50 dark:text-zinc-950'
-                  : 'bg-zinc-100 dark:bg-zinc-900 text-zinc-500 hover:text-zinc-950 dark:hover:text-zinc-50'
+                ? 'bg-zinc-950 text-white dark:bg-zinc-50 dark:text-zinc-950'
+                : 'bg-zinc-100 dark:bg-zinc-900 text-zinc-500 hover:text-zinc-950 dark:hover:text-zinc-50'
                 }`}
             >
               Alle
@@ -527,11 +532,14 @@ export function StatusScreen(props: { settings: Settings }) {
                 type="button"
                 onClick={() => setSelectedCategory(cat)}
                 className={`whitespace-nowrap rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-widest transition-all ${selectedCategory === cat
-                    ? 'bg-zinc-950 text-white dark:bg-zinc-50 dark:text-zinc-950'
-                    : 'bg-zinc-100 dark:bg-zinc-900 text-zinc-500 hover:text-zinc-950 dark:hover:text-zinc-50'
+                  ? 'bg-zinc-950 text-white dark:bg-zinc-50 dark:text-zinc-950'
+                  : 'bg-zinc-100 dark:bg-zinc-900 text-zinc-500 hover:text-zinc-950 dark:hover:text-zinc-50'
                   }`}
               >
-                {cat}
+                {(() => {
+                  const info = getCategoryInfo(cat)
+                  return info.emoji ? `${info.emoji} ${info.name}` : info.name
+                })()}
               </button>
             ))}
           </div>
@@ -559,7 +567,7 @@ export function StatusScreen(props: { settings: Settings }) {
                       {e.title?.trim() ? e.title : 'Untitled'}
                     </div>
                     <div className="shrink-0 rounded-md border border-zinc-300 dark:border-zinc-800 bg-zinc-200 dark:bg-zinc-950 px-2 py-0.5 text-xs text-zinc-700 dark:text-zinc-400">
-                      {e.category}
+                      {getCategoryInfo(e.category).name}
                     </div>
                   </div>
                   <div className="mt-1 text-xs text-zinc-600 dark:text-zinc-500">

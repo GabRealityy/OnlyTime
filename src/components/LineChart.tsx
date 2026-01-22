@@ -336,29 +336,31 @@ export function LineChart(props: {
           })}
       </svg>
 
-      {hoverPoint && (
-        <div className="mt-2 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 p-2 text-xs">
-          <div className="font-semibold text-zinc-700 dark:text-zinc-300">
-            {hoverPoint.dayLabel ? hoverPoint.dayLabel : `Tag ${hoverPoint.day}`}
-          </div>
-          <div className="mt-1 grid grid-cols-2 gap-2">
-            <div>
-              <span className="text-zinc-600 dark:text-zinc-500">Verdient:</span>{' '}
-              <span className="text-emerald-600 dark:text-emerald-400">{formatCHF(hoverPoint.earned)}</span>
-              {showTimeAxis && hoverPoint.earnedHours !== undefined && (
-                <span className="ml-1 text-zinc-600 dark:text-zinc-500">({formatHoursMinutes(hoverPoint.earnedHours)})</span>
-              )}
+      <div className="mt-2 min-h-[64px]">
+        {hoverPoint && (
+          <div className="rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 p-2 text-xs">
+            <div className="font-semibold text-zinc-700 dark:text-zinc-300">
+              {hoverPoint.dayLabel ? hoverPoint.dayLabel : `Tag ${hoverPoint.day}`}
             </div>
-            <div>
-              <span className="text-zinc-600 dark:text-zinc-500">Ausgegeben:</span>{' '}
-              <span className="text-rose-600 dark:text-rose-400">{formatCHF(hoverPoint.spent)}</span>
-              {showTimeAxis && hoverPoint.spentHours !== undefined && (
-                <span className="ml-1 text-zinc-600 dark:text-zinc-500">({formatHoursMinutes(hoverPoint.spentHours)})</span>
-              )}
+            <div className="mt-1 grid grid-cols-2 gap-2">
+              <div>
+                <span className="text-zinc-600 dark:text-zinc-500">Verdient:</span>{' '}
+                <span className="text-emerald-600 dark:text-emerald-400">{formatCHF(hoverPoint.earned)}</span>
+                {showTimeAxis && hoverPoint.earnedHours !== undefined && (
+                  <span className="ml-1 text-zinc-600 dark:text-zinc-500">({formatHoursMinutes(hoverPoint.earnedHours)})</span>
+                )}
+              </div>
+              <div>
+                <span className="text-zinc-600 dark:text-zinc-500">Ausgegeben:</span>{' '}
+                <span className="text-rose-600 dark:text-rose-400">{formatCHF(hoverPoint.spent)}</span>
+                {showTimeAxis && hoverPoint.spentHours !== undefined && (
+                  <span className="ml-1 text-zinc-600 dark:text-zinc-500">({formatHoursMinutes(hoverPoint.spentHours)})</span>
+                )}
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
       <div className="mt-2 text-xs text-zinc-600 dark:text-zinc-500">
         Crossing marker appears when spending overtakes earning.

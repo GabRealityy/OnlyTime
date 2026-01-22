@@ -11,28 +11,11 @@ import { useState } from 'react'
 import { Modal } from './Modal'
 import { ConfirmDialog } from './ConfirmDialog'
 import type { CustomCategory } from '../lib/expenses'
+import { AVAILABLE_EMOJIS } from '../lib/expenses'
 
-const AVAILABLE_EMOJIS = [
-  '🍕', '🍔', '🍟', '🍿', '🥤', '☕', '🍺', '🍽️',
-  '🚗', '🚌', '🚇', '✈️', '🚲', '⛽', '🚕', '🏍️',
-  '🛒', '👕', '👔', '👗', '👟', '🎽', '🧥', '👜',
-  '🎮', '🎬', '🎵', '🎸', '📚', '🎨', '🎭', '🎪',
-  '💊', '🏥', '💉', '🩺', '🧘', '🏋️', '🧪', '🔬',
-  '🏠', '💡', '🔧', '🔨', '🪛', '🧰', '📦', '🧹',
-  '📱', '💻', '⌨️', '🖥️', '🖱️', '💾', '📷', '📸',
-  '❤️', '💰', '💳', '🎁', '🎉', '🎂', '🎈', '⭐',
-]
 
-const AVAILABLE_COLORS = [
-  { name: 'Rot', value: '#ef4444' },
-  { name: 'Orange', value: '#f97316' },
-  { name: 'Gelb', value: '#eab308' },
-  { name: 'Grün', value: '#22c55e' },
-  { name: 'Blau', value: '#3b82f6' },
-  { name: 'Lila', value: '#a855f7' },
-  { name: 'Pink', value: '#ec4899' },
-  { name: 'Grau', value: '#6b7280' },
-]
+
+
 
 export function CategoryManager(props: {
   open: boolean
@@ -45,7 +28,6 @@ export function CategoryManager(props: {
   const [editingId, setEditingId] = useState<string | null>(null)
   const [name, setName] = useState('')
   const [emoji, setEmoji] = useState('📁')
-  const [color, setColor] = useState('#6b7280')
   const [showEmojiPicker, setShowEmojiPicker] = useState(false)
   const [categoryToDelete, setCategoryToDelete] = useState<string | null>(null)
 
@@ -53,21 +35,18 @@ export function CategoryManager(props: {
     setEditingId(category.id)
     setName(category.name)
     setEmoji(category.emoji || '📁')
-    setColor(category.color || '#6b7280')
   }
 
   const startNew = () => {
     setEditingId('new')
     setName('')
     setEmoji('📁')
-    setColor('#6b7280')
   }
 
   const cancelEdit = () => {
     setEditingId(null)
     setName('')
     setEmoji('📁')
-    setColor('#6b7280')
   }
 
   const saveCategory = () => {
@@ -80,13 +59,12 @@ export function CategoryManager(props: {
         id: `custom-${Date.now()}`,
         name: name.trim(),
         emoji,
-        color,
       }
       updatedCategories = [...categories, newCategory]
     } else {
       updatedCategories = categories.map(cat =>
         cat.id === editingId
-          ? { ...cat, name: name.trim(), emoji, color }
+          ? { ...cat, name: name.trim(), emoji }
           : cat
       )
     }
@@ -98,10 +76,10 @@ export function CategoryManager(props: {
   const deleteCategory = (id: string) => {
     const deletedCategory = categories.find(cat => cat.id === id)
     if (!deletedCategory) return
-    
+
     onSave(categories.filter(cat => cat.id !== id))
     setCategoryToDelete(null)
-    
+
     // Show toast with undo option (if showToast is available)
     if (typeof (window as any).showToast === 'function') {
       (window as any).showToast(
@@ -111,7 +89,7 @@ export function CategoryManager(props: {
         'Rückgängig',
         () => {
           onSave([...categories, deletedCategory])
-          ;(window as any).showToast(`Kategorie wiederhergestellt`, 'success', 2000)
+            ; (window as any).showToast(`Kategorie wiederhergestellt`, 'success', 2000)
         }
       )
     }
@@ -128,14 +106,12 @@ export function CategoryManager(props: {
               className="flex items-center gap-3 rounded-lg border border-zinc-800 bg-zinc-900/60 p-3"
             >
               <div
-                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-xl"
-                style={{ backgroundColor: cat.color || '#6b7280' }}
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border-2 border-zinc-700 bg-zinc-800 text-xl"
               >
                 {cat.emoji || '📁'}
               </div>
               <div className="min-w-0 flex-1">
                 <div className="font-medium">{cat.name}</div>
-                <div className="text-xs text-zinc-500">{cat.id}</div>
               </div>
               <div className="flex shrink-0 gap-2">
                 <button
@@ -222,27 +198,7 @@ export function CategoryManager(props: {
                 )}
               </div>
 
-              {/* Color Picker */}
-              <div>
-                <label className="text-sm font-medium">Farbe</label>
-                <div className="mt-1 grid grid-cols-4 gap-2">
-                  {AVAILABLE_COLORS.map((c) => (
-                    <button
-                      key={c.value}
-                      type="button"
-                      className={`flex h-10 items-center justify-center rounded-lg border-2 transition ${
-                        color === c.value
-                          ? 'border-white scale-105'
-                          : 'border-transparent hover:border-zinc-600'
-                      }`}
-                      style={{ backgroundColor: c.value }}
-                      onClick={() => setColor(c.value)}
-                    >
-                      {color === c.value && <span className="text-white">✓</span>}
-                    </button>
-                  ))}
-                </div>
-              </div>
+
 
               {/* Actions */}
               <div className="flex gap-2 pt-2">

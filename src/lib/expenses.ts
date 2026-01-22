@@ -9,14 +9,35 @@
 import { loadFromStorage, saveToStorage, storageKeys } from './storage'
 
 export const expenseCategories = [
-  'Food',
-  'Transport',
-  'Shopping',
-  'Bills',
-  'Fun',
-  'Subscriptions',
-  'Other',
+  'Essen',
+  'Mobilität',
+  'Einkaufen',
+  'Wohnen',
+  'Freizeit',
+  'Abos',
+  'Sonstiges',
 ] as const
+
+export const categoryEmojis: Record<string, string> = {
+  Essen: '🍕',
+  Mobilität: '🚲',
+  Einkaufen: '🛒',
+  Wohnen: '🏠',
+  Freizeit: '🎮',
+  Abos: '📅',
+  Sonstiges: '📁',
+}
+
+export const AVAILABLE_EMOJIS = [
+  '🍕', '🍔', '🍟', '🍿', '🥤', '☕', '🍺', '🍽️',
+  '🚗', '🚌', '🚇', '✈️', '🚲', '⛽', '🚕', '🏍️',
+  '🛒', '👕', '👔', '👗', '👟', '🎽', '🧥', '👜',
+  '🎮', '🎬', '🎵', '🎸', '📚', '🎨', '🎭', '🎪',
+  '💊', '🏥', '💉', '🩺', '🧘', '🏋️', '🧪', '🔬',
+  '🏠', '💡', '🔧', '🔨', '🪛', '🧰', '📦', '🧹',
+  '📱', '💻', '⌨️', '🖥️', '🖱️', '💾', '📷', '📸',
+  '❤️', '💰', '💳', '🎁', '🎉', '🎂', '🎈', '⭐',
+]
 
 export type ExpenseCategory = (typeof expenseCategories)[number]
 
@@ -37,7 +58,6 @@ export type QuickAddPreset = {
 export type CustomCategory = {
   id: string
   name: string
-  color?: string
   emoji?: string
 }
 
@@ -115,7 +135,7 @@ function normalizeExpense(input: unknown): Expense | undefined {
   const id = typeof obj.id === 'string' ? obj.id : undefined
   const date = typeof obj.date === 'string' ? obj.date : undefined
   const title = typeof obj.title === 'string' ? obj.title : ''
-  const category = typeof obj.category === 'string' && obj.category.trim() ? obj.category.trim() : 'Other'
+  const category = typeof obj.category === 'string' && obj.category.trim() ? obj.category.trim() : 'Sonstiges'
   const amountCHF = toNumber(obj.amountCHF)
   const createdAt = typeof obj.createdAt === 'number' && Number.isFinite(obj.createdAt) ? obj.createdAt : Date.now()
 

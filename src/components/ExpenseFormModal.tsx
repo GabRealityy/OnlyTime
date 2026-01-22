@@ -10,7 +10,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { Modal } from './Modal'
 import { formatCHF, formatHoursMinutes, toHours } from '../lib/money'
-import { expenseCategories, type ExpenseCategory } from '../lib/expenses'
+import { expenseCategories, type ExpenseCategory, categoryEmojis } from '../lib/expenses'
 import { isoDateLocal } from '../lib/date'
 
 export type ExpenseFormData = {
@@ -37,7 +37,7 @@ export function ExpenseFormModal(props: {
   // Form fields
   const [amountInput, setAmountInput] = useState<string>('')
   const [title, setTitle] = useState<string>('')
-  const [category, setCategory] = useState<ExpenseCategory | string>('Food')
+  const [category, setCategory] = useState<ExpenseCategory | string>('Essen')
   const [date, setDate] = useState<string>(isoDateLocal(new Date()))
   const [note, setNote] = useState<string>('')
 
@@ -51,7 +51,7 @@ export function ExpenseFormModal(props: {
     if (open) {
       setAmountInput(initialData?.amountCHF?.toString() || '')
       setTitle(initialData?.title || '')
-      setCategory(initialData?.category || 'Food')
+      setCategory(initialData?.category || 'Essen')
       setDate(initialData?.date || isoDateLocal(new Date()))
       setNote('')
       setErrors({})
@@ -125,7 +125,7 @@ export function ExpenseFormModal(props: {
   const timeHours = parsedAmount && hourlyRate > 0 ? toHours(parsedAmount, hourlyRate) : null
 
   const allCategories = [
-    ...expenseCategories.map(cat => ({ id: cat, name: cat, emoji: undefined })),
+    ...expenseCategories.map(cat => ({ id: cat, name: cat, emoji: categoryEmojis[cat] })),
     ...customCategories,
   ]
 
