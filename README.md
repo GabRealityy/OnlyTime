@@ -133,9 +133,10 @@ src/
 
 Verbesserungsvorschläge und Pull Requests sind willkommen!
 
-## 📜 Lizenz
+## License
 
-MIT License - siehe [LICENSE](LICENSE) Datei für Details.
+This project is publicly available for viewing and evaluation purposes only.
+All rights are reserved. See LICENSE file for details.
 
 ---
 
