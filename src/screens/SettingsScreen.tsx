@@ -4,9 +4,9 @@
 */
 
 import { useState } from 'react'
-import { 
-  monthlyWorkingHours, 
-  hourlyRateCHF, 
+import {
+  monthlyWorkingHours,
+  hourlyRateCHF,
   effectiveNetMonthlyIncome,
   weeklyCommuteHours,
   type Settings,
@@ -453,7 +453,7 @@ export function SettingsScreen(props: {
         {showAdditionalIncome && (
           <div className="mt-4 space-y-3">
             {settings.additionalIncomeSources.map((source) => (
-              <div key={source.id} className="p-3 rounded-lg border border-zinc-800 bg-zinc-950/40 space-y-2">
+              <div key={source.id} className="p-3 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/40 space-y-2">
                 <div className="flex items-center justify-between">
                   <input
                     type="text"
@@ -529,10 +529,10 @@ export function SettingsScreen(props: {
             <div className="text-zinc-600 dark:text-zinc-400">Gesamte Arbeitszeit</div>
             <div className="font-mono">{monthlyHours.toFixed(2)} h/Monat</div>
           </div>
-          <div className="h-px bg-zinc-800 my-1"></div>
+          <div className="h-px bg-zinc-200 dark:bg-zinc-800 my-1"></div>
           <div className="flex items-center justify-between">
-            <div className="text-zinc-300 font-medium">Effektiver Stundenlohn</div>
-            <div className="font-mono text-lg font-semibold text-green-400">
+            <div className="text-zinc-900 dark:text-zinc-300 font-medium">Effektiver Stundenlohn</div>
+            <div className="font-mono text-lg font-semibold text-emerald-600 dark:text-green-400">
               {hourlyRate > 0 ? `${formatCHF(hourlyRate)}/h` : '—'}
             </div>
           </div>
@@ -543,7 +543,7 @@ export function SettingsScreen(props: {
             Gib Einkommen und Arbeitszeit ein, um deinen effektiven Stundenlohn zu berechnen.
           </div>
         )}
-        
+
         {hourlyRate > 0 && monthlyHours > 0 && (
           <div className="mt-3 rounded-xl border border-emerald-900/30 bg-emerald-950/20 p-3 text-sm text-emerald-300">
             ✓ Dein Stundenlohn ist berechnet. Die App kann jetzt Preise in Arbeitszeit umrechnen.

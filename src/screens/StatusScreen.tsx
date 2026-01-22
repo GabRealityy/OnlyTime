@@ -83,7 +83,6 @@ export function StatusScreen(props: { settings: Settings }) {
   const spentHours = toHours(spent, hourly)
   // keep month-scoped values for warnings/budgets
 
-  const isAhead = rangeTotalStats.balance >= 0
   const timeOverspent = spentHours > earnedHours
 
   // Budget tracking per category
@@ -97,21 +96,21 @@ export function StatusScreen(props: { settings: Settings }) {
   }, [expenses])
 
   const budgetWarnings = useMemo(() => {
-    const warnings: Array<{ 
+    const warnings: Array<{
       category: string
       spent: number
       budgetCHF: number
       budgetHours?: number
-      percentage: number 
+      percentage: number
     }> = []
-    
+
     for (const budget of props.settings.categoryBudgets) {
       const spent = categorySpending.get(budget.categoryId) || 0
-      
+
       // Calculate budget in CHF (convert from hours if needed)
       const budgetCHF = budget.monthlyBudgetCHF || (budget.monthlyBudgetHours ? budget.monthlyBudgetHours * hourly : 0)
       const percentage = budgetCHF > 0 ? (spent / budgetCHF) * 100 : 0
-      
+
       if (percentage >= 80) {
         warnings.push({
           category: budget.categoryId,
@@ -122,7 +121,7 @@ export function StatusScreen(props: { settings: Settings }) {
         })
       }
     }
-    
+
     return warnings.sort((a, b) => b.percentage - a.percentage)
   }, [props.settings.categoryBudgets, categorySpending])
 
@@ -205,7 +204,7 @@ export function StatusScreen(props: { settings: Settings }) {
   const onCSVImport = (importedExpenses: Omit<Expense, 'id'>[]) => {
     let updated = expenses
     let importCount = 0
-    
+
     for (const exp of importedExpenses) {
       const expMonthKey = exp.date.slice(0, 7)
       if (expMonthKey === monthKey) {
@@ -213,7 +212,7 @@ export function StatusScreen(props: { settings: Settings }) {
         importCount++
       }
     }
-    
+
     setExpenses(updated)
     showToast(`${importCount} von ${importedExpenses.length} Ausgaben importiert`, 'success')
   }
@@ -222,10 +221,10 @@ export function StatusScreen(props: { settings: Settings }) {
     // Store the deleted expense for undo
     const deletedExpense = expenses.find(e => e.id === id)
     if (!deletedExpense) return
-    
+
     const updated = deleteExpense(monthKey, id)
     setExpenses(updated)
-    
+
     showToast(
       `${title} gelöscht`,
       'info',
@@ -246,94 +245,88 @@ export function StatusScreen(props: { settings: Settings }) {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <div className="ot-card">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <div className="text-lg font-semibold">Status</div>
-            <div className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-              {label} · Zeitraum: {timeRangeLabel} · {now.toLocaleDateString()}
+            <div className="text-2xl font-black tracking-tighter">Status</div>
+            <div className="mt-1 text-xs font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">
+              {label} · {timeRangeLabel}
             </div>
           </div>
           <div className="text-right">
-            <div className="text-xs text-zinc-600 dark:text-zinc-500">Today</div>
-            <div className="font-mono text-sm">
-              day {today}/{dim}
+            <div className="text-[10px] font-black uppercase tracking-widest text-zinc-500 dark:text-zinc-400">Tag</div>
+            <div className="font-mono text-sm font-bold">
+              {today}/{dim}
             </div>
           </div>
         </div>
 
         {/* Zeitraum-Filter */}
-        <div className="mt-3 flex flex-wrap gap-2">
+        <div className="mt-6 flex flex-wrap gap-2">
           {timeRangeButtons.map((btn) => (
             <button
               key={btn.id}
               type="button"
               onClick={() => setTimeRange(btn.id)}
-              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                timeRange === btn.id
-                  ? 'bg-emerald-600 text-white'
-                  : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-300 dark:hover:bg-zinc-700'
-              }`}
+              className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${timeRange === btn.id
+                ? 'bg-zinc-950 text-white dark:bg-zinc-50 dark:text-zinc-950'
+                : 'bg-zinc-50 dark:bg-zinc-900 text-zinc-500 hover:text-zinc-950 dark:hover:text-zinc-50'
+                }`}
             >
               {btn.label}
             </button>
           ))}
         </div>
 
-        <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
-          <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-950/40 p-3">
-            <div className="text-xs text-zinc-600 dark:text-zinc-500">Verdient ({timeRangeLabel})</div>
-            <div className="mt-1 text-xl font-semibold">{formatCHF(rangeTotalStats.earned)}</div>
+        <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <div className="rounded-[1.5rem] border border-zinc-100 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/40 p-5">
+            <div className="text-[10px] font-black uppercase tracking-widest text-zinc-500 dark:text-zinc-400 mb-2 whitespace-nowrap">Verdienst ({timeRangeLabel})</div>
+            <div className="text-2xl font-black tracking-tight">{formatCHF(rangeTotalStats.earned)}</div>
             {hourly > 0 && (
-              <div className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-                {formatHoursMinutes(rangeTotalStats.earnedHours)} verdient
+              <div className="mt-1 text-xs font-bold text-zinc-400">
+                {formatHoursMinutes(rangeTotalStats.earnedHours)}
               </div>
             )}
           </div>
-          <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-950/40 p-3">
-            <div className="text-xs text-zinc-600 dark:text-zinc-500">Ausgegeben ({timeRangeLabel})</div>
-            <div className="mt-1 text-xl font-semibold">{formatCHF(rangeTotalStats.spent)}</div>
+          <div className="rounded-[1.5rem] border border-zinc-100 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/40 p-5">
+            <div className="text-[10px] font-black uppercase tracking-widest text-zinc-500 dark:text-zinc-400 mb-2 whitespace-nowrap">Ausgaben ({timeRangeLabel})</div>
+            <div className="text-2xl font-black tracking-tight">{formatCHF(rangeTotalStats.spent)}</div>
             {hourly > 0 && (
-              <div className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-                {formatHoursMinutes(rangeTotalStats.spentHours)} ausgegeben
+              <div className="mt-1 text-xs font-bold text-zinc-500 dark:text-zinc-400">
+                {formatHoursMinutes(rangeTotalStats.spentHours)}
               </div>
             )}
           </div>
-          <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-950/40 p-3">
-            <div className="text-xs text-zinc-600 dark:text-zinc-500">Bilanz ({timeRangeLabel})</div>
-            <div className="mt-1 flex items-baseline gap-2">
-              <div className="text-2xl font-semibold">
-                {isAhead ? '🟢' : '🔴'} {formatCHF(rangeTotalStats.balance)}
+          <div className="rounded-[1.5rem] border border-zinc-950 bg-zinc-950 dark:bg-white p-5 text-white dark:text-zinc-950 shadow-xl shadow-zinc-900/20 dark:shadow-none">
+            <div className="text-[10px] font-black uppercase tracking-widest text-zinc-600 dark:text-zinc-400 mb-2 whitespace-nowrap">Bilanz ({timeRangeLabel})</div>
+            <div className="flex items-center gap-2">
+              <div className="text-3xl font-black tracking-tighter">
+                {formatCHF(rangeTotalStats.balance)}
               </div>
             </div>
-            <div className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-              {hourly > 0 ? (
-                <>
-                  {formatHoursMinutes(rangeTotalStats.balanceHours)} verfügbare Zeit
-                  <br />
-                  <span className="text-xs text-zinc-600 dark:text-zinc-500">
-                    Stundenlohn: {formatCHF(hourly)}/h
-                  </span>
-                </>
-              ) : (
-                'Stundenlohn in Einstellungen festlegen'
-              )}
-            </div>
+            {hourly > 0 && (
+              <div className="mt-1 text-xs font-bold text-zinc-300 dark:text-zinc-400">
+                {formatHoursMinutes(rangeTotalStats.balanceHours)} Zeit
+              </div>
+            )}
           </div>
         </div>
 
         {timeOverspent && hourly > 0 && (
-          <div className="mt-4 rounded-xl border border-rose-800 bg-rose-950/40 p-3">
-            <div className="flex items-start gap-2">
-              <span className="text-lg">⚠️</span>
+          <div className="mt-6 rounded-2xl border border-rose-100 bg-rose-50 p-4 dark:border-rose-900/30 dark:bg-rose-950/20">
+            <div className="flex items-start gap-3">
+              <div className="mt-0.5 text-rose-600">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" /><path d="M12 9v4" /><path d="M12 17h.01" />
+                </svg>
+              </div>
               <div>
-                <div className="text-sm font-semibold text-rose-300">
+                <div className="text-xs font-black uppercase tracking-widest text-rose-600">
                   Zeitüberschreitung
                 </div>
-                <div className="mt-1 text-sm text-rose-200/80">
-                  Du hast deine verdiente Zeit für diesen Monat bereits überschritten. 
-                  Kommende Ausgaben nehmen dir Zeit aus zukünftigen Monaten.
+                <div className="mt-1 text-sm font-medium text-rose-600/80">
+                  Deine Ausgaben übersteigen dein aktuelles Zeitbudget.
                 </div>
               </div>
             </div>
@@ -342,52 +335,47 @@ export function StatusScreen(props: { settings: Settings }) {
 
         {/* Budget Warnings */}
         {budgetWarnings.length > 0 && (
-          <div className="mt-4 space-y-2">
+          <div className="mt-4 space-y-3">
             {budgetWarnings.map((warning) => {
               const isExceeded = warning.percentage >= 100
               const categoryName = props.settings.customCategories.find(c => c.id === warning.category)?.name || warning.category
-              
+
               return (
                 <div
                   key={warning.category}
-                  className={`rounded-xl border p-3 animate-in slide-in-from-right-4 fade-in duration-300 ${
-                    isExceeded
-                      ? 'border-rose-800 bg-rose-950/40'
-                      : 'border-amber-800 bg-amber-950/40'
-                  }`}
+                  className={`rounded-2xl border p-4 transition-all ${isExceeded
+                    ? 'border-rose-100 bg-rose-50 dark:border-rose-900/30 dark:bg-rose-950/20'
+                    : 'border-amber-100 bg-amber-50 dark:border-amber-900/30 dark:bg-amber-950/20'
+                    }`}
                 >
-                  <div className="flex items-start gap-2">
-                    <span className="text-lg">{isExceeded ? '🚫' : '⚠️'}</span>
-                    <div className="flex-1">
-                      <div className={`text-sm font-semibold ${
-                        isExceeded ? 'text-rose-300' : 'text-amber-300'
-                      }`}>
-                        {isExceeded ? 'Budget überschritten' : 'Budget-Warnung'}: {categoryName}
-                      </div>
-                      <div className={`mt-1 text-sm ${
-                        isExceeded ? 'text-rose-200/80' : 'text-amber-200/80'
-                      }`}>
-                        {formatCHF(warning.spent)} von {formatCHF(warning.budgetCHF)} ausgegeben
-                        <span className="ml-2 font-semibold">
-                          ({warning.percentage.toFixed(0)}%)
-                        </span>
-                      </div>
-                      
-                      {/* Dual display: show hours if budget was defined in hours */}
-                      {warning.budgetHours && hourly > 0 && (
-                        <div className={`mt-1 text-xs ${
-                          isExceeded ? 'text-rose-200/60' : 'text-amber-200/60'
-                        }`}>
-                          {formatHoursMinutes(toHours(warning.spent, hourly))} von {formatHoursMinutes(warning.budgetHours)}
-                        </div>
+                  <div className="flex items-start gap-3">
+                    <div className={`mt-0.5 ${isExceeded ? 'text-rose-600' : 'text-amber-600'}`}>
+                      {isExceeded ? (
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                          <circle cx="12" cy="12" r="10" /><path d="m15 9-6 6" /><path d="m9 9 6 6" />
+                        </svg>
+                      ) : (
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" /><path d="M12 9v4" /><path d="M12 17h.01" />
+                        </svg>
                       )}
-                      
+                    </div>
+                    <div className="flex-1">
+                      <div className={`text-xs font-black uppercase tracking-widest ${isExceeded ? 'text-rose-600' : 'text-amber-600'
+                        }`}>
+                        {categoryName} {isExceeded ? 'Über Limit' : 'Warnung'}
+                      </div>
+                      <div className={`mt-1 text-sm font-bold ${isExceeded ? 'text-rose-900/70 dark:text-rose-200/70' : 'text-amber-900/70 dark:text-amber-200/70'
+                        }`}>
+                        {formatCHF(warning.spent)} / {formatCHF(warning.budgetCHF)}
+                        <span className="ml-2">({warning.percentage.toFixed(0)}%)</span>
+                      </div>
+
                       {/* Progress bar */}
-                      <div className="mt-2 h-2 overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-900">
+                      <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-800">
                         <div
-                          className={`h-full transition-all duration-500 ease-out ${
-                            isExceeded ? 'bg-rose-500' : 'bg-amber-500'
-                          }`}
+                          className={`h-full transition-all duration-700 ease-out ${isExceeded ? 'bg-rose-500' : 'bg-amber-500'
+                            }`}
                           style={{ width: `${Math.min(100, warning.percentage)}%` }}
                         />
                       </div>
@@ -404,10 +392,11 @@ export function StatusScreen(props: { settings: Settings }) {
         points={rangePoints}
         hourlyRate={hourly}
         showTimeAxis={hourly > 0}
+        showXAxis={true}
         title={timeRange === '1M' ? 'Dieser Monat' : `Zeitraum: ${timeRangeLabel}`}
       />
 
-      <QuickAddButtons 
+      <QuickAddButtons
         presets={props.settings.quickAddPresets}
         hourlyRate={hourly}
         onAddExpense={onQuickAdd}
@@ -423,16 +412,16 @@ export function StatusScreen(props: { settings: Settings }) {
         </div>
 
         <div className="mt-3 flex gap-2">
-          <button 
-            type="button" 
-            className="ot-btn ot-btn-primary flex-1" 
+          <button
+            type="button"
+            className="ot-btn ot-btn-primary flex-1"
             onClick={() => setShowExpenseForm(true)}
           >
             ➕ Manuelle Eingabe
           </button>
-          <button 
-            type="button" 
-            className="ot-btn" 
+          <button
+            type="button"
+            className="ot-btn"
             onClick={() => setShowCSVImport(true)}
           >
             📄 CSV-Import

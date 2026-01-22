@@ -34,19 +34,30 @@ export function LineChart(props: {
   height?: number
   hourlyRate?: number
   showTimeAxis?: boolean
+  showXAxis?: boolean
   title?: string
 }) {
   const width = props.width ?? 720
   const height = props.height ?? 220
   const hourlyRate = props.hourlyRate ?? 0
   const showTimeAxis = props.showTimeAxis ?? (hourlyRate > 0)
+  const showXAxis = props.showXAxis ?? true
   const title = props.title ?? 'This month'
 
   const [hoverDay, setHoverDay] = useState<number | null>(null)
 
-  const pad = 18
-  const innerW = width - pad * 2
-  const innerH = height - pad * 2
+  const showHoursAxis = showTimeAxis && hourlyRate > 0
+  const chfTickFormat = new Intl.NumberFormat(undefined, { maximumFractionDigits: 0 })
+  const hoursTickFormat = new Intl.NumberFormat(undefined, { maximumFractionDigits: 1 })
+
+  // Extra margins so labels never overlap the plot/grid.
+  const marginTop = 18
+  const marginBottom = showXAxis ? 34 : 18
+  const marginLeft = showHoursAxis ? 52 : 18
+  const marginRight = 58
+
+  const innerW = Math.max(1, width - marginLeft - marginRight)
+  const innerH = Math.max(1, height - marginTop - marginBottom)
 
   const maxY = Math.max(
     1,
@@ -57,13 +68,13 @@ export function LineChart(props: {
     const minDay = props.points[0]?.day ?? 1
     const maxDay = props.points[props.points.length - 1]?.day ?? 1
     const t = clamp01(inverseLerp(minDay, maxDay, day))
-    return pad + t * innerW
+    return marginLeft + t * innerW
   }
 
   const yForValue = (v: number) => {
     const t = clamp01(inverseLerp(0, maxY, v))
     // invert y for SVG
-    return pad + (1 - t) * innerH
+    return marginTop + (1 - t) * innerH
   }
 
   const earnedPts = props.points.map((p) => ({ x: xForDay(p.day), y: yForValue(p.earned) }))
@@ -99,7 +110,21 @@ export function LineChart(props: {
 
   // A simple grid (subtle) to read the slope.
   const gridLines = 4
-  const gridYs = Array.from({ length: gridLines + 1 }, (_, i) => pad + (innerH * i) / gridLines)
+  const gridYs = Array.from({ length: gridLines + 1 }, (_, i) => marginTop + (innerH * i) / gridLines)
+
+  const xTickIndices = (() => {
+    const n = props.points.length
+    if (n <= 1) return [0]
+    if (n <= 8) return Array.from({ length: n }, (_, i) => i)
+    // Keep labels readable on dense data: show ~5 evenly spaced ticks.
+    const steps = 4
+    const idxs = [
+      0,
+      ...Array.from({ length: steps - 1 }, (_, i) => Math.round(((i + 1) * (n - 1)) / steps)),
+      n - 1,
+    ]
+    return Array.from(new Set(idxs)).filter((i) => i >= 0 && i < n)
+  })()
 
   return (
     <div className="ot-card">
@@ -122,7 +147,7 @@ export function LineChart(props: {
 
       <svg
         viewBox={`0 0 ${width} ${height}`}
-        className="h-[220px] w-full"
+        className="h-[220px] w-full text-black dark:text-white"
         role="img"
         aria-label="Earned vs spent chart"
         onMouseMove={(e) => {
@@ -160,8 +185,8 @@ export function LineChart(props: {
         {gridYs.map((y) => (
           <line
             key={y}
-            x1={pad}
-            x2={width - pad}
+            x1={marginLeft}
+            x2={width - marginRight}
             y1={y}
             y2={y}
             stroke="#27272a"
@@ -169,16 +194,61 @@ export function LineChart(props: {
           />
         ))}
 
+        {/* y-axis tick labels */}
+        {gridYs.map((y, i) => {
+          const t = i / gridLines
+          const chfValue = maxY * (1 - t)
+          const chfLabel = chfTickFormat.format(chfValue)
+          const hoursLabel = showHoursAxis ? hoursTickFormat.format(chfValue / hourlyRate) : ''
+
+          return (
+            <g key={`yTick-${y}`}>
+              {showHoursAxis && (
+                <text
+                  x={marginLeft - 8}
+                  y={y}
+                  fill="currentColor"
+                  fontSize={12}
+                  dominantBaseline="middle"
+                  textAnchor="end"
+                >
+                  {hoursLabel}
+                </text>
+              )}
+              <text
+                x={width - marginRight + 8}
+                y={y}
+                fill="currentColor"
+                fontSize={12}
+                dominantBaseline="middle"
+                textAnchor="start"
+              >
+                {chfLabel}
+              </text>
+            </g>
+          )
+        })}
+
+        {/* y-axis unit labels */}
+        {showHoursAxis && (
+          <text x={marginLeft - 8} y={12} fill="currentColor" fontSize={12} textAnchor="end">
+            h
+          </text>
+        )}
+        <text x={width - marginRight + 8} y={12} fill="currentColor" fontSize={12} textAnchor="start">
+          CHF
+        </text>
+
         {/* area fill (subtle) */}
         {earnedPts.length > 1 && (
           <path
-            d={`${earnedPath} L ${earnedPts[earnedPts.length - 1].x} ${height - pad} L ${earnedPts[0].x} ${height - pad} Z`}
+            d={`${earnedPath} L ${earnedPts[earnedPts.length - 1].x} ${height - marginBottom} L ${earnedPts[0].x} ${height - marginBottom} Z`}
             fill="url(#earnedGlow)"
           />
         )}
         {spentPts.length > 1 && (
           <path
-            d={`${spentPath} L ${spentPts[spentPts.length - 1].x} ${height - pad} L ${spentPts[0].x} ${height - pad} Z`}
+            d={`${spentPath} L ${spentPts[spentPts.length - 1].x} ${height - marginBottom} L ${spentPts[0].x} ${height - marginBottom} Z`}
             fill="url(#spentGlow)"
           />
         )}
@@ -193,8 +263,8 @@ export function LineChart(props: {
             <line
               x1={cross.x}
               x2={cross.x}
-              y1={pad}
-              y2={height - pad}
+              y1={marginTop}
+              y2={height - marginBottom}
               stroke="#a1a1aa"
               strokeDasharray="4 6"
               opacity={0.7}
@@ -210,8 +280,8 @@ export function LineChart(props: {
             <line
               x1={hoverX}
               x2={hoverX}
-              y1={pad}
-              y2={height - pad}
+              y1={marginTop}
+              y2={height - marginBottom}
               stroke="#71717a"
               strokeDasharray="2 4"
               opacity={0.5}
@@ -221,14 +291,49 @@ export function LineChart(props: {
 
         {/* frame */}
         <rect
-          x={pad}
-          y={pad}
+          x={marginLeft}
+          y={marginTop}
           width={innerW}
           height={innerH}
           fill="none"
           stroke="#27272a"
           rx={10}
         />
+
+        {/* x-axis ticks/labels */}
+        {showXAxis &&
+          xTickIndices.map((idx) => {
+            const p = props.points[idx]
+            if (!p) return null
+            const x = xForDay(p.day)
+            const label = p.dayLabel ?? String(p.day)
+            const isFirst = idx === xTickIndices[0]
+            const isLast = idx === xTickIndices[xTickIndices.length - 1]
+            const textAnchor: 'start' | 'middle' | 'end' = isFirst ? 'start' : isLast ? 'end' : 'middle'
+
+            return (
+              <g key={`xTick-${idx}`}>
+                <line
+                  x1={x}
+                  x2={x}
+                  y1={height - marginBottom}
+                  y2={height - marginBottom + 4}
+                  stroke="#52525b"
+                  strokeWidth={1}
+                  opacity={0.8}
+                />
+                <text
+                  x={x}
+                  y={height - 8}
+                  fill="currentColor"
+                  fontSize={12}
+                  textAnchor={textAnchor}
+                >
+                  {label}
+                </text>
+              </g>
+            )
+          })}
       </svg>
 
       {hoverPoint && (

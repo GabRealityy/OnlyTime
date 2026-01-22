@@ -8,7 +8,6 @@ import type { Screen } from './types.ts'
 import { TopNav } from './components/TopNav'
 import { SettingsScreen } from './screens/SettingsScreen'
 import { StatusScreen } from './screens/StatusScreen'
-import { CalculatorScreen } from './screens/CalculatorScreen'
 import { HelpScreen } from './screens/HelpScreen'
 import { ReportsScreen } from './screens/ReportsScreen'
 import { loadSettings, saveSettings } from './lib/settings'
@@ -46,15 +45,13 @@ export default function App() {
   const handleOnboardingSkip = () => {
     localStorage.setItem('onlyTime_hasSeenOnboarding', 'true')
     setShowOnboarding(false)
-    showToast('Du kannst die Tour sp\u00e4ter unter Hilfe nachholen', 'info')
+    showToast('Du kannst die Tour später unter Hilfe nachholen', 'info')
   }
 
   const content = useMemo(() => {
     switch (screen) {
       case 'settings':
         return <SettingsScreen settings={settings} onChange={setSettings} />
-      case 'calculator':
-        return <CalculatorScreen settings={settings} />
       case 'reports':
         return <ReportsScreen settings={settings} />
       case 'help':

@@ -15,34 +15,31 @@ export function QuickAddButtons(props: {
   if (presets.length === 0) return null
 
   return (
-    <div className="ot-card">
-      <div className="mb-3 text-sm font-semibold">Schnellerfassung</div>
-      <div className="flex flex-wrap gap-2">
+    <div className="ot-card !rounded-[1.5rem] !p-4">
+      <div className="mb-4 text-xs font-black uppercase tracking-widest text-zinc-400">Schnellerfassung</div>
+      <div className="grid grid-cols-1 xs:grid-cols-2 gap-3">
         {presets.map((preset) => {
           const timeHours = toHours(preset.amountCHF, hourlyRate)
           return (
             <button
               key={preset.id}
               type="button"
-              className="flex items-center gap-2 rounded-lg border border-zinc-800 bg-zinc-950/40 px-3 py-2 text-sm transition-colors hover:border-zinc-700 hover:bg-zinc-900/60"
+              className="ot-btn !justify-start !px-4 !py-3 !rounded-2xl border-zinc-100 bg-zinc-50 hover:border-zinc-950 dark:border-zinc-800 dark:bg-zinc-900/50 dark:hover:border-zinc-50"
               onClick={() => onAddExpense(preset)}
             >
-              {preset.emoji && <span className="text-lg">{preset.emoji}</span>}
-              <div className="text-left">
-                <div className="font-medium">{preset.title}</div>
-                <div className="text-xs text-zinc-500">
+              {preset.emoji && <span className="mr-3 text-xl">{preset.emoji}</span>}
+              <div className="text-left overflow-hidden">
+                <div className="truncate text-sm font-bold leading-tight">{preset.title}</div>
+                <div className="mt-0.5 text-[10px] font-bold text-zinc-400">
                   {formatCHF(preset.amountCHF)}
                   {hourlyRate > 0 && (
-                    <span className="ml-1">· {formatHoursMinutes(timeHours)}</span>
+                    <span className="ml-1 opacity-50">· {formatHoursMinutes(timeHours)}</span>
                   )}
                 </div>
               </div>
             </button>
           )
         })}
-      </div>
-      <div className="mt-2 text-xs text-zinc-500">
-        Tipp: Konfiguriere diese Buttons in Einstellungen → Schnellerfassung
       </div>
     </div>
   )

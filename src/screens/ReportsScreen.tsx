@@ -204,6 +204,7 @@ export function ReportsScreen(props: { settings: Settings }) {
                 points={chartPoints}
                 hourlyRate={hourly}
                 showTimeAxis={hourly > 0}
+                showXAxis={true}
                 title={`Zeitraum: ${timeRangeLabel}`}
               />
             ) : (

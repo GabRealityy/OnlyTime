@@ -33,14 +33,14 @@ export function ExpenseFormModal(props: {
 
   // Input Mode: 'chf' oder 'time'
   const [inputMode, setInputMode] = useState<'chf' | 'time'>('chf')
-  
+
   // Form fields
   const [amountInput, setAmountInput] = useState<string>('')
   const [title, setTitle] = useState<string>('')
   const [category, setCategory] = useState<ExpenseCategory | string>('Food')
   const [date, setDate] = useState<string>(isoDateLocal(new Date()))
   const [note, setNote] = useState<string>('')
-  
+
   // Validation & errors
   const [errors, setErrors] = useState<{ amount?: string; title?: string }>({})
 
@@ -56,7 +56,7 @@ export function ExpenseFormModal(props: {
       setNote('')
       setErrors({})
       setInputMode('chf')
-      
+
       // Focus amount field after modal animation
       setTimeout(() => amountInputRef.current?.focus(), 100)
     }
@@ -90,8 +90,8 @@ export function ExpenseFormModal(props: {
 
     const parsedAmount = parseAmount()
     if (parsedAmount === null || parsedAmount <= 0) {
-      newErrors.amount = inputMode === 'chf' 
-        ? 'Bitte gültigen Betrag eingeben' 
+      newErrors.amount = inputMode === 'chf'
+        ? 'Bitte gültigen Betrag eingeben'
         : 'Bitte gültige Zeit eingeben (z.B. 1:30)'
     }
 
@@ -136,51 +136,61 @@ export function ExpenseFormModal(props: {
       onClose={onClose}
     >
       <div className="space-y-4" onKeyDown={handleKeyDown}>
-        {/* Amount/Time Input */}
-        <div>
-          <div className="flex items-center justify-between mb-1">
-            <label htmlFor="amount" className="text-sm font-medium">
-              {inputMode === 'chf' ? 'Betrag (CHF)' : 'Zeit (h:m)'}
-            </label>
-            <button
-              type="button"
-              className="text-xs text-zinc-600 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300"
-              onClick={() => setInputMode(inputMode === 'chf' ? 'time' : 'chf')}
-            >
-              ↔ {inputMode === 'chf' ? 'In Stunden eingeben' : 'In CHF eingeben'}
-            </button>
+        {/* Amount/Time Display & Calculator */}
+        <div className="py-6 text-center">
+          <div className="mb-2 flex items-center justify-center gap-2">
+            <span className="text-xs font-bold uppercase tracking-[0.2em] text-zinc-500 dark:text-zinc-400">
+              {inputMode === 'chf' ? 'Betrag in CHF' : 'Zeitaufwand (h:m)'}
+            </span>
           </div>
+
           <input
             ref={amountInputRef}
             id="amount"
             inputMode="decimal"
-            placeholder={inputMode === 'chf' ? 'z.B. 15.50' : 'z.B. 1:30 oder 1.5'}
+            className="w-full bg-transparent text-center text-5xl font-black tracking-tighter focus:outline-none placeholder:text-zinc-300 dark:placeholder:text-zinc-700"
+            placeholder={inputMode === 'chf' ? '0.00' : '0:00'}
             value={amountInput}
             onChange={(e) => {
               setAmountInput(e.target.value)
               if (errors.amount) setErrors({ ...errors, amount: undefined })
             }}
           />
+
           {errors.amount && (
-            <div className="mt-1 text-xs text-rose-400">{errors.amount}</div>
+            <div className="mt-2 text-xs text-rose-500 font-bold">{errors.amount}</div>
           )}
-          
-          {/* Preview */}
-          {parsedAmount && parsedAmount > 0 && (
-            <div className="mt-2 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-950/40 p-2 text-xs">
-              <div className="flex items-center justify-between">
-                <span className="text-zinc-600 dark:text-zinc-500">Entspricht:</span>
-                <div className="text-right">
-                  {inputMode === 'chf' && timeHours !== null && (
-                    <div>{formatHoursMinutes(timeHours)} Arbeitszeit</div>
-                  )}
-                  {inputMode === 'time' && (
-                    <div>{formatCHF(parsedAmount)}</div>
-                  )}
-                </div>
+
+          <div className="mt-6 flex justify-center">
+            <button
+              type="button"
+              className="group flex items-center gap-2 rounded-full border border-zinc-100 bg-zinc-50 px-4 py-2 text-xs font-bold transition-all hover:border-zinc-950 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-zinc-100"
+              onClick={() => setInputMode(inputMode === 'chf' ? 'time' : 'chf')}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="transition-transform group-hover:rotate-180">
+                <path d="m21 16-4 4-4-4" /><path d="M17 20V4" /><path d="m3 8 4-4 4 4" /><path d="M7 4v16" />
+              </svg>
+              {inputMode === 'chf' ? 'Zu Zeit wechseln' : 'Zu CHF wechseln'}
+            </button>
+          </div>
+
+          {/* Result Subtext */}
+          <div className="mt-6 min-h-[1.5rem]">
+            {parsedAmount && parsedAmount > 0 ? (
+              <div className="flex items-center justify-center gap-2 text-sm font-bold text-emerald-600 dark:text-emerald-400">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="m7 15 5 5 5-5" /><path d="m7 9 5-5 5 5" />
+                </svg>
+                <span>
+                  {inputMode === 'chf' && timeHours !== null ? formatHoursMinutes(timeHours) : formatCHF(parsedAmount)}
+                </span>
               </div>
-            </div>
-          )}
+            ) : (
+              <div className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-700">
+                Basis: {formatCHF(hourlyRate)}/h
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Title */}
