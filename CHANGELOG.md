@@ -7,6 +7,19 @@ Konvention:
 - Format: `## vX.Y.Z (YYYY-MM-DD)`
 - Optional: Links zu Tags/Commits.
 
+## v2.0 (2026-01-23)
+
+### Highlights
+- **Rechtliches & Deployment**: Impressum und Datenschutz integriert. Automatisches Deployment via GitHub Actions in ein öffentliches Repo (`SwissInnovationStudios/only-time`).
+- **Quick-Add Usability**: Neues Emoji-Palette-System für Schnellerfassung und Auto-Fokus auf Titel für schnelleres Bearbeiten.
+- **Branding-Finish**: Modernisierte Navigationsleiste mit fettem "OnlyTime" Schriftzug und optimierten Abständen.
+
+### Features & Fixes
+- **Kategorien-Refinement**: Lokalisierte (DE) Standard-Kategorien mit passenden Emojis.
+- **Simplified Design**: Entfernung der Farbauswahl für Kategorien zugunsten eines reinen Emoji-Fokus. Technische IDs werden im UI nun ausgeblendet.
+- **Datenkontrolle**: Neue "Daten zurücksetzen" Funktion in den Einstellungen (Sicherheits-Check inklusive).
+- **Chart-Stabilität**: Layout-Fix für das Status-Chart verhindert Sprünge beim Hovern durch reservierten Platz für Detail-Informationen.
+
 ---
 
 ## v1.0 (2026-01-22)
