@@ -27,12 +27,13 @@ Deployment is automated via GitHub Actions.
 - **Repo**: `SwissInnovationStudios/only-time`
 
 ### Deployment Steps:
-1. Push changes to the `main` branch.
-2. GitHub Actions will automatically:
+1. **Secret anlegen**: Da in ein externes Repo (`SwissInnovationStudios/only-time`) gepusht wird, musst du in deinem **privaten** Repo unter *Settings -> Secrets and variables -> Actions* ein Secret namens `GHP_TOKEN` anlegen. Der Wert muss dein Personal Access Token (PAT) sein.
+2. Push changes to the `main` branch of your **private** repo.
+3. GitHub Actions will automatically:
    - Install dependencies.
    - Build the project (`npm run build`).
-   - Deploy the `dist` folder to the `gh-pages` branch.
-3. Ensure GitHub Pages is enabled in your repo settings and set to deploy from the `gh-pages` branch.
+   - Deploy the `dist` folder directly into the `main` branch of the public `only-time` repo.
+4. Ensure GitHub Pages is enabled in the **public** repo settings and set to deploy from the `main` branch.
 
 ## 4. Verification
 Before pushing:
