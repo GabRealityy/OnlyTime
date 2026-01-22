@@ -52,14 +52,20 @@ const defaultRules: CategoryRule[] = [
 ]
 
 function parseCSV(text: string): CSVRow[] {
-  const lines = text.trim().split('\n')
-  if (lines.length < 2) return []
+  const allLines = text.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0)
+  if (allLines.length < 2) return []
 
-  const headers = lines[0].split(/[,;]/).map(h => h.trim().replace(/^"|"$/g, ''))
+  // Delimiter-Erkennung: Was kommt im Header häufiger vor?
+  const firstLine = allLines[0]
+  const commaCount = (firstLine.match(/,/g) || []).length
+  const semiCount = (firstLine.match(/;/g) || []).length
+  const delimiter = semiCount >= commaCount && semiCount > 0 ? ';' : ','
+
+  const headers = firstLine.split(delimiter).map(h => h.trim().replace(/^"|"$/g, ''))
   const rows: CSVRow[] = []
 
-  for (let i = 1; i < lines.length; i++) {
-    const values = lines[i].split(/[,;]/).map(v => v.trim().replace(/^"|"$/g, ''))
+  for (let i = 1; i < allLines.length; i++) {
+    const values = allLines[i].split(delimiter).map(v => v.trim().replace(/^"|"$/g, ''))
     if (values.length === headers.length) {
       const row: CSVRow = {}
       headers.forEach((header, idx) => {
