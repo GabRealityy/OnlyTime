@@ -45,6 +45,8 @@ export function StatusScreen(props: { settings: Settings }) {
   const label = monthLabel(now)
 
   const [timeRange, setTimeRange] = useState<TimeRange>('1M')
+  const [selectedCategory, setSelectedCategory] = useState<string>('all')
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
 
   const [lastUpdate, setLastUpdate] = useState(Date.now())
   const [expenses, setExpenses] = useState<Expense[]>(() => loadExpensesForMonth(monthKey))
@@ -131,16 +133,42 @@ export function StatusScreen(props: { settings: Settings }) {
     // Force re-evaluation on lastUpdate
     lastUpdate
 
-    if (timeRange === '1M') return expenses
-
-    // Load expenses for all months in range
-    const keys = getMonthKeys(timeRange, now)
-    const all: Expense[] = []
-    for (const key of keys) {
-      all.push(...loadExpensesForMonth(key))
+    let all: Expense[] = []
+    if (timeRange === '1M') {
+      all = [...expenses]
+    } else {
+      // Load expenses for all months in range
+      const keys = getMonthKeys(timeRange, now)
+      for (const key of keys) {
+        all.push(...loadExpensesForMonth(key))
+      }
     }
+
     return all
-  }, [timeRange, now, expenses])
+  }, [timeRange, now, expenses, lastUpdate])
+
+  // Get unique categories from allRangeExpenses
+  const availableCategories = useMemo(() => {
+    const cats = new Set<string>()
+    for (const exp of allRangeExpenses) {
+      cats.add(exp.category)
+    }
+    return Array.from(cats).sort()
+  }, [allRangeExpenses])
+
+  // Filtered and sorted expenses for the list
+  const displayExpenses = useMemo(() => {
+    let filtered = allRangeExpenses
+    if (selectedCategory !== 'all') {
+      filtered = filtered.filter(e => e.category === selectedCategory)
+    }
+
+    return [...filtered].sort((a, b) => {
+      const dateCompare = b.date.localeCompare(a.date)
+      const finalCompare = dateCompare !== 0 ? dateCompare : b.createdAt - a.createdAt
+      return sortOrder === 'desc' ? finalCompare : -finalCompare
+    })
+  }, [allRangeExpenses, selectedCategory, sortOrder])
 
   const dailyPoints: DailyPoint[] = useMemo(() => {
     const monthly = effectiveNetMonthlyIncome(props.settings)
@@ -456,22 +484,69 @@ export function StatusScreen(props: { settings: Settings }) {
         <div className="flex items-start justify-between gap-3">
           <div>
             <div className="text-sm font-semibold">Expenses ({timeRange === '1M' ? label : timeRangeLabel})</div>
-            <div className="mt-1 text-xs text-zinc-500">{allRangeExpenses.length} item(s)</div>
+            <div className="mt-1 text-xs text-zinc-500">{displayExpenses.length} item(s)</div>
           </div>
-          <div className="text-right">
-            <div className="text-xs text-zinc-500">Total</div>
-            <div className="font-mono text-sm">{formatCHF(allRangeExpenses.reduce((sum, e) => sum + e.amountCHF, 0))}</div>
+          <div className="flex items-center gap-3">
+            <div className="text-right">
+              <div className="text-xs text-zinc-500">Total</div>
+              <div className="font-mono text-sm">{formatCHF(displayExpenses.reduce((sum, e) => sum + e.amountCHF, 0))}</div>
+            </div>
+            <button
+              type="button"
+              onClick={() => setSortOrder(sortOrder === 'desc' ? 'asc' : 'desc')}
+              className="flex h-8 w-8 items-center justify-center rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
+              title={sortOrder === 'desc' ? 'Neueste zuerst' : 'Älteste zuerst'}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                {sortOrder === 'desc' ? (
+                  <path d="m3 16 4 4 4-4M7 20V4M13 18h8M13 12h8M13 6h8" />
+                ) : (
+                  <path d="m3 8 4-4 4 4M7 4v16M13 18h8M13 12h8M13 6h8" />
+                )}
+              </svg>
+            </button>
           </div>
         </div>
 
-        <div className="mt-3 space-y-2">
-          {allRangeExpenses.length === 0 && (
+        {/* Category Filter Chips */}
+        {availableCategories.length > 0 && (
+          <div className="mt-4 flex flex-wrap gap-2 overflow-x-auto pb-1 no-scrollbar">
+            <button
+              type="button"
+              onClick={() => setSelectedCategory('all')}
+              className={`whitespace-nowrap rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-widest transition-all ${selectedCategory === 'all'
+                  ? 'bg-zinc-950 text-white dark:bg-zinc-50 dark:text-zinc-950'
+                  : 'bg-zinc-100 dark:bg-zinc-900 text-zinc-500 hover:text-zinc-950 dark:hover:text-zinc-50'
+                }`}
+            >
+              Alle
+            </button>
+            {availableCategories.map((cat) => (
+              <button
+                key={cat}
+                type="button"
+                onClick={() => setSelectedCategory(cat)}
+                className={`whitespace-nowrap rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-widest transition-all ${selectedCategory === cat
+                    ? 'bg-zinc-950 text-white dark:bg-zinc-50 dark:text-zinc-950'
+                    : 'bg-zinc-100 dark:bg-zinc-900 text-zinc-500 hover:text-zinc-950 dark:hover:text-zinc-50'
+                  }`}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+        )}
+
+        <div className="mt-4 space-y-2">
+          {displayExpenses.length === 0 && (
             <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-950/40 p-3 text-sm text-zinc-600 dark:text-zinc-400">
-              No expenses recorded in this period.
+              {selectedCategory === 'all'
+                ? 'No expenses recorded in this period.'
+                : `No expenses found in category "${selectedCategory}" for this period.`}
             </div>
           )}
 
-          {allRangeExpenses.map((e) => {
+          {displayExpenses.map((e) => {
             const expenseHours = toHours(e.amountCHF, hourly)
             return (
               <div
