@@ -23,6 +23,7 @@ import { loadExpensesForMonth } from '../lib/expenses'
 import { monthKeyFromDate } from '../lib/date'
 import { useTheme } from '../contexts/ThemeContext'
 import { clearAllData } from '../lib/storage'
+import { generateDummyData } from '../lib/dummyData'
 
 export function SettingsScreen(props: {
   settings: Settings
@@ -35,6 +36,8 @@ export function SettingsScreen(props: {
   const [showCategoryManager, setShowCategoryManager] = useState(false)
   const [showBudgetManager, setShowBudgetManager] = useState(false)
   const [showConfirmReset, setShowConfirmReset] = useState(false)
+  const [showConfirmDummyData, setShowConfirmDummyData] = useState(false)
+  const [dummyDataMonths, setDummyDataMonths] = useState<number>(12)
   const [showEmojiPickerFor, setShowEmojiPickerFor] = useState<string | null>(null)
 
   const monthlyHours = monthlyWorkingHours(settings)
@@ -182,6 +185,36 @@ export function SettingsScreen(props: {
             <span className="text-lg">{theme === 'dark' ? '☀️' : '🌙'}</span>
             <span>{theme === 'dark' ? 'Hell' : 'Dunkel'}</span>
           </button>
+        </div>
+      </div>
+
+      {/* Display Preferences */}
+      <div className="ot-card">
+        <div className="text-lg font-semibold">Anzeigeeinstellungen</div>
+        <div className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+          Wie sollen Werte angezeigt werden?
+        </div>
+        
+        <div className="mt-4">
+          <label className="flex items-start gap-3 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={settings.preferTimeDisplay}
+              onChange={(e) =>
+                onChange({
+                  ...settings,
+                  preferTimeDisplay: e.target.checked,
+                })
+              }
+              className="h-4 w-4 mt-1"
+            />
+            <div className="flex-1">
+              <div className="text-sm font-medium">Zeit bevorzugen</div>
+              <div className="mt-1 text-xs text-zinc-600 dark:text-zinc-500">
+                Zeigt Stunden an erster Stelle und CHF dahinter. Fokussiert auf die Zeit, die du für dein Geld arbeitest.
+              </div>
+            </div>
+          </label>
         </div>
       </div>
 
@@ -702,7 +735,15 @@ export function SettingsScreen(props: {
           Lösche alle Einstellungen und Ausgaben dauerhaft
         </div>
 
-        <div className="mt-4">
+        <div className="mt-4 space-y-2">
+          <button
+            type="button"
+            className="ot-btn w-full border-amber-600 text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-950/20"
+            onClick={() => setShowConfirmDummyData(true)}
+          >
+            🎲 Dummy-Daten laden
+          </button>
+          
           <button
             type="button"
             className="ot-btn ot-btn-danger w-full"
@@ -748,6 +789,75 @@ export function SettingsScreen(props: {
         }}
         onCancel={() => setShowConfirmReset(false)}
       />
+
+      {showConfirmDummyData && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+          <div className="bg-white dark:bg-zinc-900 rounded-lg shadow-xl max-w-md w-full p-6">
+            <h3 className="text-lg font-semibold mb-2">Dummy-Daten laden</h3>
+            <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-4">
+              Dies erstellt realistische Beispiel-Ausgaben für Tests und Demonstrationen.
+              <strong className="block mt-2 text-amber-600 dark:text-amber-500">
+                ⚠️ Warnung: Vorhandene Ausgaben werden überschrieben!
+              </strong>
+            </p>
+            
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-2">
+                Zeitraum wählen:
+              </label>
+              <div className="space-y-2">
+                {[3, 6, 12, 24, 60].map((months) => (
+                  <label key={months} className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="dummyDataMonths"
+                      checked={dummyDataMonths === months}
+                      onChange={() => setDummyDataMonths(months)}
+                      className="h-4 w-4"
+                    />
+                    <span className="text-sm">
+                      {months === 3 && '3 Monate'}
+                      {months === 6 && '6 Monate'}
+                      {months === 12 && '1 Jahr (12 Monate)'}
+                      {months === 24 && '2 Jahre (24 Monate)'}
+                      {months === 60 && '5 Jahre (60 Monate)'}
+                    </span>
+                  </label>
+                ))}
+              </div>
+            </div>
+            
+            <div className="flex gap-2">
+              <button
+                type="button"
+                className="ot-btn flex-1"
+                onClick={() => setShowConfirmDummyData(false)}
+              >
+                Abbrechen
+              </button>
+              <button
+                type="button"
+                className="ot-btn ot-btn-primary flex-1"
+                onClick={() => {
+                  const count = generateDummyData(settings, dummyDataMonths)
+                  setShowConfirmDummyData(false)
+                  showToast(
+                    `${count} Dummy-Ausgaben für ${dummyDataMonths} Monate erstellt`,
+                    'success',
+                    3000
+                  )
+                  // Trigger a reload of the status screen by changing a timestamp
+                  setTimeout(() => {
+                    window.location.reload()
+                  }, 1000)
+                }}
+              >
+                Laden
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

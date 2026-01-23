@@ -49,6 +49,8 @@ export type Settings = {
   quickAddPresets: QuickAddPreset[]
   customCategories: CustomCategory[]
   categoryBudgets: CategoryBudget[]
+  // Display preferences
+  preferTimeDisplay: boolean
 }
 
 export const defaultSettings: Settings = {
@@ -69,6 +71,7 @@ export const defaultSettings: Settings = {
   ],
   customCategories: [],
   categoryBudgets: [],
+  preferTimeDisplay: false,
 }
 
 export function normalizeSettings(input: unknown): Settings {
@@ -153,6 +156,10 @@ export function normalizeSettings(input: unknown): Settings {
       .filter((b): b is CategoryBudget => b !== null)
   }
 
+  const preferTimeDisplay = typeof obj.preferTimeDisplay === 'boolean' 
+    ? obj.preferTimeDisplay 
+    : defaultSettings.preferTimeDisplay
+
   return {
     netMonthlyIncomeCHF: Math.max(0, netMonthlyIncomeCHF),
     grossMonthlyIncomeCHF: Math.max(0, grossMonthlyIncomeCHF),
@@ -167,6 +174,7 @@ export function normalizeSettings(input: unknown): Settings {
     quickAddPresets,
     customCategories,
     categoryBudgets,
+    preferTimeDisplay,
   }
 }
 

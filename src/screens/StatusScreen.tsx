@@ -147,6 +147,23 @@ export function StatusScreen(props: { settings: Settings }) {
     return all
   }, [timeRange, now, expenses, lastUpdate])
 
+  // Helper function to format values based on preferTimeDisplay
+  const formatValue = (chf: number, hours: number) => {
+    if (!props.settings.preferTimeDisplay || hourly === 0) {
+      // CHF first (default)
+      return {
+        primary: formatCHF(chf),
+        secondary: hourly > 0 ? formatHoursMinutes(hours) : null,
+      }
+    } else {
+      // Time first (when preferTimeDisplay is enabled)
+      return {
+        primary: formatHoursMinutes(hours),
+        secondary: formatCHF(chf),
+      }
+    }
+  }
+
   // Get unique categories from allRangeExpenses
   const availableCategories = useMemo(() => {
     const cats = new Set<string>()
@@ -311,7 +328,7 @@ export function StatusScreen(props: { settings: Settings }) {
               key={btn.id}
               type="button"
               onClick={() => setTimeRange(btn.id)}
-              className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${timeRange === btn.id
+              className={`px-3 sm:px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all touch-manipulation active:scale-95 ${timeRange === btn.id
                 ? 'bg-zinc-950 text-white dark:bg-zinc-50 dark:text-zinc-950'
                 : 'bg-zinc-50 dark:bg-zinc-900 text-zinc-500 hover:text-zinc-950 dark:hover:text-zinc-50'
                 }`}
@@ -322,34 +339,38 @@ export function StatusScreen(props: { settings: Settings }) {
         </div>
 
         <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
-          <div className="rounded-[1.5rem] border border-zinc-100 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800/40 p-5">
+          <div className="rounded-[1.5rem] border border-zinc-100 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800/40 p-4 sm:p-5">
             <div className="text-[10px] font-black uppercase tracking-widest text-zinc-500 dark:text-zinc-400 mb-2 whitespace-nowrap">Verdienst ({timeRangeLabel})</div>
-            <div className="text-2xl font-black tracking-tight text-zinc-950 dark:text-white">{formatCHF(rangeTotalStats.earned)}</div>
-            {hourly > 0 && (
-              <div className="mt-1 text-xs font-bold text-zinc-500 dark:text-zinc-400">
-                {formatHoursMinutes(rangeTotalStats.earnedHours)}
+            <div className="text-xl sm:text-2xl font-black tracking-tight text-zinc-950 dark:text-white break-all">
+              {formatValue(rangeTotalStats.earned, rangeTotalStats.earnedHours).primary}
+            </div>
+            {formatValue(rangeTotalStats.earned, rangeTotalStats.earnedHours).secondary && (
+              <div className="mt-1 text-xs font-bold text-zinc-500 dark:text-zinc-400 break-all">
+                {formatValue(rangeTotalStats.earned, rangeTotalStats.earnedHours).secondary}
               </div>
             )}
           </div>
-          <div className="rounded-[1.5rem] border border-zinc-100 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800/40 p-5">
+          <div className="rounded-[1.5rem] border border-zinc-100 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800/40 p-4 sm:p-5">
             <div className="text-[10px] font-black uppercase tracking-widest text-zinc-500 dark:text-zinc-400 mb-2 whitespace-nowrap">Ausgaben ({timeRangeLabel})</div>
-            <div className="text-2xl font-black tracking-tight text-zinc-950 dark:text-white">{formatCHF(rangeTotalStats.spent)}</div>
-            {hourly > 0 && (
-              <div className="mt-1 text-xs font-bold text-zinc-500 dark:text-zinc-400">
-                {formatHoursMinutes(rangeTotalStats.spentHours)}
+            <div className="text-xl sm:text-2xl font-black tracking-tight text-zinc-950 dark:text-white break-all">
+              {formatValue(rangeTotalStats.spent, rangeTotalStats.spentHours).primary}
+            </div>
+            {formatValue(rangeTotalStats.spent, rangeTotalStats.spentHours).secondary && (
+              <div className="mt-1 text-xs font-bold text-zinc-500 dark:text-zinc-400 break-all">
+                {formatValue(rangeTotalStats.spent, rangeTotalStats.spentHours).secondary}
               </div>
             )}
           </div>
-          <div className="rounded-[1.5rem] border border-zinc-950 bg-zinc-950 dark:border-zinc-200 dark:bg-zinc-50 p-5 text-zinc-50 dark:text-zinc-950 shadow-xl shadow-zinc-900/20 dark:shadow-none">
+          <div className="rounded-[1.5rem] border border-zinc-950 bg-zinc-950 dark:border-zinc-200 dark:bg-zinc-50 p-4 sm:p-5 text-zinc-50 dark:text-zinc-950 shadow-xl shadow-zinc-900/20 dark:shadow-none">
             <div className="text-[10px] font-black uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-2 whitespace-nowrap">Bilanz ({timeRangeLabel})</div>
             <div className="flex items-center gap-2">
-              <div className="text-3xl font-black tracking-tighter">
-                {formatCHF(rangeTotalStats.balance)}
+              <div className="text-2xl sm:text-3xl font-black tracking-tighter break-all">
+                {formatValue(rangeTotalStats.balance, rangeTotalStats.balanceHours).primary}
               </div>
             </div>
-            {hourly > 0 && (
-              <div className="mt-1 text-xs font-bold text-zinc-300 dark:text-zinc-600">
-                {formatHoursMinutes(rangeTotalStats.balanceHours)} Zeit
+            {formatValue(rangeTotalStats.balance, rangeTotalStats.balanceHours).secondary && (
+              <div className="mt-1 text-xs font-bold text-zinc-300 dark:text-zinc-600 break-all">
+                {formatValue(rangeTotalStats.balance, rangeTotalStats.balanceHours).secondary}
               </div>
             )}
           </div>
@@ -436,6 +457,7 @@ export function StatusScreen(props: { settings: Settings }) {
         showTimeAxis={hourly > 0}
         showXAxis={true}
         title={timeRange === '1M' ? 'Dieser Monat' : `Zeitraum: ${timeRangeLabel}`}
+        preferTimeDisplay={props.settings.preferTimeDisplay}
       />
 
       <QuickAddButtons
@@ -476,6 +498,7 @@ export function StatusScreen(props: { settings: Settings }) {
         onSave={onSaveExpense}
         hourlyRate={hourly}
         customCategories={props.settings.customCategories}
+        preferTimeDisplay={props.settings.preferTimeDisplay}
       />
 
       <CSVImportModal

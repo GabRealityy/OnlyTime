@@ -28,11 +28,12 @@ export function ExpenseFormModal(props: {
   hourlyRate: number
   initialData?: Partial<ExpenseFormData>
   customCategories?: Array<{ id: string; name: string; emoji?: string }>
+  preferTimeDisplay?: boolean
 }) {
-  const { open, onClose, onSave, hourlyRate, initialData, customCategories = [] } = props
+  const { open, onClose, onSave, hourlyRate, initialData, customCategories = [], preferTimeDisplay = false } = props
 
-  // Input Mode: 'chf' oder 'time'
-  const [inputMode, setInputMode] = useState<'chf' | 'time'>('chf')
+  // Input Mode: 'chf' oder 'time' - default based on preferTimeDisplay
+  const [inputMode, setInputMode] = useState<'chf' | 'time'>(preferTimeDisplay && hourlyRate > 0 ? 'time' : 'chf')
 
   // Form fields
   const [amountInput, setAmountInput] = useState<string>('')
@@ -55,12 +56,12 @@ export function ExpenseFormModal(props: {
       setDate(initialData?.date || isoDateLocal(new Date()))
       setNote('')
       setErrors({})
-      setInputMode('chf')
+      setInputMode(preferTimeDisplay && hourlyRate > 0 ? 'time' : 'chf')
 
       // Focus amount field after modal animation
       setTimeout(() => amountInputRef.current?.focus(), 100)
     }
-  }, [open, initialData])
+  }, [open, initialData, preferTimeDisplay, hourlyRate])
 
   const parseTimeInput = (input: string): number | null => {
     // Format: "1:30" oder "1.5" oder "90"

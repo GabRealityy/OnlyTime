@@ -36,6 +36,7 @@ export function LineChart(props: {
   showTimeAxis?: boolean
   showXAxis?: boolean
   title?: string
+  preferTimeDisplay?: boolean
 }) {
   const width = props.width ?? 720
   const height = props.height ?? 220
@@ -43,6 +44,7 @@ export function LineChart(props: {
   const showTimeAxis = props.showTimeAxis ?? (hourlyRate > 0)
   const showXAxis = props.showXAxis ?? true
   const title = props.title ?? 'This month'
+  const preferTimeDisplay = props.preferTimeDisplay ?? false
 
   const [hoverDay, setHoverDay] = useState<number | null>(null)
 
@@ -345,16 +347,34 @@ export function LineChart(props: {
             <div className="mt-1 grid grid-cols-2 gap-2">
               <div>
                 <span className="text-zinc-600 dark:text-zinc-500">Verdient:</span>{' '}
-                <span className="text-emerald-600 dark:text-emerald-400">{formatCHF(hoverPoint.earned)}</span>
-                {showTimeAxis && hoverPoint.earnedHours !== undefined && (
-                  <span className="ml-1 text-zinc-600 dark:text-zinc-500">({formatHoursMinutes(hoverPoint.earnedHours)})</span>
+                {preferTimeDisplay && showTimeAxis && hoverPoint.earnedHours !== undefined ? (
+                  <>
+                    <span className="text-emerald-600 dark:text-emerald-400 font-semibold">{formatHoursMinutes(hoverPoint.earnedHours)}</span>
+                    <span className="ml-1 text-zinc-600 dark:text-zinc-500">({formatCHF(hoverPoint.earned)})</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="text-emerald-600 dark:text-emerald-400">{formatCHF(hoverPoint.earned)}</span>
+                    {showTimeAxis && hoverPoint.earnedHours !== undefined && (
+                      <span className="ml-1 text-zinc-600 dark:text-zinc-500">({formatHoursMinutes(hoverPoint.earnedHours)})</span>
+                    )}
+                  </>
                 )}
               </div>
               <div>
                 <span className="text-zinc-600 dark:text-zinc-500">Ausgegeben:</span>{' '}
-                <span className="text-rose-600 dark:text-rose-400">{formatCHF(hoverPoint.spent)}</span>
-                {showTimeAxis && hoverPoint.spentHours !== undefined && (
-                  <span className="ml-1 text-zinc-600 dark:text-zinc-500">({formatHoursMinutes(hoverPoint.spentHours)})</span>
+                {preferTimeDisplay && showTimeAxis && hoverPoint.spentHours !== undefined ? (
+                  <>
+                    <span className="text-rose-600 dark:text-rose-400 font-semibold">{formatHoursMinutes(hoverPoint.spentHours)}</span>
+                    <span className="ml-1 text-zinc-600 dark:text-zinc-500">({formatCHF(hoverPoint.spent)})</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="text-rose-600 dark:text-rose-400">{formatCHF(hoverPoint.spent)}</span>
+                    {showTimeAxis && hoverPoint.spentHours !== undefined && (
+                      <span className="ml-1 text-zinc-600 dark:text-zinc-500">({formatHoursMinutes(hoverPoint.spentHours)})</span>
+                    )}
+                  </>
                 )}
               </div>
             </div>
