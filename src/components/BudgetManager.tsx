@@ -198,9 +198,9 @@ export function BudgetManager(props: {
                     <div className="flex gap-2 text-xs">
                       <button
                         type="button"
-                        className={`px-3 py-1 rounded-lg border transition-all ${budgetMode === 'chf'
-                          ? 'bg-btn-active text-btn-active-text border-btn-active-border'
-                          : 'bg-card text-secondary border-border hover:bg-card-hover'
+                        className={`px-3 py-1 rounded-lg transition-all ${budgetMode === 'chf'
+                          ? 'ot-btn-active'
+                          : 'bg-card text-secondary hover:bg-card-hover'
                           }`}
                         onClick={() => setBudgetMode('chf')}
                       >
@@ -208,9 +208,9 @@ export function BudgetManager(props: {
                       </button>
                       <button
                         type="button"
-                        className={`px-3 py-1 rounded-lg border transition-all ${budgetMode === 'hours'
-                          ? 'bg-btn-active text-btn-active-text border-btn-active-border'
-                          : 'bg-card text-secondary border-border hover:bg-card-hover'
+                        className={`px-3 py-1 rounded-lg transition-all ${budgetMode === 'hours'
+                          ? 'ot-btn-active'
+                          : 'bg-card text-secondary hover:bg-card-hover'
                           }`}
                         onClick={() => setBudgetMode('hours')}
                       >
