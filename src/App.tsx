@@ -64,7 +64,7 @@ export default function App() {
         return <PrivacyScreen onBack={() => setScreen('status')} />
       case 'status':
       default:
-        return <StatusScreen settings={settings} />
+        return <StatusScreen settings={settings} onChange={setSettings} />
     }
   }, [screen, settings, setSettings])
 

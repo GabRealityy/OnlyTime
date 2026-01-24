@@ -37,7 +37,7 @@ function toDay(isoDate: string): number {
   return Number.isFinite(d) ? d : 1
 }
 
-export function StatusScreen(props: { settings: Settings }) {
+export function StatusScreen(props: { settings: Settings; onChange: (next: Settings) => void }) {
   const now = new Date()
   const monthKey = monthKeyFromDate(now)
   const today = dayOfMonth(now)
@@ -313,10 +313,25 @@ export function StatusScreen(props: { settings: Settings }) {
               {label} · {timeRangeLabel}
             </div>
           </div>
-          <div className="text-right">
-            <div className="text-[10px] font-black uppercase tracking-widest text-secondary">Tag</div>
-            <div className="font-mono text-sm font-bold">
-              {today}/{dim}
+          <div className="flex items-center gap-4">
+            {/* Zeit bevorzugen Toggle - nur bei 1M anzeigen */}
+            {timeRange === '1M' && hourly > 0 && (
+              <button
+                type="button"
+                onClick={() => props.onChange({ ...props.settings, preferTimeDisplay: !props.settings.preferTimeDisplay })}
+                className="flex items-center gap-2 px-3 py-2 rounded-xl bg-input hover:bg-card-hover transition-colors"
+                title={props.settings.preferTimeDisplay ? 'Zu CHF wechseln' : 'Zu Zeitanzeige wechseln'}
+              >
+                <span className="text-lg">
+                  {props.settings.preferTimeDisplay ? '⏰' : '💰'}
+                </span>
+              </button>
+            )}
+            <div className="text-right">
+              <div className="text-[10px] font-black uppercase tracking-widest text-secondary">Tag</div>
+              <div className="font-mono text-sm font-bold">
+                {today}/{dim}
+              </div>
             </div>
           </div>
         </div>
@@ -341,7 +356,9 @@ export function StatusScreen(props: { settings: Settings }) {
         <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
           <div className="rounded-[1.5rem] border border-border-secondary bg-card p-4 sm:p-5">
             <div className="text-[10px] font-black uppercase tracking-widest text-secondary mb-2 whitespace-nowrap">Verdienst ({timeRangeLabel})</div>
-            <div className="text-xl sm:text-2xl font-black tracking-tight text-primary break-all">
+            <div className={`font-black tracking-tight text-primary break-all ${
+              rangeTotalStats.earned >= 10000000 ? 'text-lg sm:text-xl' : 'text-xl sm:text-2xl'
+            }`}>
               {formatValue(rangeTotalStats.earned, rangeTotalStats.earnedHours).primary}
             </div>
             {formatValue(rangeTotalStats.earned, rangeTotalStats.earnedHours).secondary && (
@@ -352,7 +369,9 @@ export function StatusScreen(props: { settings: Settings }) {
           </div>
           <div className="rounded-[1.5rem] border border-border-secondary bg-card p-4 sm:p-5">
             <div className="text-[10px] font-black uppercase tracking-widest text-secondary mb-2 whitespace-nowrap">Ausgaben ({timeRangeLabel})</div>
-            <div className="text-xl sm:text-2xl font-black tracking-tight text-primary break-all">
+            <div className={`font-black tracking-tight text-primary break-all ${
+              rangeTotalStats.spent >= 10000000 ? 'text-lg sm:text-xl' : 'text-xl sm:text-2xl'
+            }`}>
               {formatValue(rangeTotalStats.spent, rangeTotalStats.spentHours).primary}
             </div>
             {formatValue(rangeTotalStats.spent, rangeTotalStats.spentHours).secondary && (
@@ -364,9 +383,18 @@ export function StatusScreen(props: { settings: Settings }) {
           <div className="rounded-[1.5rem] border border-primary bg-primary p-4 sm:p-5 text-primary-inverse shadow-xl">
             <div className="text-[10px] font-black uppercase tracking-widest opacity-70 mb-2 whitespace-nowrap">Bilanz ({timeRangeLabel})</div>
             <div className="flex items-center gap-2">
-              <div className="text-2xl sm:text-3xl font-black tracking-tighter break-all">
+              <div className={`font-black tracking-tighter break-all ${
+                Math.abs(rangeTotalStats.balance) >= 10000000 ? 'text-xl sm:text-2xl' : 'text-2xl sm:text-3xl'
+              }`}>
                 {formatValue(rangeTotalStats.balance, rangeTotalStats.balanceHours).primary}
               </div>
+              {rangeTotalStats.earned > 0 && (
+                <div className={`text-xs font-bold px-2 py-0.5 rounded-md ${
+                  rangeTotalStats.balance >= 0 ? 'bg-success/20 text-success' : 'bg-danger/20 text-danger'
+                }`}>
+                  {((rangeTotalStats.spent / rangeTotalStats.earned) * 100).toFixed(0)}%
+                </div>
+              )}
             </div>
             {formatValue(rangeTotalStats.balance, rangeTotalStats.balanceHours).secondary && (
               <div className="mt-1 text-xs font-bold opacity-60 break-all">
@@ -435,7 +463,7 @@ export function StatusScreen(props: { settings: Settings }) {
                       </div>
 
                       {/* Progress bar */}
-                      <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-input">
+                      <div className="mt-3 h-2 overflow-hidden rounded-full bg-border">
                         <div
                           className={`h-full transition-all duration-700 ease-out ${isExceeded ? 'bg-danger' : 'bg-warning'
                             }`}
@@ -458,6 +486,7 @@ export function StatusScreen(props: { settings: Settings }) {
         showXAxis={true}
         title={timeRange === '1M' ? 'Dieser Monat' : `Zeitraum: ${timeRangeLabel}`}
         preferTimeDisplay={props.settings.preferTimeDisplay}
+        currentDay={timeRange === '1M' ? today : undefined}
       />
 
       <QuickAddButtons

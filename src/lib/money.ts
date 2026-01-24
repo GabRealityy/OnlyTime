@@ -2,6 +2,9 @@
   Money/time formatting + conversion helpers.
 */
 
+import type { Currency } from '../types'
+import { currencySymbols } from '../types'
+
 export function formatCHF(value: number): string {
   // Keep it honest: no fancy rounding rules beyond 2 decimals.
   const rounded = Math.round(value * 100) / 100
@@ -11,6 +14,16 @@ export function formatCHF(value: number): string {
     maximumFractionDigits: 2,
     minimumFractionDigits: 2,
   }).format(rounded)
+}
+
+export function formatCurrency(value: number, currency: Currency = 'CHF'): string {
+  const rounded = Math.round(value * 100) / 100
+  const symbol = currencySymbols[currency]
+  const formatted = new Intl.NumberFormat(undefined, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(rounded)
+  return `${formatted} ${symbol}`
 }
 
 export function clamp(n: number, min: number, max: number): number {

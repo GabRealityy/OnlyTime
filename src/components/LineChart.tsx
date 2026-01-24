@@ -37,6 +37,7 @@ export function LineChart(props: {
   showXAxis?: boolean
   title?: string
   preferTimeDisplay?: boolean
+  currentDay?: number
 }) {
   const width = props.width ?? 720
   const height = props.height ?? 220
@@ -45,6 +46,7 @@ export function LineChart(props: {
   const showXAxis = props.showXAxis ?? true
   const title = props.title ?? 'This month'
   const preferTimeDisplay = props.preferTimeDisplay ?? false
+  const currentDay = props.currentDay
 
   const [hoverDay, setHoverDay] = useState<number | null>(null)
 
@@ -135,11 +137,11 @@ export function LineChart(props: {
         <div className="flex items-center gap-3 text-xs text-secondary">
           <div className="flex items-center gap-2">
             <span className="inline-block h-2 w-2 rounded-full bg-success" />
-            <span>earned</span>
+            <span>Verdienst</span>
           </div>
           <div className="flex items-center gap-2">
             <span className="inline-block h-2 w-2 rounded-full bg-danger" />
-            <span>spent</span>
+            <span>Ausgaben</span>
           </div>
           {showTimeAxis && (
             <span className="text-[10px]">(Zeitwerte berücksichtigt)</span>
@@ -290,6 +292,20 @@ export function LineChart(props: {
               opacity={0.3}
             />
           </g>
+        )}
+
+        {/* current day marker (dotted vertical line) */}
+        {currentDay !== undefined && currentDay > 0 && (
+          <line
+            x1={xForDay(currentDay)}
+            x2={xForDay(currentDay)}
+            y1={marginTop}
+            y2={height - marginBottom}
+            stroke="currentColor"
+            strokeDasharray="2 3"
+            opacity={0.5}
+            strokeWidth={1.5}
+          />
         )}
 
         {/* frame */}

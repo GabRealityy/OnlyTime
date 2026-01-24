@@ -13,8 +13,9 @@ export type ChecklistItem = {
 export function OnboardingChecklist(props: {
   items: ChecklistItem[]
   onItemClick?: (id: string) => void
+  onDismiss?: () => void
 }) {
-  const { items, onItemClick } = props
+  const { items, onItemClick, onDismiss } = props
 
   const completedCount = items.filter(item => item.completed).length
   const progress = (completedCount / items.length) * 100
@@ -23,8 +24,24 @@ export function OnboardingChecklist(props: {
     <div className="rounded-xl border border-border bg-card p-4">
       <div className="flex items-center justify-between mb-3">
         <div className="font-semibold">Erste Schritte</div>
-        <div className="text-sm text-secondary">
-          {completedCount} / {items.length}
+        <div className="flex items-center gap-3">
+          <div className="text-sm text-secondary">
+            {completedCount} / {items.length}
+          </div>
+          {onDismiss && (
+            <button
+              type="button"
+              onClick={onDismiss}
+              className="text-secondary hover:text-primary transition-colors p-1"
+              title="Checkliste ausblenden"
+              aria-label="Checkliste ausblenden"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M18 6 6 18" />
+                <path d="m6 6 12 12" />
+              </svg>
+            </button>
+          )}
         </div>
       </div>
 

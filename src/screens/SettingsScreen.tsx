@@ -151,7 +151,11 @@ export function SettingsScreen(props: {
     // Scroll to relevant section or open modal
     switch (id) {
       case 'hourly-rate':
-        window.scrollTo({ top: 0, behavior: 'smooth' })
+        // Scroll to income section
+        const incomeSection = document.querySelector('[data-section="income"]')
+        if (incomeSection) {
+          incomeSection.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        }
         break
       case 'category':
         setShowCategoryManager(true)
@@ -166,28 +170,13 @@ export function SettingsScreen(props: {
     }
   }
 
+  const handleDismissChecklist = () => {
+    onChange({ ...settings, showOnboardingChecklist: false })
+    showToast('Checkliste ausgeblendet', 'info')
+  }
+
   return (
     <div className="space-y-4">
-      {/* Theme Toggle */}
-      <div className="ot-card">
-        <div className="flex items-center justify-between">
-          <div>
-            <div className="text-lg font-semibold">Design</div>
-            <div className="mt-1 text-sm text-secondary">
-              Zwischen hellem und dunklem Modus wechseln
-            </div>
-          </div>
-          <button
-            type="button"
-            className="ot-btn flex items-center gap-2"
-            onClick={toggleTheme}
-          >
-            <span className="text-lg">{theme === 'dark' ? '☀️' : '🌙'}</span>
-            <span>{theme === 'dark' ? 'Hell' : 'Dunkel'}</span>
-          </button>
-        </div>
-      </div>
-
       {/* Display Preferences */}
       <div className="ot-card">
         <div className="text-lg font-semibold">Anzeigeeinstellungen</div>
@@ -196,36 +185,37 @@ export function SettingsScreen(props: {
         </div>
         
         <div className="mt-4">
-          <label className="flex items-start gap-3 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={settings.preferTimeDisplay}
-              onChange={(e) =>
-                onChange({
-                  ...settings,
-                  preferTimeDisplay: e.target.checked,
-                })
-              }
-              className="h-4 w-4 mt-1"
-            />
-            <div className="flex-1">
-              <div className="text-sm font-medium">Zeit bevorzugen</div>
-              <div className="mt-1 text-xs text-tertiary">
-                Zeigt Stunden an erster Stelle und CHF dahinter. Fokussiert auf die Zeit, die du für dein Geld arbeitest.
-              </div>
-            </div>
-          </label>
+          <label className="text-sm font-medium">Währung</label>
+          <div className="mt-2 flex gap-2">
+            {(['CHF', 'EUR', 'USD'] as const).map((curr) => (
+              <button
+                key={curr}
+                type="button"
+                onClick={() => onChange({ ...settings, currency: curr })}
+                className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${
+                  settings.currency === curr
+                    ? 'ot-btn-active'
+                    : 'bg-card hover:bg-card-hover text-secondary hover:text-primary'
+                }`}
+              >
+                {curr}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
       {/* Setup Checklist */}
-      <OnboardingChecklist
-        items={checklistItems}
-        onItemClick={handleChecklistClick}
-      />
+      {settings.showOnboardingChecklist && (
+        <OnboardingChecklist
+          items={checklistItems}
+          onItemClick={handleChecklistClick}
+          onDismiss={handleDismissChecklist}
+        />
+      )}
 
       {/* Haupteinkommen */}
-      <div className="ot-card">
+      <div className="ot-card" data-section="income">
         <div className="text-lg font-semibold">Einkommen</div>
         <div className="mt-1 text-sm text-secondary">
           Wähle zwischen Netto- oder Bruttoeinkommen
@@ -654,11 +644,12 @@ export function SettingsScreen(props: {
                   <input
                     inputMode="decimal"
                     value={String(p.amountCHF ?? 0)}
-                    onChange={(e) =>
+                    onChange={(e) => {
+                      const rawValue = e.target.value.replace(',', '.')
                       updateQuickAddPreset(p.id, {
-                        amountCHF: Number(e.target.value.replace(',', '.')) || 0,
+                        amountCHF: Number(rawValue) || 0,
                       })
-                    }
+                    }}
                     className="w-full text-sm"
                   />
                 </div>
