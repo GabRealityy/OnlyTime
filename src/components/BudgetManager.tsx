@@ -199,7 +199,7 @@ export function BudgetManager(props: {
                       <button
                         type="button"
                         className={`px-3 py-1 rounded-lg border transition-all ${budgetMode === 'chf'
-                          ? 'bg-primary text-primary-inverse border-primary'
+                          ? 'bg-btn-active text-btn-active-text border-btn-active-border'
                           : 'bg-card text-secondary border-border hover:bg-card-hover'
                           }`}
                         onClick={() => setBudgetMode('chf')}
@@ -209,7 +209,7 @@ export function BudgetManager(props: {
                       <button
                         type="button"
                         className={`px-3 py-1 rounded-lg border transition-all ${budgetMode === 'hours'
-                          ? 'bg-primary text-primary-inverse border-primary'
+                          ? 'bg-btn-active text-btn-active-text border-btn-active-border'
                           : 'bg-card text-secondary border-border hover:bg-card-hover'
                           }`}
                         onClick={() => setBudgetMode('hours')}

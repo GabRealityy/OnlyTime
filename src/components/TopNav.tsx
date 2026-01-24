@@ -72,10 +72,10 @@ export function TopNav(props: {
                 key={it.id}
                 type="button"
                 className={`
-                  flex items-center justify-center rounded-2xl px-4 py-2 text-sm font-bold transition-all
+                  flex items-center justify-center rounded-2xl px-4 py-2 text-sm font-bold transition-all border
                   ${isActive
-                    ? 'bg-primary text-primary-inverse'
-                    : 'text-secondary hover:text-primary hover:bg-input'}
+                    ? 'bg-btn-active text-btn-active-text border-btn-active-border'
+                    : 'text-secondary hover:text-primary hover:bg-input border-transparent'}
                   ${it.hideLabel ? 'aspect-square p-2 bg-input ml-2' : ''}
                 `}
                 onClick={() => onNavigate(it.id)}

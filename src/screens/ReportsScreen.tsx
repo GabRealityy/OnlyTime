@@ -123,10 +123,10 @@ export function ReportsScreen(props: { settings: Settings }) {
             <button
               key={btn.id}
               onClick={() => setTimeRange(btn.id)}
-              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors border ${
                 timeRange === btn.id
-                  ? 'bg-success text-primary-inverse'
-                  : 'bg-input text-secondary hover:bg-card'
+                  ? 'bg-btn-active text-btn-active-text border-btn-active-border'
+                  : 'bg-input text-secondary hover:bg-card border-transparent'
               }`}
             >
               {btn.label}

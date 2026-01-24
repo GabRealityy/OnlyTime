@@ -329,8 +329,8 @@ export function StatusScreen(props: { settings: Settings }) {
               type="button"
               onClick={() => setTimeRange(btn.id)}
               className={`px-3 sm:px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all touch-manipulation active:scale-95 ${timeRange === btn.id
-                ? 'bg-primary text-primary-inverse'
-                : 'bg-card hover:bg-card-hover text-secondary hover:text-primary'
+                ? 'bg-btn-active text-btn-active-text border border-btn-active-border'
+                : 'bg-card hover:bg-card-hover text-secondary hover:text-primary border border-transparent'
                 }`}
             >
               {btn.label}
@@ -543,8 +543,8 @@ export function StatusScreen(props: { settings: Settings }) {
               type="button"
               onClick={() => setSelectedCategory('all')}
               className={`whitespace-nowrap rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-widest transition-all ${selectedCategory === 'all'
-                ? 'bg-primary text-primary-inverse'
-                : 'bg-card hover:bg-card-hover text-secondary hover:text-primary'
+                ? 'bg-btn-active text-btn-active-text border border-btn-active-border'
+                : 'bg-card hover:bg-card-hover text-secondary hover:text-primary border border-transparent'
                 }`}
             >
               Alle
@@ -555,8 +555,8 @@ export function StatusScreen(props: { settings: Settings }) {
                 type="button"
                 onClick={() => setSelectedCategory(cat)}
                 className={`whitespace-nowrap rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-widest transition-all ${selectedCategory === cat
-                  ? 'bg-primary text-primary-inverse'
-                  : 'bg-card hover:bg-card-hover text-secondary hover:text-primary'
+                  ? 'bg-btn-active text-btn-active-text border border-btn-active-border'
+                  : 'bg-card hover:bg-card-hover text-secondary hover:text-primary border border-transparent'
                   }`}
               >
                 {(() => {

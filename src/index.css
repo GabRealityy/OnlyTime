@@ -41,6 +41,10 @@
     --danger-bg: #fef2f2;
     --danger-text: #991b1b;
     
+    --button-active-bg: #1a1a1a;
+    --button-active-text: #ffffff;
+    --button-active-border: #1a1a1a;
+    
     --shadow-color: rgba(0, 0, 0, 0.05);
     --shadow-card: rgba(0, 0, 0, 0.08);
   }
@@ -78,6 +82,10 @@
     --danger: #f87171;
     --danger-bg: #7f1d1d;
     --danger-text: #fecaca;
+    
+    --button-active-bg: #ffffff;
+    --button-active-text: #1a1a1a;
+    --button-active-border: #ffffff;
     
     --shadow-color: rgba(0, 0, 0, 0.3);
     --shadow-card: rgba(0, 0, 0, 0.5);
@@ -158,9 +166,9 @@
 
   .ot-btn-primary {
     @apply shadow-lg active:scale-95;
-    background-color: var(--text-primary) !important;
-    color: var(--text-inverse) !important;
-    border: 1px solid var(--text-primary) !important;
+    background-color: var(--button-active-bg) !important;
+    color: var(--button-active-text) !important;
+    border: 1px solid var(--button-active-border) !important;
   }
 
   .ot-btn-primary:hover {
@@ -176,5 +184,11 @@
   .ot-btn-danger:hover {
     background-color: var(--danger);
     color: var(--accent-text);
+  }
+
+  .ot-btn-active {
+    background-color: var(--button-active-bg) !important;
+    color: var(--button-active-text) !important;
+    border-color: var(--button-active-border) !important;
   }
 }

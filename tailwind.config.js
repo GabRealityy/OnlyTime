@@ -30,6 +30,11 @@ export default {
         },
         'secondary': 'var(--text-secondary)',
         'tertiary': 'var(--text-tertiary)',
+        'btn-active': {
+          DEFAULT: 'var(--button-active-bg)',
+          text: 'var(--button-active-text)',
+          border: 'var(--button-active-border)',
+        },
         'border': {
           DEFAULT: 'var(--border-primary)',
           secondary: 'var(--border-secondary)',
