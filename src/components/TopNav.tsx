@@ -4,6 +4,8 @@
 
 import type { Screen } from '../types.ts'
 import AppLogo from '../assets/AppLogo_OnlyTime.svg'
+import AppLogoWhite from '../assets/AppLogo_OnlyTime_White.svg'
+import { useTheme } from '../contexts/ThemeContext'
 
 // Minimalist SVG Icons (TR Style)
 const Icons = {
@@ -39,6 +41,7 @@ export function TopNav(props: {
   onNavigate: (screen: Screen) => void
 }) {
   const { active, onNavigate } = props
+  const { theme } = useTheme()
 
   const items: { id: Screen; label: string; Icon: React.ComponentType; hideLabel?: boolean }[] = [
     { id: 'status', label: 'Status', Icon: Icons.Status },
@@ -55,9 +58,9 @@ export function TopNav(props: {
           onClick={() => onNavigate('status')}
         >
           <img
-            src={AppLogo}
+            src={theme === 'dark' ? AppLogoWhite : AppLogo}
             alt="OnlyTime"
-            className="h-8 w-8 dark:brightness-0 dark:invert"
+            className="h-8 w-8"
           />
           <div className="text-2xl font-black tracking-tighter text-primary h-8 flex items-center">
             OnlyTime
