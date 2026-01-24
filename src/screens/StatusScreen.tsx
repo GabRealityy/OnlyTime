@@ -339,11 +339,6 @@ export function StatusScreen(props: { settings: Settings; onChange: (next: Setti
                 </div>
               </button>
             )}
-                    {props.settings.preferTimeDisplay ? '⏰' : '💰'}
-                  </span>
-                </div>
-              </button>
-            )}
             {timeRange === '1M' && (
               <div className="text-right">
                 <div className="text-[10px] font-black uppercase tracking-widest text-secondary">Tag</div>
