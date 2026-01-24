@@ -125,7 +125,7 @@ export function ReportsScreen(props: { settings: Settings }) {
               onClick={() => setTimeRange(btn.id)}
               className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                 timeRange === btn.id
-                  ? 'bg-success text-white'
+                  ? 'bg-success text-primary-inverse'
                   : 'bg-input text-secondary hover:bg-card'
               }`}
             >

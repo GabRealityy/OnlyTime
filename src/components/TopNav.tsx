@@ -74,7 +74,7 @@ export function TopNav(props: {
                 className={`
                   flex items-center justify-center rounded-2xl px-4 py-2 text-sm font-bold transition-all
                   ${isActive
-                    ? 'bg-primary text-primary-fg'
+                    ? 'bg-primary text-primary-inverse'
                     : 'text-secondary hover:text-primary hover:bg-input'}
                   ${it.hideLabel ? 'aspect-square p-2 bg-input ml-2' : ''}
                 `}

@@ -50,7 +50,7 @@ export function OnboardingChecklist(props: {
             <div className="flex items-start gap-3">
               <div className={`flex h-5 w-5 shrink-0 items-center justify-center rounded ${
                 item.completed
-                  ? 'bg-success text-white'
+                  ? 'bg-success text-primary-inverse'
                   : 'border-2 border-secondary'
               }`}>
                 {item.completed && <span className="text-xs">✓</span>}
