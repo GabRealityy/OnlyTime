@@ -26,6 +26,7 @@ export default {
         'primary': {
           DEFAULT: 'var(--text-primary)',
           inverse: 'var(--text-inverse)',
+          fg: 'var(--text-inverse)',  // Alias for text on primary backgrounds
         },
         'secondary': 'var(--text-secondary)',
         'tertiary': 'var(--text-tertiary)',

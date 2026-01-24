@@ -435,7 +435,7 @@ export function StatusScreen(props: { settings: Settings }) {
                       </div>
 
                       {/* Progress bar */}
-                      <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-border">
+                      <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-input">
                         <div
                           className={`h-full transition-all duration-700 ease-out ${isExceeded ? 'bg-danger' : 'bg-warning'
                             }`}
