@@ -319,20 +319,26 @@ export function StatusScreen(props: { settings: Settings; onChange: (next: Setti
               <button
                 type="button"
                 onClick={() => props.onChange({ ...props.settings, preferTimeDisplay: !props.settings.preferTimeDisplay })}
-                className="relative h-8 w-14 rounded-full transition-colors"
+                className="relative h-8 w-14 rounded-full transition-all border-2"
                 style={{
-                  backgroundColor: props.settings.preferTimeDisplay ? 'var(--color-primary)' : 'var(--color-input)'
+                  backgroundColor: props.settings.preferTimeDisplay ? 'var(--color-primary)' : 'var(--color-input)',
+                  borderColor: 'var(--color-border)'
                 }}
                 title={props.settings.preferTimeDisplay ? 'Zu CHF wechseln' : 'Zu Zeitanzeige wechseln'}
                 aria-label="Anzeigemodus wechseln"
               >
                 <div
-                  className="absolute top-0.5 h-7 w-7 rounded-full bg-primary-inverse shadow-md transition-transform flex items-center justify-center"
+                  className="absolute top-0.5 left-0.5 h-6 w-6 rounded-full bg-card shadow-md transition-transform flex items-center justify-center"
                   style={{
-                    transform: props.settings.preferTimeDisplay ? 'translateX(24px)' : 'translateX(2px)'
+                    transform: props.settings.preferTimeDisplay ? 'translateX(22px)' : 'translateX(0px)'
                   }}
                 >
                   <span className="text-sm">
+                    {props.settings.preferTimeDisplay ? '⏰' : '💰'}
+                  </span>
+                </div>
+              </button>
+            )}
                     {props.settings.preferTimeDisplay ? '⏰' : '💰'}
                   </span>
                 </div>
@@ -409,9 +415,13 @@ export function StatusScreen(props: { settings: Settings; onChange: (next: Setti
             <div className="p-4 sm:p-5 pb-8">
               <div className="text-[10px] font-black uppercase tracking-widest opacity-70 mb-2 whitespace-nowrap">Bilanz ({timeRangeLabel})</div>
               <div
-                className="font-black tracking-tighter break-words"
+                className="font-black tracking-tighter break-words leading-tight"
                 style={{
-                  fontSize: Math.abs(rangeTotalStats.balance) >= 10000000 ? 'clamp(1.25rem, 5vw, 1.75rem)' : 'clamp(1.5rem, 6vw, 2rem)'
+                  fontSize: Math.abs(rangeTotalStats.balance) >= 1000000 
+                    ? 'clamp(1rem, 3.5vw, 1.125rem)' 
+                    : Math.abs(rangeTotalStats.balance) >= 100000
+                    ? 'clamp(1.125rem, 4vw, 1.25rem)'
+                    : 'clamp(1.5rem, 6vw, 2rem)'
                 }}
               >
                 {formatValue(rangeTotalStats.balance, rangeTotalStats.balanceHours).primary}

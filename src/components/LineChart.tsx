@@ -136,11 +136,11 @@ export function LineChart(props: {
         <div className="text-sm font-semibold">{title}</div>
         <div className="flex items-center gap-3 text-xs text-secondary">
           <div className="flex items-center gap-2">
-            <span className="inline-block h-2 w-2 rounded-full bg-success" />
+            <div className="h-3 w-3 rounded-full bg-success border border-success" />
             <span>Verdienst</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="inline-block h-2 w-2 rounded-full bg-danger" />
+            <div className="h-3 w-3 rounded-full bg-danger border border-danger" />
             <span>Ausgaben</span>
           </div>
           {showTimeAxis && (
