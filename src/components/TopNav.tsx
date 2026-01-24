@@ -57,7 +57,7 @@ export function TopNav(props: {
           <img
             src={AppLogo}
             alt="OnlyTime"
-            className="h-8 w-8 dark:invert"
+            className="h-8 w-8 dark:brightness-0 dark:invert"
           />
           <div className="text-2xl font-black tracking-tighter text-primary h-8 flex items-center">
             OnlyTime
