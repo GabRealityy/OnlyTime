@@ -67,12 +67,12 @@ export function ToastContainer() {
   const getToastStyles = (type: ToastType) => {
     switch (type) {
       case 'success':
-        return 'border-emerald-800 bg-emerald-950/90 text-emerald-200'
+        return 'border-success bg-success text-success-text'
       case 'error':
-        return 'border-rose-800 bg-rose-950/90 text-rose-200'
+        return 'border-danger bg-danger text-danger-text'
       case 'info':
       default:
-        return 'border-zinc-800 bg-zinc-950/90 text-zinc-200'
+        return 'border-border bg-card text-primary'
     }
   }
 

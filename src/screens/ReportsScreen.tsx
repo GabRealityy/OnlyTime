@@ -86,16 +86,16 @@ export function ReportsScreen(props: { settings: Settings }) {
       <div className="space-y-4">
         <div className="ot-card">
           <div className="text-lg font-semibold">📈 Berichte</div>
-          <div className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+          <div className="mt-1 text-sm text-secondary">
             Historische Analysen deiner Einnahmen und Ausgaben
           </div>
         </div>
         
         <div className="ot-card">
-          <div className="rounded-xl border border-amber-800 bg-amber-950/40 p-4 text-center">
+          <div className="rounded-xl border border-warning bg-warning-bg p-4 text-center">
             <div className="text-2xl mb-2">⚠️</div>
-            <div className="font-semibold text-amber-300">Stundenlohn fehlt</div>
-            <div className="mt-2 text-sm text-amber-200/80">
+            <div className="font-semibold text-warning">Stundenlohn fehlt</div>
+            <div className="mt-2 text-sm text-warning-text">
               Gehe zu Einstellungen und lege dein Einkommen und deine Arbeitszeit fest,
               um Berichte in Arbeitszeit anzeigen zu können.
             </div>
@@ -110,7 +110,7 @@ export function ReportsScreen(props: { settings: Settings }) {
       {/* Header */}
       <div className="ot-card">
         <div className="text-lg font-semibold">📈 Berichte</div>
-        <div className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+        <div className="mt-1 text-sm text-secondary">
           Historische Analysen deiner Einnahmen und Ausgaben
         </div>
       </div>
@@ -125,8 +125,8 @@ export function ReportsScreen(props: { settings: Settings }) {
               onClick={() => setTimeRange(btn.id)}
               className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                 timeRange === btn.id
-                  ? 'bg-emerald-600 text-white'
-                  : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-300 dark:hover:bg-zinc-700'
+                  ? 'bg-success text-white'
+                  : 'bg-input text-secondary hover:bg-card'
               }`}
             >
               {btn.label}
@@ -141,17 +141,17 @@ export function ReportsScreen(props: { settings: Settings }) {
         
         <div className="space-y-3">
           {/* Gesamtbilanz */}
-          <div className="rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-950/40 p-3">
-            <div className="text-xs text-zinc-600 dark:text-zinc-500 mb-1">Gesamtbilanz ({timeRange})</div>
+          <div className="rounded-lg border border-border bg-card p-3">
+            <div className="text-xs text-tertiary mb-1">Gesamtbilanz ({timeRange})</div>
             <div className="flex items-baseline gap-2">
-              <div className={`text-2xl font-semibold ${totalStats.balance >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
+              <div className={`text-2xl font-semibold ${totalStats.balance >= 0 ? 'text-success' : 'text-danger'}`}>
                 {formatCHF(totalStats.balance)}
               </div>
-              <div className="text-sm text-zinc-600 dark:text-zinc-400">
+              <div className="text-sm text-secondary">
                 ({formatHoursMinutes(Math.abs(totalStats.balanceHours))})
               </div>
             </div>
-            <div className="mt-2 text-xs text-zinc-600 dark:text-zinc-400">
+            <div className="mt-2 text-xs text-secondary">
               Verdient: {formatCHF(totalStats.earned)} ({formatHoursMinutes(totalStats.earnedHours)}) • 
               Ausgegeben: {formatCHF(totalStats.spent)} ({formatHoursMinutes(totalStats.spentHours)})
             </div>
@@ -159,15 +159,15 @@ export function ReportsScreen(props: { settings: Settings }) {
 
           {/* Top-Kategorie */}
           {topCategory.category && (
-            <div className="rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-950/40 p-3">
-              <div className="text-xs text-zinc-600 dark:text-zinc-500 mb-1">Größte Ausgabenkategorie</div>
+            <div className="rounded-lg border border-border bg-card p-3">
+              <div className="text-xs text-tertiary mb-1">Größte Ausgabenkategorie</div>
               <div className="flex items-baseline gap-2">
                 <div className="text-lg font-semibold">{topCategory.category}</div>
-                <div className="text-sm text-zinc-600 dark:text-zinc-400">
+                <div className="text-sm text-secondary">
                   {formatCHF(topCategory.amount)}
                 </div>
               </div>
-              <div className="mt-1 text-xs text-zinc-600 dark:text-zinc-400">
+              <div className="mt-1 text-xs text-secondary">
                 Das entspricht {formatHoursMinutes(topCategory.hours)} Arbeitszeit
                 ({((topCategory.amount / totalStats.spent) * 100).toFixed(1)}% deiner Gesamtausgaben)
               </div>
@@ -175,17 +175,17 @@ export function ReportsScreen(props: { settings: Settings }) {
           )}
 
           {/* Durchschnitt pro Monat */}
-          <div className="rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-950/40 p-3">
-            <div className="text-xs text-zinc-600 dark:text-zinc-500 mb-1">Ø Ausgaben pro Monat</div>
+          <div className="rounded-lg border border-border bg-card p-3">
+            <div className="text-xs text-tertiary mb-1">Ø Ausgaben pro Monat</div>
             <div className="flex items-baseline gap-2">
               <div className="text-lg font-semibold">
                 {formatCHF(totalStats.spent / monthlyData.length)}
               </div>
-              <div className="text-sm text-zinc-600 dark:text-zinc-400">
+              <div className="text-sm text-secondary">
                 ({formatHoursMinutes(totalStats.spentHours / monthlyData.length)})
               </div>
             </div>
-            <div className="mt-1 text-xs text-zinc-600 dark:text-zinc-400">
+            <div className="mt-1 text-xs text-secondary">
               Insgesamt {totalStats.expenseCount} Ausgaben erfasst
             </div>
           </div>
@@ -198,7 +198,7 @@ export function ReportsScreen(props: { settings: Settings }) {
 
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
           <div>
-            <div className="mb-2 text-xs font-semibold text-zinc-600 dark:text-zinc-400">Historisches Chart (kumuliert)</div>
+            <div className="mb-2 text-xs font-semibold text-secondary">Historisches Chart (kumuliert)</div>
             {chartPoints.length > 0 ? (
               <LineChart
                 points={chartPoints}
@@ -208,17 +208,17 @@ export function ReportsScreen(props: { settings: Settings }) {
                 title={`Zeitraum: ${timeRangeLabel}`}
               />
             ) : (
-              <div className="rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-950/40 p-4 text-sm text-zinc-600 dark:text-zinc-400">
+              <div className="rounded-lg border border-border bg-card p-4 text-sm text-secondary">
                 Keine Daten im ausgewählten Zeitraum.
               </div>
             )}
           </div>
 
           <div>
-            <div className="mb-2 text-xs font-semibold text-zinc-600 dark:text-zinc-400">Kategorie-Breakdown</div>
+            <div className="mb-2 text-xs font-semibold text-secondary">Kategorie-Breakdown</div>
 
             {totalStats.spent <= 0 || categoryBreakdown.length === 0 ? (
-              <div className="rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-950/40 p-4 text-sm text-zinc-600 dark:text-zinc-400">
+              <div className="rounded-lg border border-border bg-card p-4 text-sm text-secondary">
                 Noch keine Ausgaben im ausgewählten Zeitraum.
               </div>
             ) : (
@@ -226,28 +226,28 @@ export function ReportsScreen(props: { settings: Settings }) {
                 {categoryBreakdown.slice(0, 6).map((it) => (
                   <div
                     key={it.categoryId}
-                    className="rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/40 p-3"
+                    className="rounded-lg border border-border bg-card p-3"
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
                         <div className="truncate text-sm font-medium">{it.name}</div>
-                        <div className="mt-0.5 text-xs text-zinc-600 dark:text-zinc-500">
+                        <div className="mt-0.5 text-xs text-tertiary">
                           {it.pct.toFixed(1)}% von {formatCHF(totalStats.spent)}
                         </div>
                       </div>
                       <div className="shrink-0 text-right">
                         <div className="font-mono text-sm">{formatCHF(it.amount)}</div>
                         {hourly > 0 && (
-                          <div className="text-xs text-zinc-600 dark:text-zinc-500">
+                          <div className="text-xs text-tertiary">
                             {formatHoursMinutes(it.hours)}
                           </div>
                         )}
                       </div>
                     </div>
 
-                    <div className="mt-2 h-2 overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-900">
+                    <div className="mt-2 h-2 overflow-hidden rounded-full bg-input">
                       <div
-                        className="h-full bg-emerald-500 transition-all duration-500 ease-out"
+                        className="h-full bg-success transition-all duration-500 ease-out"
                         style={{ width: `${Math.min(100, Math.max(0, it.pct))}%` }}
                       />
                     </div>
@@ -255,7 +255,7 @@ export function ReportsScreen(props: { settings: Settings }) {
                 ))}
 
                 {categoryBreakdown.length > 6 && (
-                  <div className="text-xs text-zinc-600 dark:text-zinc-500">
+                  <div className="text-xs text-tertiary">
                     +{categoryBreakdown.length - 6} weitere Kategorie(n)
                   </div>
                 )}
@@ -273,30 +273,30 @@ export function ReportsScreen(props: { settings: Settings }) {
           {monthlyData.map(month => (
             <div
               key={month.monthKey}
-              className="rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/40 p-3"
+              className="rounded-lg border border-border bg-card p-3"
             >
               <div className="flex items-center justify-between mb-2">
                 <div className="font-medium">{month.label}</div>
-                <div className={`text-sm font-semibold ${month.balance >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
+                <div className={`text-sm font-semibold ${month.balance >= 0 ? 'text-success' : 'text-danger'}`}>
                   {month.balance >= 0 ? '+' : ''}{formatCHF(month.balance)}
                 </div>
               </div>
               
               <div className="grid grid-cols-2 gap-3 text-xs">
                 <div>
-                  <div className="text-zinc-600 dark:text-zinc-500">Verdient</div>
+                  <div className="text-tertiary">Verdient</div>
                   <div className="font-mono">{formatCHF(month.earned)}</div>
-                  <div className="text-zinc-600 dark:text-zinc-400">{formatHoursMinutes(month.earnedHours)}</div>
+                  <div className="text-secondary">{formatHoursMinutes(month.earnedHours)}</div>
                 </div>
                 <div>
-                  <div className="text-zinc-600 dark:text-zinc-500">Ausgegeben</div>
+                  <div className="text-tertiary">Ausgegeben</div>
                   <div className="font-mono">{formatCHF(month.spent)}</div>
-                  <div className="text-zinc-600 dark:text-zinc-400">{formatHoursMinutes(month.spentHours)}</div>
+                  <div className="text-secondary">{formatHoursMinutes(month.spentHours)}</div>
                 </div>
               </div>
               
               {month.expenseCount > 0 && (
-                <div className="mt-2 text-xs text-zinc-600 dark:text-zinc-500">
+                <div className="mt-2 text-xs text-tertiary">
                   {month.expenseCount} Ausgabe{month.expenseCount !== 1 ? 'n' : ''}
                 </div>
               )}

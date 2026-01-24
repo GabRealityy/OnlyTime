@@ -74,25 +74,25 @@ export default function App() {
 
       <main className="mx-auto max-w-3xl px-3 py-4">
         {content}
-        <footer className="mt-8 pb-12 flex flex-col items-center gap-4 border-t border-zinc-100 dark:border-zinc-800 pt-8">
-          <div className="text-xs text-zinc-500">
+        <footer className="mt-8 pb-12 flex flex-col items-center gap-4 border-t border-border pt-8">
+          <div className="text-xs text-tertiary">
             OnlyTime runs locally. Nothing leaves this device.
           </div>
-          <div className="flex gap-4 text-[10px] font-black uppercase tracking-widest text-zinc-400">
+          <div className="flex gap-4 text-[10px] font-black uppercase tracking-widest text-tertiary">
             <button
               onClick={() => setScreen('imprint')}
-              className="hover:text-zinc-950 dark:hover:text-zinc-50 transition-colors"
+              className="hover:text-primary transition-colors"
             >
               Impressum
             </button>
             <button
               onClick={() => setScreen('privacy')}
-              className="hover:text-zinc-950 dark:hover:text-zinc-50 transition-colors"
+              className="hover:text-primary transition-colors"
             >
               Datenschutz
             </button>
           </div>
-          <div className="text-[10px] text-zinc-400">
+          <div className="text-[10px] text-tertiary">
             © 2026 Swiss Innovation Studios
           </div>
         </footer>

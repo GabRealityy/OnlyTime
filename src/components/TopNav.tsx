@@ -48,7 +48,7 @@ export function TopNav(props: {
   ]
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-zinc-100 dark:border-zinc-800 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-xl">
+    <nav className="sticky top-0 z-50 border-b border-border bg-card/80 backdrop-blur-xl">
       <div className="mx-auto flex max-w-3xl items-center justify-between px-6 py-4">
         <div
           className="flex cursor-pointer items-center gap-8 transition-opacity hover:opacity-70"
@@ -59,7 +59,7 @@ export function TopNav(props: {
             alt="OnlyTime"
             className="h-8 w-8 dark:invert"
           />
-          <div className="text-2xl font-black tracking-tighter text-zinc-950 dark:text-white h-8 flex items-center">
+          <div className="text-2xl font-black tracking-tighter text-primary h-8 flex items-center">
             OnlyTime
           </div>
         </div>
@@ -74,9 +74,9 @@ export function TopNav(props: {
                 className={`
                   flex items-center justify-center rounded-2xl px-4 py-2 text-sm font-bold transition-all
                   ${isActive
-                    ? 'bg-zinc-950 text-white dark:bg-zinc-50 dark:text-zinc-950'
-                    : 'text-zinc-500 hover:text-zinc-950 dark:text-zinc-400 dark:hover:text-zinc-50 hover:bg-zinc-50 dark:hover:bg-zinc-900'}
-                  ${it.hideLabel ? 'aspect-square p-2 bg-zinc-50 dark:bg-zinc-900 ml-2' : ''}
+                    ? 'bg-primary text-primary-fg'
+                    : 'text-secondary hover:text-primary hover:bg-input'}
+                  ${it.hideLabel ? 'aspect-square p-2 bg-input ml-2' : ''}
                 `}
                 onClick={() => onNavigate(it.id)}
                 aria-label={it.label}

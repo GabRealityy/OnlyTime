@@ -12,6 +12,49 @@ export default {
         sans: ['ui-sans-serif', 'system-ui', 'Segoe UI', 'Roboto', 'Helvetica', 'Arial'],
         mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'Liberation Mono'],
       },
+      colors: {
+        // Semantic colors using CSS variables
+        'page': 'var(--bg-page)',
+        'card': {
+          DEFAULT: 'var(--bg-card)',
+          hover: 'var(--bg-card-hover)',
+        },
+        'input': {
+          DEFAULT: 'var(--bg-input)',
+          focus: 'var(--bg-input-focus)',
+        },
+        'primary': {
+          DEFAULT: 'var(--text-primary)',
+          inverse: 'var(--text-inverse)',
+        },
+        'secondary': 'var(--text-secondary)',
+        'tertiary': 'var(--text-tertiary)',
+        'border': {
+          DEFAULT: 'var(--border-primary)',
+          secondary: 'var(--border-secondary)',
+          focus: 'var(--border-focus)',
+        },
+        'accent': {
+          DEFAULT: 'var(--accent)',
+          hover: 'var(--accent-hover)',
+          text: 'var(--accent-text)',
+        },
+        'success': {
+          DEFAULT: 'var(--success)',
+          bg: 'var(--success-bg)',
+          text: 'var(--success-text)',
+        },
+        'warning': {
+          DEFAULT: 'var(--warning)',
+          bg: 'var(--warning-bg)',
+          text: 'var(--warning-text)',
+        },
+        'danger': {
+          DEFAULT: 'var(--danger)',
+          bg: 'var(--danger-bg)',
+          text: 'var(--danger-text)',
+        },
+      },
       animation: {
         'spin-slow': 'spin 3s linear infinite',
       },

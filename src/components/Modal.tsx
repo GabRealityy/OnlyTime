@@ -36,7 +36,7 @@ export function Modal(props: {
           <div className="flex items-start justify-between gap-3">
             <div>
               <div className="text-base font-semibold">{title}</div>
-              <div className="mt-1 text-xs text-zinc-600 dark:text-zinc-500">
+              <div className="mt-1 text-xs text-secondary">
                 Press <span className="ot-kbd">Esc</span> to close.
               </div>
             </div>

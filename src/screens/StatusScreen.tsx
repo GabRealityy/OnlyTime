@@ -309,12 +309,12 @@ export function StatusScreen(props: { settings: Settings }) {
         <div className="flex items-start justify-between gap-3">
           <div>
             <div className="text-2xl font-black tracking-tighter">Status</div>
-            <div className="mt-1 text-xs font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">
+            <div className="mt-1 text-xs font-bold uppercase tracking-widest text-secondary">
               {label} · {timeRangeLabel}
             </div>
           </div>
           <div className="text-right">
-            <div className="text-[10px] font-black uppercase tracking-widest text-zinc-500 dark:text-zinc-400">Tag</div>
+            <div className="text-[10px] font-black uppercase tracking-widest text-secondary">Tag</div>
             <div className="font-mono text-sm font-bold">
               {today}/{dim}
             </div>
@@ -329,8 +329,8 @@ export function StatusScreen(props: { settings: Settings }) {
               type="button"
               onClick={() => setTimeRange(btn.id)}
               className={`px-3 sm:px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all touch-manipulation active:scale-95 ${timeRange === btn.id
-                ? 'bg-zinc-950 text-white dark:bg-zinc-50 dark:text-zinc-950'
-                : 'bg-zinc-50 dark:bg-zinc-900 text-zinc-500 hover:text-zinc-950 dark:hover:text-zinc-50'
+                ? 'bg-primary text-primary-inverse'
+                : 'bg-card hover:bg-card-hover text-secondary hover:text-primary'
                 }`}
             >
               {btn.label}
@@ -339,37 +339,37 @@ export function StatusScreen(props: { settings: Settings }) {
         </div>
 
         <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
-          <div className="rounded-[1.5rem] border border-zinc-100 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800/40 p-4 sm:p-5">
-            <div className="text-[10px] font-black uppercase tracking-widest text-zinc-500 dark:text-zinc-400 mb-2 whitespace-nowrap">Verdienst ({timeRangeLabel})</div>
-            <div className="text-xl sm:text-2xl font-black tracking-tight text-zinc-950 dark:text-white break-all">
+          <div className="rounded-[1.5rem] border border-border-secondary bg-card p-4 sm:p-5">
+            <div className="text-[10px] font-black uppercase tracking-widest text-secondary mb-2 whitespace-nowrap">Verdienst ({timeRangeLabel})</div>
+            <div className="text-xl sm:text-2xl font-black tracking-tight text-primary break-all">
               {formatValue(rangeTotalStats.earned, rangeTotalStats.earnedHours).primary}
             </div>
             {formatValue(rangeTotalStats.earned, rangeTotalStats.earnedHours).secondary && (
-              <div className="mt-1 text-xs font-bold text-zinc-500 dark:text-zinc-400 break-all">
+              <div className="mt-1 text-xs font-bold text-secondary break-all">
                 {formatValue(rangeTotalStats.earned, rangeTotalStats.earnedHours).secondary}
               </div>
             )}
           </div>
-          <div className="rounded-[1.5rem] border border-zinc-100 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800/40 p-4 sm:p-5">
-            <div className="text-[10px] font-black uppercase tracking-widest text-zinc-500 dark:text-zinc-400 mb-2 whitespace-nowrap">Ausgaben ({timeRangeLabel})</div>
-            <div className="text-xl sm:text-2xl font-black tracking-tight text-zinc-950 dark:text-white break-all">
+          <div className="rounded-[1.5rem] border border-border-secondary bg-card p-4 sm:p-5">
+            <div className="text-[10px] font-black uppercase tracking-widest text-secondary mb-2 whitespace-nowrap">Ausgaben ({timeRangeLabel})</div>
+            <div className="text-xl sm:text-2xl font-black tracking-tight text-primary break-all">
               {formatValue(rangeTotalStats.spent, rangeTotalStats.spentHours).primary}
             </div>
             {formatValue(rangeTotalStats.spent, rangeTotalStats.spentHours).secondary && (
-              <div className="mt-1 text-xs font-bold text-zinc-500 dark:text-zinc-400 break-all">
+              <div className="mt-1 text-xs font-bold text-secondary break-all">
                 {formatValue(rangeTotalStats.spent, rangeTotalStats.spentHours).secondary}
               </div>
             )}
           </div>
-          <div className="rounded-[1.5rem] border border-zinc-950 bg-zinc-950 dark:border-zinc-200 dark:bg-zinc-50 p-4 sm:p-5 text-zinc-50 dark:text-zinc-950 shadow-xl shadow-zinc-900/20 dark:shadow-none">
-            <div className="text-[10px] font-black uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-2 whitespace-nowrap">Bilanz ({timeRangeLabel})</div>
+          <div className="rounded-[1.5rem] border border-primary bg-primary p-4 sm:p-5 text-primary-inverse shadow-xl">
+            <div className="text-[10px] font-black uppercase tracking-widest opacity-70 mb-2 whitespace-nowrap">Bilanz ({timeRangeLabel})</div>
             <div className="flex items-center gap-2">
               <div className="text-2xl sm:text-3xl font-black tracking-tighter break-all">
                 {formatValue(rangeTotalStats.balance, rangeTotalStats.balanceHours).primary}
               </div>
             </div>
             {formatValue(rangeTotalStats.balance, rangeTotalStats.balanceHours).secondary && (
-              <div className="mt-1 text-xs font-bold text-zinc-300 dark:text-zinc-600 break-all">
+              <div className="mt-1 text-xs font-bold opacity-60 break-all">
                 {formatValue(rangeTotalStats.balance, rangeTotalStats.balanceHours).secondary}
               </div>
             )}
@@ -377,18 +377,18 @@ export function StatusScreen(props: { settings: Settings }) {
         </div>
 
         {timeOverspent && hourly > 0 && (
-          <div className="mt-6 rounded-2xl border border-rose-100 bg-rose-50 p-4 dark:border-rose-900/30 dark:bg-rose-950/20">
+          <div className="mt-6 rounded-2xl border border-danger bg-danger-bg p-4">
             <div className="flex items-start gap-3">
-              <div className="mt-0.5 text-rose-600">
+              <div className="mt-0.5 text-danger">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" /><path d="M12 9v4" /><path d="M12 17h.01" />
                 </svg>
               </div>
               <div>
-                <div className="text-xs font-black uppercase tracking-widest text-rose-600">
+                <div className="text-xs font-black uppercase tracking-widest text-danger">
                   Zeitüberschreitung
                 </div>
-                <div className="mt-1 text-sm font-medium text-rose-600/80">
+                <div className="mt-1 text-sm font-medium text-danger-text">
                   Deine Ausgaben übersteigen dein aktuelles Zeitbudget.
                 </div>
               </div>
@@ -407,12 +407,12 @@ export function StatusScreen(props: { settings: Settings }) {
                 <div
                   key={warning.category}
                   className={`rounded-2xl border p-4 transition-all ${isExceeded
-                    ? 'border-rose-100 bg-rose-50 dark:border-rose-900/30 dark:bg-rose-950/20'
-                    : 'border-amber-100 bg-amber-50 dark:border-amber-900/30 dark:bg-amber-950/20'
+                    ? 'border-danger bg-danger-bg'
+                    : 'border-warning bg-warning-bg'
                     }`}
                 >
                   <div className="flex items-start gap-3">
-                    <div className={`mt-0.5 ${isExceeded ? 'text-rose-600' : 'text-amber-600'}`}>
+                    <div className={`mt-0.5 ${isExceeded ? 'text-danger' : 'text-warning'}`}>
                       {isExceeded ? (
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                           <circle cx="12" cy="12" r="10" /><path d="m15 9-6 6" /><path d="m9 9 6 6" />
@@ -424,20 +424,20 @@ export function StatusScreen(props: { settings: Settings }) {
                       )}
                     </div>
                     <div className="flex-1">
-                      <div className={`text-xs font-black uppercase tracking-widest ${isExceeded ? 'text-rose-600' : 'text-amber-600'
+                      <div className={`text-xs font-black uppercase tracking-widest ${isExceeded ? 'text-danger' : 'text-warning'
                         }`}>
                         {categoryName} {isExceeded ? 'Über Limit' : 'Warnung'}
                       </div>
-                      <div className={`mt-1 text-sm font-bold ${isExceeded ? 'text-rose-900/70 dark:text-rose-200/70' : 'text-amber-900/70 dark:text-amber-200/70'
+                      <div className={`mt-1 text-sm font-bold ${isExceeded ? 'text-danger-text' : 'text-warning-text'
                         }`}>
                         {formatCHF(warning.spent)} / {formatCHF(warning.budgetCHF)}
                         <span className="ml-2">({warning.percentage.toFixed(0)}%)</span>
                       </div>
 
                       {/* Progress bar */}
-                      <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-800">
+                      <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-border">
                         <div
-                          className={`h-full transition-all duration-700 ease-out ${isExceeded ? 'bg-rose-500' : 'bg-amber-500'
+                          className={`h-full transition-all duration-700 ease-out ${isExceeded ? 'bg-danger' : 'bg-warning'
                             }`}
                           style={{ width: `${Math.min(100, warning.percentage)}%` }}
                         />
@@ -470,7 +470,7 @@ export function StatusScreen(props: { settings: Settings }) {
         <div className="flex items-start justify-between gap-3">
           <div>
             <div className="text-sm font-semibold">Ausgabe erfassen</div>
-            <div className="mt-1 text-xs text-zinc-600 dark:text-zinc-500">Nur für aktuellen Monat</div>
+            <div className="mt-1 text-xs text-secondary">Nur für aktuellen Monat</div>
           </div>
         </div>
 
@@ -512,17 +512,17 @@ export function StatusScreen(props: { settings: Settings }) {
         <div className="flex items-start justify-between gap-3">
           <div>
             <div className="text-sm font-semibold">Expenses ({timeRange === '1M' ? label : timeRangeLabel})</div>
-            <div className="mt-1 text-xs text-zinc-500">{displayExpenses.length} item(s)</div>
+            <div className="mt-1 text-xs text-tertiary">{displayExpenses.length} item(s)</div>
           </div>
           <div className="flex items-center gap-3">
             <div className="text-right">
-              <div className="text-xs text-zinc-500">Total</div>
+              <div className="text-xs text-tertiary">Total</div>
               <div className="font-mono text-sm">{formatCHF(displayExpenses.reduce((sum, e) => sum + e.amountCHF, 0))}</div>
             </div>
             <button
               type="button"
               onClick={() => setSortOrder(sortOrder === 'desc' ? 'asc' : 'desc')}
-              className="flex h-8 w-8 items-center justify-center rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
+              className="flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-card text-secondary hover:text-primary transition-colors"
               title={sortOrder === 'desc' ? 'Neueste zuerst' : 'Älteste zuerst'}
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -543,8 +543,8 @@ export function StatusScreen(props: { settings: Settings }) {
               type="button"
               onClick={() => setSelectedCategory('all')}
               className={`whitespace-nowrap rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-widest transition-all ${selectedCategory === 'all'
-                ? 'bg-zinc-950 text-white dark:bg-zinc-50 dark:text-zinc-950'
-                : 'bg-zinc-100 dark:bg-zinc-900 text-zinc-500 hover:text-zinc-950 dark:hover:text-zinc-50'
+                ? 'bg-primary text-primary-inverse'
+                : 'bg-card hover:bg-card-hover text-secondary hover:text-primary'
                 }`}
             >
               Alle
@@ -555,8 +555,8 @@ export function StatusScreen(props: { settings: Settings }) {
                 type="button"
                 onClick={() => setSelectedCategory(cat)}
                 className={`whitespace-nowrap rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-widest transition-all ${selectedCategory === cat
-                  ? 'bg-zinc-950 text-white dark:bg-zinc-50 dark:text-zinc-950'
-                  : 'bg-zinc-100 dark:bg-zinc-900 text-zinc-500 hover:text-zinc-950 dark:hover:text-zinc-50'
+                  ? 'bg-primary text-primary-inverse'
+                  : 'bg-card hover:bg-card-hover text-secondary hover:text-primary'
                   }`}
               >
                 {(() => {
@@ -570,7 +570,7 @@ export function StatusScreen(props: { settings: Settings }) {
 
         <div className="mt-4 space-y-2">
           {displayExpenses.length === 0 && (
-            <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-950/40 p-3 text-sm text-zinc-600 dark:text-zinc-400">
+            <div className="rounded-xl border border-border bg-card p-3 text-sm text-secondary">
               {selectedCategory === 'all'
                 ? 'No expenses recorded in this period.'
                 : `No expenses found in category "${selectedCategory}" for this period.`}
@@ -582,18 +582,18 @@ export function StatusScreen(props: { settings: Settings }) {
             return (
               <div
                 key={e.id}
-                className="flex items-center justify-between gap-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-950/40 p-3"
+                className="flex items-center justify-between gap-3 rounded-xl border border-border bg-card p-3"
               >
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">
                     <div className="truncate text-sm font-medium">
                       {e.title?.trim() ? e.title : 'Untitled'}
                     </div>
-                    <div className="shrink-0 rounded-md border border-zinc-300 dark:border-zinc-800 bg-zinc-200 dark:bg-zinc-950 px-2 py-0.5 text-xs text-zinc-700 dark:text-zinc-400">
+                    <div className="shrink-0 rounded-md border border-border bg-input px-2 py-0.5 text-xs text-secondary">
                       {getCategoryInfo(e.category).name}
                     </div>
                   </div>
-                  <div className="mt-1 text-xs text-zinc-600 dark:text-zinc-500">
+                  <div className="mt-1 text-xs text-secondary">
                     {e.date}
                   </div>
                 </div>
@@ -602,7 +602,7 @@ export function StatusScreen(props: { settings: Settings }) {
                   <div className="text-right">
                     <div className="font-mono text-sm">{formatCHF(e.amountCHF)}</div>
                     {hourly > 0 && (
-                      <div className="text-xs text-zinc-600 dark:text-zinc-500">
+                      <div className="text-xs text-secondary">
                         {formatHoursMinutes(expenseHours)}
                       </div>
                     )}

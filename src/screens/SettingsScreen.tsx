@@ -173,7 +173,7 @@ export function SettingsScreen(props: {
         <div className="flex items-center justify-between">
           <div>
             <div className="text-lg font-semibold">Design</div>
-            <div className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+            <div className="mt-1 text-sm text-secondary">
               Zwischen hellem und dunklem Modus wechseln
             </div>
           </div>
@@ -191,7 +191,7 @@ export function SettingsScreen(props: {
       {/* Display Preferences */}
       <div className="ot-card">
         <div className="text-lg font-semibold">Anzeigeeinstellungen</div>
-        <div className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+        <div className="mt-1 text-sm text-secondary">
           Wie sollen Werte angezeigt werden?
         </div>
         
@@ -210,7 +210,7 @@ export function SettingsScreen(props: {
             />
             <div className="flex-1">
               <div className="text-sm font-medium">Zeit bevorzugen</div>
-              <div className="mt-1 text-xs text-zinc-600 dark:text-zinc-500">
+              <div className="mt-1 text-xs text-tertiary">
                 Zeigt Stunden an erster Stelle und CHF dahinter. Fokussiert auf die Zeit, die du für dein Geld arbeitest.
               </div>
             </div>
@@ -227,7 +227,7 @@ export function SettingsScreen(props: {
       {/* Haupteinkommen */}
       <div className="ot-card">
         <div className="text-lg font-semibold">Einkommen</div>
-        <div className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+        <div className="mt-1 text-sm text-secondary">
           Wähle zwischen Netto- oder Bruttoeinkommen
         </div>
 
@@ -254,7 +254,7 @@ export function SettingsScreen(props: {
               <div>
                 <label htmlFor="grossMonthlyIncome">
                   Brutto-Monatseinkommen (CHF)
-                  <span className="ml-2 text-xs text-zinc-600 dark:text-zinc-500">vor Steuern/Abgaben</span>
+                  <span className="ml-2 text-xs text-tertiary">vor Steuern/Abgaben</span>
                 </label>
                 <input
                   id="grossMonthlyIncome"
@@ -272,7 +272,7 @@ export function SettingsScreen(props: {
               <div>
                 <label htmlFor="taxRate">
                   Steuern & Sozialabgaben (%)
-                  <span className="ml-2 text-xs text-zinc-600 dark:text-zinc-500">ca. 15-35%</span>
+                  <span className="ml-2 text-xs text-tertiary">ca. 15-35%</span>
                 </label>
                 <input
                   id="taxRate"
@@ -288,7 +288,7 @@ export function SettingsScreen(props: {
                   }}
                 />
                 {settings.grossMonthlyIncomeCHF > 0 && settings.taxRatePercent > 0 && (
-                  <div className="mt-1 text-xs text-zinc-600 dark:text-zinc-500">
+                  <div className="mt-1 text-xs text-tertiary">
                     ≈ {formatCHF(settings.grossMonthlyIncomeCHF * (1 - settings.taxRatePercent / 100))} netto
                   </div>
                 )}
@@ -298,7 +298,7 @@ export function SettingsScreen(props: {
             <div>
               <label htmlFor="netMonthlyIncome">
                 Netto-Monatseinkommen (CHF)
-                <span className="ml-2 text-xs text-zinc-600 dark:text-zinc-500">nach allen Abzügen</span>
+                <span className="ml-2 text-xs text-tertiary">nach allen Abzügen</span>
               </label>
               <input
                 id="netMonthlyIncome"
@@ -320,7 +320,7 @@ export function SettingsScreen(props: {
       {/* Arbeitszeit */}
       <div className="ot-card">
         <div className="text-lg font-semibold">Arbeitszeit</div>
-        <div className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+        <div className="mt-1 text-sm text-secondary">
           Reguläre Arbeitsstunden pro Woche
         </div>
 
@@ -343,7 +343,7 @@ export function SettingsScreen(props: {
           <div>
             <label htmlFor="weeksPerMonth">
               Wochen pro Monat
-              <span className="ml-2 text-xs text-zinc-600 dark:text-zinc-500">Standard: 4.33</span>
+              <span className="ml-2 text-xs text-tertiary">Standard: 4.33</span>
             </label>
             <input
               id="weeksPerMonth"
@@ -369,7 +369,7 @@ export function SettingsScreen(props: {
         >
           <div>
             <div className="text-lg font-semibold">Zeitfaktoren</div>
-            <div className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+            <div className="mt-1 text-sm text-secondary">
               Pendelzeit, Überstunden & Arbeitstage
             </div>
           </div>
@@ -388,7 +388,7 @@ export function SettingsScreen(props: {
             <div>
               <label htmlFor="commuteMinutes">
                 Pendelzeit pro Arbeitstag (Minuten)
-                <span className="ml-2 text-xs text-zinc-500">Hin + Zurück</span>
+                <span className="ml-2 text-xs text-tertiary">Hin + Zurück</span>
               </label>
               <input
                 id="commuteMinutes"
@@ -403,11 +403,11 @@ export function SettingsScreen(props: {
                 }
               />
               {settings.commuteMinutesPerDay > 0 && (
-                <div className="mt-1 text-xs text-zinc-500">
+                <div className="mt-1 text-xs text-tertiary">
                   = {commuteHours.toFixed(1)} h pro Woche, {(commuteHours * settings.weeksPerMonth).toFixed(1)} h pro Monat
                 </div>
               )}
-              <div className="mt-2 text-xs text-zinc-600 dark:text-zinc-500">
+              <div className="mt-2 text-xs text-tertiary">
                 💡 Dein Arbeitsweg zählt zur Zeit, die du aufwendest, um dein Einkommen zu verdienen
               </div>
             </div>
@@ -415,7 +415,7 @@ export function SettingsScreen(props: {
             <div>
               <label htmlFor="overtimeHours">
                 Unbezahlte Überstunden pro Woche
-                <span className="ml-2 text-xs text-zinc-500">nicht extra vergütet</span>
+                <span className="ml-2 text-xs text-tertiary">nicht extra vergütet</span>
               </label>
               <input
                 id="overtimeHours"
@@ -430,7 +430,7 @@ export function SettingsScreen(props: {
                 }
               />
               {settings.overtimeHoursPerWeek > 0 && (
-                <div className="mt-1 text-xs text-zinc-500">
+                <div className="mt-1 text-xs text-tertiary">
                   = {(settings.overtimeHoursPerWeek * settings.weeksPerMonth).toFixed(1)} h pro Monat
                 </div>
               )}
@@ -439,7 +439,7 @@ export function SettingsScreen(props: {
             <div>
               <label htmlFor="workingDays">
                 Arbeitstage pro Woche
-                <span className="ml-2 text-xs text-zinc-500">für Pendelzeit-Berechnung</span>
+                <span className="ml-2 text-xs text-tertiary">für Pendelzeit-Berechnung</span>
               </label>
               <input
                 id="workingDays"
@@ -469,10 +469,10 @@ export function SettingsScreen(props: {
             <div className="text-lg font-semibold">
               Zusätzliche Einkommen
               {settings.additionalIncomeSources.length > 0 && (
-                <span className="ml-2 text-sm text-zinc-500">({settings.additionalIncomeSources.length})</span>
+                <span className="ml-2 text-sm text-tertiary">({settings.additionalIncomeSources.length})</span>
               )}
             </div>
-            <div className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+            <div className="mt-1 text-sm text-secondary">
               Nebenjobs, passive Einkünfte, etc.
             </div>
           </div>
@@ -489,7 +489,7 @@ export function SettingsScreen(props: {
         {showAdditionalIncome && (
           <div className="mt-4 space-y-3">
             {settings.additionalIncomeSources.map((source) => (
-              <div key={source.id} className="p-3 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/40 space-y-2">
+              <div key={source.id} className="p-3 rounded-lg border border-border bg-card space-y-2">
                 <div className="flex items-center justify-between">
                   <input
                     type="text"
@@ -500,7 +500,7 @@ export function SettingsScreen(props: {
                   />
                   <button
                     onClick={() => removeIncomeSource(source.id)}
-                    className="text-zinc-500 hover:text-red-500 transition-colors"
+                    className="text-tertiary hover:text-danger transition-colors"
                     title="Entfernen"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -510,7 +510,7 @@ export function SettingsScreen(props: {
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <label className="text-xs text-zinc-500">Betrag (CHF/Monat)</label>
+                    <label className="text-xs text-tertiary">Betrag (CHF/Monat)</label>
                     <input
                       inputMode="decimal"
                       placeholder="z.B. 500"
@@ -524,7 +524,7 @@ export function SettingsScreen(props: {
                     />
                   </div>
                   <div>
-                    <label className="text-xs text-zinc-500">Zeitaufwand (h/Monat)</label>
+                    <label className="text-xs text-tertiary">Zeitaufwand (h/Monat)</label>
                     <input
                       inputMode="decimal"
                       placeholder="z.B. 20"
@@ -542,7 +542,7 @@ export function SettingsScreen(props: {
             ))}
             <button
               onClick={addIncomeSource}
-              className="w-full py-2 px-3 rounded-lg border border-dashed border-zinc-700 hover:border-zinc-600 text-sm text-zinc-400 hover:text-zinc-300 transition-colors"
+              className="w-full py-2 px-3 rounded-lg border border-dashed border-border hover:border-primary text-sm text-tertiary hover:text-secondary transition-colors"
             >
               + Einkommensquelle hinzufügen
             </button>
@@ -553,35 +553,35 @@ export function SettingsScreen(props: {
       {/* Berechnete Ergebnisse */}
       <div className="ot-card">
         <div className="text-sm font-semibold">Effektive Werte</div>
-        <div className="mt-1 text-xs text-zinc-500">
+        <div className="mt-1 text-xs text-tertiary">
           Diese Werte berücksichtigen alle oben angegebenen Faktoren
         </div>
         <div className="mt-3 grid grid-cols-1 gap-2 text-sm">
           <div className="flex items-center justify-between">
-            <div className="text-zinc-600 dark:text-zinc-400">Gesamtes Netto-Einkommen</div>
+            <div className="text-secondary">Gesamtes Netto-Einkommen</div>
             <div className="font-mono">{formatCHF(totalIncome)}/Monat</div>
           </div>
           <div className="flex items-center justify-between">
-            <div className="text-zinc-600 dark:text-zinc-400">Gesamte Arbeitszeit</div>
+            <div className="text-secondary">Gesamte Arbeitszeit</div>
             <div className="font-mono">{monthlyHours.toFixed(2)} h/Monat</div>
           </div>
-          <div className="h-px bg-zinc-200 dark:bg-zinc-800 my-1"></div>
+          <div className="h-px bg-border my-1"></div>
           <div className="flex items-center justify-between">
-            <div className="text-zinc-900 dark:text-zinc-300 font-medium">Effektiver Stundenlohn</div>
-            <div className="font-mono text-lg font-semibold text-emerald-600 dark:text-green-400">
+            <div className="text-primary font-medium">Effektiver Stundenlohn</div>
+            <div className="font-mono text-lg font-semibold text-success">
               {hourlyRate > 0 ? `${formatCHF(hourlyRate)}/h` : '—'}
             </div>
           </div>
         </div>
 
         {hourlyRate <= 0 && (
-          <div className="mt-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-950/40 p-3 text-sm text-zinc-600 dark:text-zinc-400">
+          <div className="mt-3 rounded-xl border border-border bg-card p-3 text-sm text-secondary">
             Gib Einkommen und Arbeitszeit ein, um deinen effektiven Stundenlohn zu berechnen.
           </div>
         )}
 
         {hourlyRate > 0 && monthlyHours > 0 && (
-          <div className="mt-3 rounded-xl border border-emerald-900/30 bg-emerald-950/20 p-3 text-sm text-emerald-300">
+          <div className="mt-3 rounded-xl border border-success bg-success-bg p-3 text-sm text-success">
             ✓ Dein Stundenlohn ist berechnet. Die App kann jetzt Preise in Arbeitszeit umrechnen.
           </div>
         )}
@@ -590,13 +590,13 @@ export function SettingsScreen(props: {
       {/* Schnellerfassung (Quick-Add) */}
       <div className="ot-card">
         <div className="text-lg font-semibold">Schnellerfassung</div>
-        <div className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+        <div className="mt-1 text-sm text-secondary">
           Diese Buttons erscheinen im Status und erfassen Ausgaben mit einem Klick.
         </div>
 
         <div className="mt-4 space-y-2">
           {settings.quickAddPresets.length === 0 && (
-            <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-950/40 p-3 text-sm text-zinc-600 dark:text-zinc-400">
+            <div className="rounded-xl border border-border bg-card p-3 text-sm text-secondary">
               Noch keine Schnellerfassungen. Füge unten einen Button hinzu.
             </div>
           )}
@@ -604,27 +604,27 @@ export function SettingsScreen(props: {
           {settings.quickAddPresets.map((p) => (
             <div
               key={p.id}
-              className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/40 p-3"
+              className="rounded-xl border border-border bg-card p-3"
             >
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-12 sm:items-end">
                 <div className="sm:col-span-2 relative">
-                  <label className="text-xs text-zinc-600 dark:text-zinc-500">Emoji</label>
+                  <label className="text-xs text-tertiary">Emoji</label>
                   <button
                     type="button"
-                    className="flex h-10 w-full items-center justify-center rounded-lg border-2 border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 text-xl hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors"
+                    className="flex h-10 w-full items-center justify-center rounded-lg border-2 border-border bg-input text-xl hover:border-primary transition-colors"
                     onClick={() => setShowEmojiPickerFor(showEmojiPickerFor === p.id ? null : p.id)}
                   >
                     {p.emoji || '⚡'}
                   </button>
 
                   {showEmojiPickerFor === p.id && (
-                    <div className="absolute top-full left-0 z-50 mt-2 w-64 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-2 shadow-2xl">
+                    <div className="absolute top-full left-0 z-50 mt-2 w-64 rounded-xl border border-border bg-page p-2 shadow-2xl">
                       <div className="grid grid-cols-6 gap-1 max-h-48 overflow-y-auto custom-scrollbar p-1">
                         {AVAILABLE_EMOJIS.map((em) => (
                           <button
                             key={em}
                             type="button"
-                            className="flex h-9 w-9 items-center justify-center rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-lg transition-colors"
+                            className="flex h-9 w-9 items-center justify-center rounded-lg hover:bg-card-hover text-lg transition-colors"
                             onClick={() => {
                               updateQuickAddPreset(p.id, { emoji: em })
                               setShowEmojiPickerFor(null)
@@ -639,7 +639,7 @@ export function SettingsScreen(props: {
                 </div>
 
                 <div className="sm:col-span-4">
-                  <label className="text-xs text-zinc-600 dark:text-zinc-500">Titel</label>
+                  <label className="text-xs text-tertiary">Titel</label>
                   <input
                     value={p.title}
                     onChange={(e) => updateQuickAddPreset(p.id, { title: e.target.value })}
@@ -650,7 +650,7 @@ export function SettingsScreen(props: {
                 </div>
 
                 <div className="sm:col-span-3">
-                  <label className="text-xs text-zinc-600 dark:text-zinc-500">Betrag (CHF)</label>
+                  <label className="text-xs text-tertiary">Betrag (CHF)</label>
                   <input
                     inputMode="decimal"
                     value={String(p.amountCHF ?? 0)}
@@ -664,7 +664,7 @@ export function SettingsScreen(props: {
                 </div>
 
                 <div className="sm:col-span-3">
-                  <label className="text-xs text-zinc-600 dark:text-zinc-500">Kategorie</label>
+                  <label className="text-xs text-tertiary">Kategorie</label>
                   <select
                     value={String(p.category ?? 'Other')}
                     onChange={(e) => updateQuickAddPreset(p.id, { category: e.target.value })}
@@ -680,7 +680,7 @@ export function SettingsScreen(props: {
               </div>
 
               <div className="mt-3 flex items-center justify-between">
-                <div className="text-xs text-zinc-600 dark:text-zinc-500">
+                <div className="text-xs text-tertiary">
                   Vorschau: {p.emoji ? `${p.emoji} ` : ''}{p.title || 'Ohne Titel'} · {formatCHF(p.amountCHF || 0)}
                 </div>
                 <button
@@ -705,7 +705,7 @@ export function SettingsScreen(props: {
       {/* Kategorien & Budgets */}
       <div className="ot-card">
         <div className="text-lg font-semibold">Kategorien & Budgets</div>
-        <div className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+        <div className="mt-1 text-sm text-secondary">
           Verwalte benutzerdefinierte Kategorien und setze monatliche Budgets
         </div>
 
@@ -729,16 +729,16 @@ export function SettingsScreen(props: {
       </div>
 
       {/* Daten zurücksetzen */}
-      <div className="ot-card border-rose-900/20 bg-rose-950/5">
-        <div className="text-lg font-semibold text-rose-500">Gefahrenzone</div>
-        <div className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+      <div className="ot-card border-danger bg-danger-bg">
+        <div className="text-lg font-semibold text-danger">Gefahrenzone</div>
+        <div className="mt-1 text-sm text-secondary">
           Lösche alle Einstellungen und Ausgaben dauerhaft
         </div>
 
         <div className="mt-4 space-y-2">
           <button
             type="button"
-            className="ot-btn w-full border-amber-600 text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-950/20"
+            className="ot-btn w-full border-warning text-warning hover:bg-warning-bg"
             onClick={() => setShowConfirmDummyData(true)}
           >
             🎲 Dummy-Daten laden
@@ -792,11 +792,11 @@ export function SettingsScreen(props: {
 
       {showConfirmDummyData && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-          <div className="bg-white dark:bg-zinc-900 rounded-lg shadow-xl max-w-md w-full p-6">
+          <div className="bg-card rounded-lg shadow-xl max-w-md w-full p-6">
             <h3 className="text-lg font-semibold mb-2">Dummy-Daten laden</h3>
-            <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-4">
+            <p className="text-sm text-secondary mb-4">
               Dies erstellt realistische Beispiel-Ausgaben für Tests und Demonstrationen.
-              <strong className="block mt-2 text-amber-600 dark:text-amber-500">
+              <strong className="block mt-2 text-warning">
                 ⚠️ Warnung: Vorhandene Ausgaben werden überschrieben!
               </strong>
             </p>
