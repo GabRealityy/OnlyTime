@@ -38,6 +38,7 @@ describe('settings - Erweiterte Stundenlohn-Berechnung', () => {
     quickAddPresets: [],
     customCategories: [],
     categoryBudgets: [],
+    preferTimeDisplay: false,
   }
 
   describe('monthlyWorkingHours', () => {
