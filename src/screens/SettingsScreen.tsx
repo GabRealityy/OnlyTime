@@ -21,7 +21,6 @@ import { OnboardingChecklist, type ChecklistItem } from '../components/Onboardin
 import { expenseCategories, type QuickAddPreset, categoryEmojis, AVAILABLE_EMOJIS } from '../lib/expenses'
 import { loadExpensesForMonth } from '../lib/expenses'
 import { monthKeyFromDate } from '../lib/date'
-import { useTheme } from '../contexts/ThemeContext'
 import { clearAllData } from '../lib/storage'
 import { generateDummyData } from '../lib/dummyData'
 
