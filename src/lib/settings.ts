@@ -21,6 +21,7 @@
 
 import { loadFromStorage, saveToStorage, storageKeys } from './storage'
 import type { QuickAddPreset, CustomCategory, CategoryBudget } from './expenses'
+import type { Currency } from '../types'
 
 export type IncomeSource = {
   id: string
@@ -51,6 +52,8 @@ export type Settings = {
   categoryBudgets: CategoryBudget[]
   // Display preferences
   preferTimeDisplay: boolean
+  currency: Currency
+  showOnboardingChecklist: boolean
 }
 
 export const defaultSettings: Settings = {
@@ -65,13 +68,13 @@ export const defaultSettings: Settings = {
   workingDaysPerWeek: 5,
   additionalIncomeSources: [],
   quickAddPresets: [
-    { id: '1', title: 'Kaffee', amountCHF: 4.50, category: 'Food', emoji: '☕' },
-    { id: '2', title: 'Mittagessen', amountCHF: 15, category: 'Food', emoji: '🍽️' },
-    { id: '3', title: 'ÖV-Ticket', amountCHF: 3.40, category: 'Transport', emoji: '🚌' },
+    { id: '1', title: 'Kaffee', amountCHF: 2.00, category: 'Essen', emoji: '☕' },
   ],
   customCategories: [],
   categoryBudgets: [],
   preferTimeDisplay: false,
+  currency: 'CHF',
+  showOnboardingChecklist: true,
 }
 
 export function normalizeSettings(input: unknown): Settings {
@@ -160,6 +163,14 @@ export function normalizeSettings(input: unknown): Settings {
     ? obj.preferTimeDisplay 
     : defaultSettings.preferTimeDisplay
 
+  const currency = (typeof obj.currency === 'string' && (obj.currency === 'CHF' || obj.currency === 'EUR' || obj.currency === 'USD'))
+    ? obj.currency
+    : defaultSettings.currency
+
+  const showOnboardingChecklist = typeof obj.showOnboardingChecklist === 'boolean'
+    ? obj.showOnboardingChecklist
+    : defaultSettings.showOnboardingChecklist
+
   return {
     netMonthlyIncomeCHF: Math.max(0, netMonthlyIncomeCHF),
     grossMonthlyIncomeCHF: Math.max(0, grossMonthlyIncomeCHF),
@@ -175,6 +186,8 @@ export function normalizeSettings(input: unknown): Settings {
     customCategories,
     categoryBudgets,
     preferTimeDisplay,
+    currency,
+    showOnboardingChecklist,
   }
 }
 

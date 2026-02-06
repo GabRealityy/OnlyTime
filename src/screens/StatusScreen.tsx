@@ -37,7 +37,7 @@ function toDay(isoDate: string): number {
   return Number.isFinite(d) ? d : 1
 }
 
-export function StatusScreen(props: { settings: Settings }) {
+export function StatusScreen(props: { settings: Settings; onChange: (next: Settings) => void }) {
   const now = new Date()
   const monthKey = monthKeyFromDate(now)
   const today = dayOfMonth(now)
@@ -313,11 +313,40 @@ export function StatusScreen(props: { settings: Settings }) {
               {label} · {timeRangeLabel}
             </div>
           </div>
-          <div className="text-right">
-            <div className="text-[10px] font-black uppercase tracking-widest text-secondary">Tag</div>
-            <div className="font-mono text-sm font-bold">
-              {today}/{dim}
-            </div>
+          <div className="flex items-center gap-4">
+            {/* Zeit bevorzugen Toggle Switch */}
+            {hourly > 0 && (
+              <button
+                type="button"
+                onClick={() => props.onChange({ ...props.settings, preferTimeDisplay: !props.settings.preferTimeDisplay })}
+                className="relative h-8 w-14 rounded-full transition-all border-2"
+                style={{
+                  backgroundColor: props.settings.preferTimeDisplay ? 'var(--color-primary)' : 'var(--color-input)',
+                  borderColor: 'var(--color-border)'
+                }}
+                title={props.settings.preferTimeDisplay ? 'Zu CHF wechseln' : 'Zu Zeitanzeige wechseln'}
+                aria-label="Anzeigemodus wechseln"
+              >
+                <div
+                  className="absolute top-0.5 left-0.5 h-6 w-6 rounded-full bg-card shadow-md transition-transform flex items-center justify-center"
+                  style={{
+                    transform: props.settings.preferTimeDisplay ? 'translateX(22px)' : 'translateX(0px)'
+                  }}
+                >
+                  <span className="text-sm">
+                    {props.settings.preferTimeDisplay ? '⏰' : '💰'}
+                  </span>
+                </div>
+              </button>
+            )}
+            {timeRange === '1M' && (
+              <div className="text-right">
+                <div className="text-[10px] font-black uppercase tracking-widest text-secondary">Tag</div>
+                <div className="font-mono text-sm font-bold">
+                  {today}/{dim}
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
@@ -341,7 +370,12 @@ export function StatusScreen(props: { settings: Settings }) {
         <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
           <div className="rounded-[1.5rem] border border-border-secondary bg-card p-4 sm:p-5">
             <div className="text-[10px] font-black uppercase tracking-widest text-secondary mb-2 whitespace-nowrap">Verdienst ({timeRangeLabel})</div>
-            <div className="text-xl sm:text-2xl font-black tracking-tight text-primary break-all">
+            <div
+              className="font-black tracking-tight text-primary break-words"
+              style={{
+                fontSize: rangeTotalStats.earned >= 10000000 ? 'clamp(1rem, 4vw, 1.25rem)' : 'clamp(1.25rem, 5vw, 1.5rem)'
+              }}
+            >
               {formatValue(rangeTotalStats.earned, rangeTotalStats.earnedHours).primary}
             </div>
             {formatValue(rangeTotalStats.earned, rangeTotalStats.earnedHours).secondary && (
@@ -352,7 +386,12 @@ export function StatusScreen(props: { settings: Settings }) {
           </div>
           <div className="rounded-[1.5rem] border border-border-secondary bg-card p-4 sm:p-5">
             <div className="text-[10px] font-black uppercase tracking-widest text-secondary mb-2 whitespace-nowrap">Ausgaben ({timeRangeLabel})</div>
-            <div className="text-xl sm:text-2xl font-black tracking-tight text-primary break-all">
+            <div
+              className="font-black tracking-tight text-primary break-words"
+              style={{
+                fontSize: rangeTotalStats.spent >= 10000000 ? 'clamp(1rem, 4vw, 1.25rem)' : 'clamp(1.25rem, 5vw, 1.5rem)'
+              }}
+            >
               {formatValue(rangeTotalStats.spent, rangeTotalStats.spentHours).primary}
             </div>
             {formatValue(rangeTotalStats.spent, rangeTotalStats.spentHours).secondary && (
@@ -361,16 +400,48 @@ export function StatusScreen(props: { settings: Settings }) {
               </div>
             )}
           </div>
-          <div className="rounded-[1.5rem] border border-primary bg-primary p-4 sm:p-5 text-primary-inverse shadow-xl">
-            <div className="text-[10px] font-black uppercase tracking-widest opacity-70 mb-2 whitespace-nowrap">Bilanz ({timeRangeLabel})</div>
-            <div className="flex items-center gap-2">
-              <div className="text-2xl sm:text-3xl font-black tracking-tighter break-all">
+          <div
+            className={`rounded-[1.5rem] border shadow-xl relative overflow-hidden ${
+              rangeTotalStats.balance >= 0
+                ? 'border-success bg-success text-success-text'
+                : 'border-danger bg-danger text-danger-text'
+            }`}
+          >
+            <div className="p-4 sm:p-5 pb-8">
+              <div className="text-[10px] font-black uppercase tracking-widest opacity-70 mb-2 whitespace-nowrap">Bilanz ({timeRangeLabel})</div>
+              <div
+                className="font-black tracking-tighter break-words leading-tight"
+                style={{
+                  fontSize: Math.abs(rangeTotalStats.balance) >= 1000000 
+                    ? 'clamp(1rem, 3.5vw, 1.125rem)' 
+                    : Math.abs(rangeTotalStats.balance) >= 100000
+                    ? 'clamp(1.125rem, 4vw, 1.25rem)'
+                    : 'clamp(1.5rem, 6vw, 2rem)'
+                }}
+              >
                 {formatValue(rangeTotalStats.balance, rangeTotalStats.balanceHours).primary}
               </div>
+              {formatValue(rangeTotalStats.balance, rangeTotalStats.balanceHours).secondary && (
+                <div className="mt-1 text-xs font-bold opacity-60 break-all">
+                  {formatValue(rangeTotalStats.balance, rangeTotalStats.balanceHours).secondary}
+                </div>
+              )}
             </div>
-            {formatValue(rangeTotalStats.balance, rangeTotalStats.balanceHours).secondary && (
-              <div className="mt-1 text-xs font-bold opacity-60 break-all">
-                {formatValue(rangeTotalStats.balance, rangeTotalStats.balanceHours).secondary}
+            {/* Percentage Notch */}
+            {rangeTotalStats.earned > 0 && (
+              <div className="absolute bottom-0 left-0 right-0 flex justify-center">
+                <div
+                  className={`px-3 py-1 rounded-t-lg text-xs font-black ${
+                    rangeTotalStats.balance >= 0
+                      ? 'bg-success-bg text-success'
+                      : 'bg-danger-bg text-danger'
+                  }`}
+                  style={{
+                    boxShadow: '0 -2px 8px rgba(0,0,0,0.1)'
+                  }}
+                >
+                  {((rangeTotalStats.spent / rangeTotalStats.earned) * 100).toFixed(0)}%
+                </div>
               </div>
             )}
           </div>
@@ -435,7 +506,7 @@ export function StatusScreen(props: { settings: Settings }) {
                       </div>
 
                       {/* Progress bar */}
-                      <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-input">
+                      <div className="mt-3 h-2 overflow-hidden rounded-full bg-border">
                         <div
                           className={`h-full transition-all duration-700 ease-out ${isExceeded ? 'bg-danger' : 'bg-warning'
                             }`}
@@ -458,6 +529,7 @@ export function StatusScreen(props: { settings: Settings }) {
         showXAxis={true}
         title={timeRange === '1M' ? 'Dieser Monat' : `Zeitraum: ${timeRangeLabel}`}
         preferTimeDisplay={props.settings.preferTimeDisplay}
+        currentDay={timeRange === '1M' ? today : undefined}
       />
 
       <QuickAddButtons

@@ -41,13 +41,12 @@ export function TopNav(props: {
   onNavigate: (screen: Screen) => void
 }) {
   const { active, onNavigate } = props
-  const { theme } = useTheme()
+  const { theme, toggleTheme } = useTheme()
 
   const items: { id: Screen; label: string; Icon: React.ComponentType; hideLabel?: boolean }[] = [
     { id: 'status', label: 'Status', Icon: Icons.Status },
     { id: 'reports', label: 'Berichte', Icon: Icons.Reports },
     { id: 'help', label: 'Hilfe', Icon: Icons.Help },
-    { id: 'settings', label: 'Einstellungen', Icon: Icons.Settings, hideLabel: true },
   ]
 
   return (
@@ -92,6 +91,30 @@ export function TopNav(props: {
               </button>
             )
           })}
+
+          {/* Theme Toggle Button */}
+          <button
+            type="button"
+            onClick={toggleTheme}
+            className="aspect-square p-2 rounded-2xl bg-input hover:bg-card-hover text-secondary hover:text-primary transition-all"
+            title={theme === 'dark' ? 'Zum hellen Modus wechseln' : 'Zum dunklen Modus wechseln'}
+            aria-label="Theme wechseln"
+          >
+            <span className="text-lg">
+              {theme === 'dark' ? '☀️' : '🌙'}
+            </span>
+          </button>
+
+          {/* Settings Button */}
+          <button
+            type="button"
+            className="aspect-square p-2 bg-input rounded-2xl text-secondary hover:text-primary hover:bg-card-hover transition-all"
+            onClick={() => onNavigate('settings')}
+            aria-label="Einstellungen"
+            aria-current={active === 'settings' ? 'page' : undefined}
+          >
+            <Icons.Settings />
+          </button>
         </div>
       </div>
     </nav>
