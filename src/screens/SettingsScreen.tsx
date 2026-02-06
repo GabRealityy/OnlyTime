@@ -30,7 +30,6 @@ export function SettingsScreen(props: {
   onChange: (next: Settings) => void
 }) {
   const { settings, onChange } = props
-  const { theme, toggleTheme } = useTheme()
   const [showAdvanced, setShowAdvanced] = useState(false)
   const [showAdditionalIncome, setShowAdditionalIncome] = useState(settings.additionalIncomeSources.length > 0)
   const [showCategoryManager, setShowCategoryManager] = useState(false)

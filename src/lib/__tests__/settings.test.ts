@@ -39,6 +39,8 @@ describe('settings - Erweiterte Stundenlohn-Berechnung', () => {
     customCategories: [],
     categoryBudgets: [],
     preferTimeDisplay: false,
+    currency: 'CHF',
+    showOnboardingChecklist: true,
   }
 
   describe('monthlyWorkingHours', () => {
