@@ -103,10 +103,10 @@ export function CategoryManager(props: {
           {categories.map(cat => (
             <div
               key={cat.id}
-              className="flex items-center gap-3 rounded-lg border border-zinc-800 bg-zinc-900/60 p-3"
+              className="flex items-center gap-3 rounded-lg border border-border bg-card p-3"
             >
               <div
-                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border-2 border-zinc-700 bg-zinc-800 text-xl"
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border-2 border-secondary bg-input text-xl"
               >
                 {cat.emoji || '📁'}
               </div>
@@ -133,7 +133,7 @@ export function CategoryManager(props: {
           ))}
 
           {categories.length === 0 && (
-            <div className="rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-950/40 p-6 text-center text-sm text-zinc-600 dark:text-zinc-500">
+            <div className="rounded-lg border border-border bg-page p-6 text-center text-sm text-secondary">
               Noch keine benutzerdefinierten Kategorien.
               <br />
               Erstelle deine erste Kategorie!
@@ -143,7 +143,7 @@ export function CategoryManager(props: {
 
         {/* Edit Form */}
         {editingId && (
-          <div className="rounded-lg border-2 border-zinc-700 bg-zinc-950/80 p-4">
+          <div className="rounded-lg border-2 border-secondary bg-card p-4">
             <div className="mb-3 font-semibold">
               {editingId === 'new' ? 'Neue Kategorie' : 'Kategorie bearbeiten'}
             </div>
@@ -169,23 +169,23 @@ export function CategoryManager(props: {
                 <div className="mt-1 flex items-center gap-2">
                   <button
                     type="button"
-                    className="flex h-12 w-12 items-center justify-center rounded-lg border-2 border-zinc-700 bg-zinc-900 text-2xl hover:border-zinc-600"
+                    className="flex h-12 w-12 items-center justify-center rounded-lg border-2 border-secondary bg-card text-2xl hover:border-border"
                     onClick={() => setShowEmojiPicker(!showEmojiPicker)}
                   >
                     {emoji}
                   </button>
-                  <span className="text-xs text-zinc-500">
+                  <span className="text-xs text-secondary">
                     Klicke um Emoji zu wählen
                   </span>
                 </div>
 
                 {showEmojiPicker && (
-                  <div className="mt-2 grid grid-cols-8 gap-1 rounded-lg border border-zinc-800 bg-zinc-900/60 p-2">
+                  <div className="mt-2 grid grid-cols-8 gap-1 rounded-lg border border-border bg-card p-2">
                     {AVAILABLE_EMOJIS.map((em) => (
                       <button
                         key={em}
                         type="button"
-                        className="flex h-10 w-10 items-center justify-center rounded hover:bg-zinc-800 text-xl"
+                        className="flex h-10 w-10 items-center justify-center rounded hover:bg-input text-xl"
                         onClick={() => {
                           setEmoji(em)
                           setShowEmojiPicker(false)

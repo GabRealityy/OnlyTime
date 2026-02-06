@@ -118,7 +118,7 @@ export function BudgetManager(props: {
   return (
     <Modal title="Kategorie-Budgets" open={open} onClose={onClose}>
       <div className="space-y-4">
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">
+        <p className="text-sm text-secondary">
           Setze monatliche Budgets für einzelne Kategorien. Du wirst gewarnt, wenn du das Budget überschreitest.
         </p>
 
@@ -131,7 +131,7 @@ export function BudgetManager(props: {
             return (
               <div
                 key={cat.id}
-                className="rounded-lg border border-zinc-800 bg-zinc-900/60 p-3"
+                className="rounded-lg border border-border bg-card p-3"
               >
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex items-center gap-2">
@@ -148,7 +148,7 @@ export function BudgetManager(props: {
                               <div className="font-mono text-sm">
                                 {formatCHF(budget.monthlyBudgetCHF)}
                                 {hourlyRate > 0 && (
-                                  <span className="ml-2 text-xs text-zinc-600 dark:text-zinc-500">
+                                  <span className="ml-2 text-xs text-secondary">
                                     ({formatHoursMinutes(toHours(budget.monthlyBudgetCHF, hourlyRate))})
                                   </span>
                                 )}
@@ -158,7 +158,7 @@ export function BudgetManager(props: {
                               <div className="font-mono text-sm">
                                 {formatHoursMinutes(budget.monthlyBudgetHours)}
                                 {hourlyRate > 0 && (
-                                  <span className="ml-2 text-xs text-zinc-600 dark:text-zinc-500">
+                                  <span className="ml-2 text-xs text-secondary">
                                     ({formatCHF(budget.monthlyBudgetHours * hourlyRate)})
                                   </span>
                                 )}
@@ -198,9 +198,9 @@ export function BudgetManager(props: {
                     <div className="flex gap-2 text-xs">
                       <button
                         type="button"
-                        className={`px-3 py-1 rounded-lg ${budgetMode === 'chf'
-                          ? 'bg-zinc-200 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100'
-                          : 'bg-zinc-100 dark:bg-zinc-900/40 text-zinc-500'
+                        className={`px-3 py-1 rounded-lg transition-all ${budgetMode === 'chf'
+                          ? 'ot-btn-active'
+                          : 'bg-card text-secondary hover:bg-card-hover'
                           }`}
                         onClick={() => setBudgetMode('chf')}
                       >
@@ -208,9 +208,9 @@ export function BudgetManager(props: {
                       </button>
                       <button
                         type="button"
-                        className={`px-3 py-1 rounded-lg ${budgetMode === 'hours'
-                          ? 'bg-zinc-200 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100'
-                          : 'bg-zinc-100 dark:bg-zinc-900/40 text-zinc-500'
+                        className={`px-3 py-1 rounded-lg transition-all ${budgetMode === 'hours'
+                          ? 'ot-btn-active'
+                          : 'bg-card text-secondary hover:bg-card-hover'
                           }`}
                         onClick={() => setBudgetMode('hours')}
                       >
@@ -254,7 +254,7 @@ export function BudgetManager(props: {
         </div>
 
         {budgets.length === 0 && (
-          <div className="rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-950/40 p-6 text-center text-sm text-zinc-600 dark:text-zinc-500">
+          <div className="rounded-lg border border-border bg-page p-6 text-center text-sm text-secondary">
             Noch keine Budgets definiert.
             <br />
             Klicke auf "Budget setzen" bei einer Kategorie.

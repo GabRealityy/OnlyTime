@@ -4,6 +4,8 @@
 
 import type { Screen } from '../types.ts'
 import AppLogo from '../assets/AppLogo_OnlyTime.svg'
+import AppLogoWhite from '../assets/AppLogo_OnlyTime_White.svg'
+import { useTheme } from '../contexts/ThemeContext'
 
 // Minimalist SVG Icons (TR Style)
 const Icons = {
@@ -39,27 +41,27 @@ export function TopNav(props: {
   onNavigate: (screen: Screen) => void
 }) {
   const { active, onNavigate } = props
+  const { theme, toggleTheme } = useTheme()
 
   const items: { id: Screen; label: string; Icon: React.ComponentType; hideLabel?: boolean }[] = [
     { id: 'status', label: 'Status', Icon: Icons.Status },
     { id: 'reports', label: 'Berichte', Icon: Icons.Reports },
     { id: 'help', label: 'Hilfe', Icon: Icons.Help },
-    { id: 'settings', label: 'Einstellungen', Icon: Icons.Settings, hideLabel: true },
   ]
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-zinc-100 dark:border-zinc-800 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-xl">
+    <nav className="sticky top-0 z-50 border-b border-border bg-card/80 backdrop-blur-xl">
       <div className="mx-auto flex max-w-3xl items-center justify-between px-6 py-4">
         <div
           className="flex cursor-pointer items-center gap-8 transition-opacity hover:opacity-70"
           onClick={() => onNavigate('status')}
         >
           <img
-            src={AppLogo}
+            src={theme === 'dark' ? AppLogoWhite : AppLogo}
             alt="OnlyTime"
-            className="h-8 w-8 dark:invert"
+            className="h-8 w-8"
           />
-          <div className="text-2xl font-black tracking-tighter text-zinc-950 dark:text-white h-8 flex items-center">
+          <div className="text-2xl font-black tracking-tighter text-primary h-8 flex items-center">
             OnlyTime
           </div>
         </div>
@@ -74,9 +76,9 @@ export function TopNav(props: {
                 className={`
                   flex items-center justify-center rounded-2xl px-4 py-2 text-sm font-bold transition-all
                   ${isActive
-                    ? 'bg-zinc-950 text-white dark:bg-zinc-50 dark:text-zinc-950'
-                    : 'text-zinc-500 hover:text-zinc-950 dark:text-zinc-400 dark:hover:text-zinc-50 hover:bg-zinc-50 dark:hover:bg-zinc-900'}
-                  ${it.hideLabel ? 'aspect-square p-2 bg-zinc-50 dark:bg-zinc-900 ml-2' : ''}
+                    ? 'ot-btn-active'
+                    : 'text-secondary hover:text-primary hover:bg-input'}
+                  ${it.hideLabel ? 'aspect-square p-2 bg-input ml-2' : ''}
                 `}
                 onClick={() => onNavigate(it.id)}
                 aria-label={it.label}
@@ -89,6 +91,30 @@ export function TopNav(props: {
               </button>
             )
           })}
+
+          {/* Theme Toggle Button */}
+          <button
+            type="button"
+            onClick={toggleTheme}
+            className="aspect-square p-2 rounded-2xl bg-input hover:bg-card-hover text-secondary hover:text-primary transition-all"
+            title={theme === 'dark' ? 'Zum hellen Modus wechseln' : 'Zum dunklen Modus wechseln'}
+            aria-label="Theme wechseln"
+          >
+            <span className="text-lg">
+              {theme === 'dark' ? '☀️' : '🌙'}
+            </span>
+          </button>
+
+          {/* Settings Button */}
+          <button
+            type="button"
+            className="aspect-square p-2 bg-input rounded-2xl text-secondary hover:text-primary hover:bg-card-hover transition-all"
+            onClick={() => onNavigate('settings')}
+            aria-label="Einstellungen"
+            aria-current={active === 'settings' ? 'page' : undefined}
+          >
+            <Icons.Settings />
+          </button>
         </div>
       </div>
     </nav>

@@ -36,6 +36,8 @@ export function LineChart(props: {
   showTimeAxis?: boolean
   showXAxis?: boolean
   title?: string
+  preferTimeDisplay?: boolean
+  currentDay?: number
 }) {
   const width = props.width ?? 720
   const height = props.height ?? 220
@@ -43,6 +45,8 @@ export function LineChart(props: {
   const showTimeAxis = props.showTimeAxis ?? (hourlyRate > 0)
   const showXAxis = props.showXAxis ?? true
   const title = props.title ?? 'This month'
+  const preferTimeDisplay = props.preferTimeDisplay ?? false
+  const currentDay = props.currentDay
 
   const [hoverDay, setHoverDay] = useState<number | null>(null)
 
@@ -130,14 +134,14 @@ export function LineChart(props: {
     <div className="ot-card">
       <div className="mb-2 flex items-center justify-between">
         <div className="text-sm font-semibold">{title}</div>
-        <div className="flex items-center gap-3 text-xs text-zinc-600 dark:text-zinc-400">
+        <div className="flex items-center gap-3 text-xs text-secondary">
           <div className="flex items-center gap-2">
-            <span className="inline-block h-2 w-2 rounded-full bg-emerald-500" />
-            <span>earned</span>
+            <div className="h-3 w-3 rounded-full bg-success border border-success" />
+            <span>Verdienst</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="inline-block h-2 w-2 rounded-full bg-rose-500" />
-            <span>spent</span>
+            <div className="h-3 w-3 rounded-full bg-danger border border-danger" />
+            <span>Ausgaben</span>
           </div>
           {showTimeAxis && (
             <span className="text-[10px]">(Zeitwerte berücksichtigt)</span>
@@ -147,7 +151,7 @@ export function LineChart(props: {
 
       <svg
         viewBox={`0 0 ${width} ${height}`}
-        className="h-[220px] w-full text-black dark:text-white"
+        className="h-[220px] w-full text-primary"
         role="img"
         aria-label="Earned vs spent chart"
         onMouseMove={(e) => {
@@ -189,8 +193,9 @@ export function LineChart(props: {
             x2={width - marginRight}
             y1={y}
             y2={y}
-            stroke="#27272a"
+            stroke="currentColor"
             strokeWidth={1}
+            opacity={0.2}
           />
         ))}
 
@@ -282,11 +287,25 @@ export function LineChart(props: {
               x2={hoverX}
               y1={marginTop}
               y2={height - marginBottom}
-              stroke="#71717a"
+              stroke="currentColor"
               strokeDasharray="2 4"
-              opacity={0.5}
+              opacity={0.3}
             />
           </g>
+        )}
+
+        {/* current day marker (dotted vertical line) */}
+        {currentDay !== undefined && currentDay > 0 && (
+          <line
+            x1={xForDay(currentDay)}
+            x2={xForDay(currentDay)}
+            y1={marginTop}
+            y2={height - marginBottom}
+            stroke="currentColor"
+            strokeDasharray="2 3"
+            opacity={0.5}
+            strokeWidth={1.5}
+          />
         )}
 
         {/* frame */}
@@ -296,8 +315,9 @@ export function LineChart(props: {
           width={innerW}
           height={innerH}
           fill="none"
-          stroke="#27272a"
+          stroke="currentColor"
           rx={10}
+          opacity={0.2}
         />
 
         {/* x-axis ticks/labels */}
@@ -318,9 +338,9 @@ export function LineChart(props: {
                   x2={x}
                   y1={height - marginBottom}
                   y2={height - marginBottom + 4}
-                  stroke="#52525b"
+                  stroke="currentColor"
                   strokeWidth={1}
-                  opacity={0.8}
+                  opacity={0.3}
                 />
                 <text
                   x={x}
@@ -338,23 +358,41 @@ export function LineChart(props: {
 
       <div className="mt-2 min-h-[64px]">
         {hoverPoint && (
-          <div className="rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 p-2 text-xs">
-            <div className="font-semibold text-zinc-700 dark:text-zinc-300">
+            <div className="rounded-lg border border-border bg-card p-2 text-xs">
+            <div className="font-semibold text-secondary">
               {hoverPoint.dayLabel ? hoverPoint.dayLabel : `Tag ${hoverPoint.day}`}
             </div>
             <div className="mt-1 grid grid-cols-2 gap-2">
               <div>
-                <span className="text-zinc-600 dark:text-zinc-500">Verdient:</span>{' '}
-                <span className="text-emerald-600 dark:text-emerald-400">{formatCHF(hoverPoint.earned)}</span>
-                {showTimeAxis && hoverPoint.earnedHours !== undefined && (
-                  <span className="ml-1 text-zinc-600 dark:text-zinc-500">({formatHoursMinutes(hoverPoint.earnedHours)})</span>
+                <span className="text-secondary">Verdient:</span>{' '}
+                {preferTimeDisplay && showTimeAxis && hoverPoint.earnedHours !== undefined ? (
+                  <>
+                    <span className="text-success font-semibold">{formatHoursMinutes(hoverPoint.earnedHours)}</span>
+                    <span className="ml-1 text-secondary">({formatCHF(hoverPoint.earned)})</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="text-success">{formatCHF(hoverPoint.earned)}</span>
+                    {showTimeAxis && hoverPoint.earnedHours !== undefined && (
+                      <span className="ml-1 text-secondary">({formatHoursMinutes(hoverPoint.earnedHours)})</span>
+                    )}
+                  </>
                 )}
               </div>
               <div>
-                <span className="text-zinc-600 dark:text-zinc-500">Ausgegeben:</span>{' '}
-                <span className="text-rose-600 dark:text-rose-400">{formatCHF(hoverPoint.spent)}</span>
-                {showTimeAxis && hoverPoint.spentHours !== undefined && (
-                  <span className="ml-1 text-zinc-600 dark:text-zinc-500">({formatHoursMinutes(hoverPoint.spentHours)})</span>
+                <span className="text-secondary">Ausgegeben:</span>{' '}
+                {preferTimeDisplay && showTimeAxis && hoverPoint.spentHours !== undefined ? (
+                  <>
+                    <span className="text-danger font-semibold">{formatHoursMinutes(hoverPoint.spentHours)}</span>
+                    <span className="ml-1 text-secondary">({formatCHF(hoverPoint.spent)})</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="text-danger">{formatCHF(hoverPoint.spent)}</span>
+                    {showTimeAxis && hoverPoint.spentHours !== undefined && (
+                      <span className="ml-1 text-secondary">({formatHoursMinutes(hoverPoint.spentHours)})</span>
+                    )}
+                  </>
                 )}
               </div>
             </div>
@@ -362,7 +400,7 @@ export function LineChart(props: {
         )}
       </div>
 
-      <div className="mt-2 text-xs text-zinc-600 dark:text-zinc-500">
+      <div className="mt-2 text-xs text-secondary">
         Crossing marker appears when spending overtakes earning.
       </div>
     </div>

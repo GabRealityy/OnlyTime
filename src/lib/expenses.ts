@@ -104,6 +104,47 @@ export function loadExpensesForMonth(monthKey: string): Expense[] {
   return parsed
 }
 
+/**
+ * Lädt Ausgaben für einen Datumsbereich effizient.
+ * Nützlich für lange Zeiträume, um mehrere Monate auf einmal zu laden.
+ * 
+ * @param startMonthKey - Start-Monat im Format YYYY-MM
+ * @param endMonthKey - End-Monat im Format YYYY-MM (inklusive)
+ * @returns Alle Ausgaben im angegebenen Zeitraum, sortiert nach Datum
+ */
+export function loadExpensesForRange(startMonthKey: string, endMonthKey: string): Expense[] {
+  const allExpenses: Expense[] = []
+  
+  // Parse start and end dates
+  const [startYear, startMonth] = startMonthKey.split('-').map(Number)
+  const [endYear, endMonth] = endMonthKey.split('-').map(Number)
+  
+  let currentYear = startYear
+  let currentMonth = startMonth
+  
+  // Iterate through all months in range
+  while (
+    currentYear < endYear || 
+    (currentYear === endYear && currentMonth <= endMonth)
+  ) {
+    const monthKey = `${currentYear}-${String(currentMonth).padStart(2, '0')}`
+    const monthExpenses = loadExpensesForMonth(monthKey)
+    allExpenses.push(...monthExpenses)
+    
+    // Move to next month
+    currentMonth++
+    if (currentMonth > 12) {
+      currentMonth = 1
+      currentYear++
+    }
+  }
+  
+  // Sort all expenses by date (newest first)
+  allExpenses.sort((a, b) => b.date.localeCompare(a.date) || b.createdAt - a.createdAt)
+  
+  return allExpenses
+}
+
 export function saveExpensesForMonth(monthKey: string, expenses: Expense[]): void {
   saveToStorage(storageKeys.expensesByMonth(monthKey), expenses)
 }

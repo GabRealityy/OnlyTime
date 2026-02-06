@@ -28,11 +28,12 @@ export function ExpenseFormModal(props: {
   hourlyRate: number
   initialData?: Partial<ExpenseFormData>
   customCategories?: Array<{ id: string; name: string; emoji?: string }>
+  preferTimeDisplay?: boolean
 }) {
-  const { open, onClose, onSave, hourlyRate, initialData, customCategories = [] } = props
+  const { open, onClose, onSave, hourlyRate, initialData, customCategories = [], preferTimeDisplay = false } = props
 
-  // Input Mode: 'chf' oder 'time'
-  const [inputMode, setInputMode] = useState<'chf' | 'time'>('chf')
+  // Input Mode: 'chf' oder 'time' - default based on preferTimeDisplay
+  const [inputMode, setInputMode] = useState<'chf' | 'time'>(preferTimeDisplay && hourlyRate > 0 ? 'time' : 'chf')
 
   // Form fields
   const [amountInput, setAmountInput] = useState<string>('')
@@ -55,12 +56,12 @@ export function ExpenseFormModal(props: {
       setDate(initialData?.date || isoDateLocal(new Date()))
       setNote('')
       setErrors({})
-      setInputMode('chf')
+      setInputMode(preferTimeDisplay && hourlyRate > 0 ? 'time' : 'chf')
 
       // Focus amount field after modal animation
       setTimeout(() => amountInputRef.current?.focus(), 100)
     }
-  }, [open, initialData])
+  }, [open, initialData, preferTimeDisplay, hourlyRate])
 
   const parseTimeInput = (input: string): number | null => {
     // Format: "1:30" oder "1.5" oder "90"
@@ -139,7 +140,7 @@ export function ExpenseFormModal(props: {
         {/* Amount/Time Display & Calculator */}
         <div className="py-6 text-center">
           <div className="mb-2 flex items-center justify-center gap-2">
-            <span className="text-xs font-bold uppercase tracking-[0.2em] text-zinc-500 dark:text-zinc-400">
+            <span className="text-xs font-bold uppercase tracking-[0.2em] text-secondary">
               {inputMode === 'chf' ? 'Betrag in CHF' : 'Zeitaufwand (h:m)'}
             </span>
           </div>
@@ -148,7 +149,7 @@ export function ExpenseFormModal(props: {
             ref={amountInputRef}
             id="amount"
             inputMode="decimal"
-            className="w-full bg-transparent text-center text-5xl font-black tracking-tighter focus:outline-none placeholder:text-zinc-300 dark:placeholder:text-zinc-700"
+            className="w-full bg-transparent text-center text-5xl font-black tracking-tighter focus:outline-none placeholder:text-tertiary"
             placeholder={inputMode === 'chf' ? '0.00' : '0:00'}
             value={amountInput}
             onChange={(e) => {
@@ -158,13 +159,13 @@ export function ExpenseFormModal(props: {
           />
 
           {errors.amount && (
-            <div className="mt-2 text-xs text-rose-500 font-bold">{errors.amount}</div>
+            <div className="mt-2 text-xs text-danger font-bold">{errors.amount}</div>
           )}
 
           <div className="mt-6 flex justify-center">
             <button
               type="button"
-              className="group flex items-center gap-2 rounded-full border border-zinc-100 bg-zinc-50 px-4 py-2 text-xs font-bold transition-all hover:border-zinc-950 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-zinc-100"
+              className="group flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-xs font-bold transition-all hover:border-primary"
               onClick={() => setInputMode(inputMode === 'chf' ? 'time' : 'chf')}
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="transition-transform group-hover:rotate-180">
@@ -177,7 +178,7 @@ export function ExpenseFormModal(props: {
           {/* Result Subtext */}
           <div className="mt-6 min-h-[1.5rem]">
             {parsedAmount && parsedAmount > 0 ? (
-              <div className="flex items-center justify-center gap-2 text-sm font-bold text-emerald-600 dark:text-emerald-400">
+              <div className="flex items-center justify-center gap-2 text-sm font-bold text-success">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <path d="m7 15 5 5 5-5" /><path d="m7 9 5-5 5 5" />
                 </svg>
@@ -186,7 +187,7 @@ export function ExpenseFormModal(props: {
                 </span>
               </div>
             ) : (
-              <div className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-700">
+              <div className="text-[10px] font-bold uppercase tracking-widest text-tertiary">
                 Basis: {formatCHF(hourlyRate)}/h
               </div>
             )}
@@ -208,7 +209,7 @@ export function ExpenseFormModal(props: {
             }}
           />
           {errors.title && (
-            <div className="mt-1 text-xs text-rose-400">{errors.title}</div>
+            <div className="mt-1 text-xs text-danger">{errors.title}</div>
           )}
         </div>
 
@@ -245,7 +246,7 @@ export function ExpenseFormModal(props: {
 
         {/* Optional Note */}
         <div>
-          <label htmlFor="expense-note" className="text-sm font-medium text-zinc-600 dark:text-zinc-400">
+          <label htmlFor="expense-note" className="text-sm font-medium text-secondary">
             Notiz (optional)
           </label>
           <textarea
@@ -275,7 +276,7 @@ export function ExpenseFormModal(props: {
           </button>
         </div>
 
-        <div className="text-xs text-zinc-600 dark:text-zinc-500">
+        <div className="text-xs text-secondary">
           Tipp: Drücke Enter zum Speichern
         </div>
       </div>
