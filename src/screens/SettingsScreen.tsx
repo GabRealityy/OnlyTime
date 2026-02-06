@@ -201,6 +201,23 @@ export function SettingsScreen(props: {
             ))}
           </div>
         </div>
+
+        <div className="mt-6">
+          <label className="flex items-center gap-3 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={settings.preferTimeDisplay}
+              onChange={(e) => onChange({ ...settings, preferTimeDisplay: e.target.checked })}
+              className="h-5 w-5"
+            />
+            <div>
+              <div className="text-sm font-medium">Zeit-Fokus-Modus</div>
+              <div className="text-xs text-tertiary">
+                Zeige Zeitwerte (Stunden) prominent an, CHF in Klammern
+              </div>
+            </div>
+          </label>
+        </div>
       </div>
 
       {/* Setup Checklist */}
