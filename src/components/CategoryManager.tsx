@@ -78,7 +78,8 @@ export function CategoryManager(props: {
     const deletedCategory = categories.find(cat => cat.id === id)
     if (!deletedCategory) return
 
-    onSave(categories.filter(cat => cat.id !== id))
+    const remaining = categories.filter(cat => cat.id !== id)
+    onSave(remaining)
     setCategoryToDelete(null)
 
     // Show toast with undo option
@@ -88,7 +89,7 @@ export function CategoryManager(props: {
       5000,
       'Rückgängig',
       () => {
-        onSave([...categories, deletedCategory])
+        onSave([...remaining, deletedCategory])
         showToast(`Kategorie wiederhergestellt`, 'success', 2000)
       },
     )

@@ -97,7 +97,8 @@ export function BudgetManager(props: {
     const deletedBudget = budgets.find(b => b.categoryId === categoryId)
     if (!deletedBudget) return
 
-    onSave(budgets.filter(b => b.categoryId !== categoryId))
+    const remaining = budgets.filter(b => b.categoryId !== categoryId)
+    onSave(remaining)
     setBudgetToRemove(null)
 
     // Show toast with undo option
@@ -108,7 +109,7 @@ export function BudgetManager(props: {
       5000,
       'Rückgängig',
       () => {
-        onSave([...budgets, deletedBudget])
+        onSave([...remaining, deletedBudget])
         showToast(`Budget wiederhergestellt`, 'success', 2000)
       },
     )

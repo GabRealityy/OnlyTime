@@ -24,28 +24,14 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Lint (informational)
-        id: lint
-        continue-on-error: true
+      - name: Lint
         run: npm run lint
 
-      - name: Tests (informational)
-        id: test
-        continue-on-error: true
+      - name: Tests
         run: npm run test:run
 
       - name: Build
         run: npm run build
-
-      - name: Quality summary
-        if: always()
-        run: |
-          if [ "${{ steps.lint.outcome }}" = "failure" ]; then
-            echo "::warning::Lint checks failed. Deploy continued intentionally."
-          fi
-          if [ "${{ steps.test.outcome }}" = "failure" ]; then
-            echo "::warning::Tests failed. Deploy continued intentionally."
-          fi
 
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4
