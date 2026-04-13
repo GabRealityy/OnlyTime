@@ -14,6 +14,7 @@ import { hourlyRateCHF, effectiveNetMonthlyIncome } from '../lib/settings'
 import { dayOfMonth, daysInMonth, isoDateLocal, monthKeyFromDate, monthLabel } from '../lib/date'
 import { formatCHF, formatHoursMinutes, toHours } from '../lib/money'
 import { addExpense, deleteExpense, loadExpensesForMonth, type Expense, type QuickAddPreset, categoryEmojis } from '../lib/expenses'
+import { useExpenses } from '../hooks/useExpenses'
 import { LineChart, type DailyPoint } from '../components/LineChart'
 import { QuickAddButtons } from '../components/QuickAddButtons'
 import { ExpenseFormModal, type ExpenseFormData } from '../components/ExpenseFormModal'
@@ -37,29 +38,26 @@ function toDay(isoDate: string): number {
   return Number.isFinite(d) ? d : 1
 }
 
-export function StatusScreen(props: { settings: Settings; onChange: (next: Settings) => void }) {
+type Props = {
+  settings: Settings
+  onChange: (next: Settings) => void
+  now?: Date
+}
+
+export function StatusScreen(props: Props) {
   const [timeRange, setTimeRange] = useState<TimeRange>('1M')
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
 
-  const [reloadToken, setReloadToken] = useState(0)
-  const [now, setNow] = useState(() => new Date())
-  const reload = () => {
-    setNow(new Date())
-    setReloadToken((t) => t + 1)
-  }
+  const nowProp = props.now
+  const now = useMemo(() => nowProp ?? new Date(), [nowProp])
 
   const monthKey = monthKeyFromDate(now)
   const today = dayOfMonth(now)
   const dim = daysInMonth(now)
   const label = monthLabel(now)
 
-  const expenses = useMemo(
-    () => loadExpensesForMonth(monthKey),
-    // reloadToken triggers re-read of localStorage after mutations
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [monthKey, reloadToken],
-  )
+  const { expenses, mutate } = useExpenses(monthKey)
 
   // Modal states
   const [showExpenseForm, setShowExpenseForm] = useState(false)
@@ -247,7 +245,7 @@ export function StatusScreen(props: { settings: Settings; onChange: (next: Setti
       category: data.category,
     })
 
-    reload()
+    mutate()
     showToast(`${data.title} erfolgreich gespeichert`, 'success')
   }
 
@@ -258,7 +256,7 @@ export function StatusScreen(props: { settings: Settings; onChange: (next: Setti
       title: preset.title,
       category: preset.category,
     })
-    reload()
+    mutate()
     showToast(`${preset.title} erfasst: ${formatCHF(preset.amountCHF)}`, 'success', 2000)
   }
 
@@ -268,7 +266,7 @@ export function StatusScreen(props: { settings: Settings; onChange: (next: Setti
       addExpense(expMonthKey, exp)
     }
 
-    reload()
+    mutate()
     showToast(`${importedExpenses.length} Ausgaben importiert`, 'success')
   }
 
@@ -279,7 +277,7 @@ export function StatusScreen(props: { settings: Settings; onChange: (next: Setti
 
     const expMonthKey = deletedExpense.date.slice(0, 7)
     deleteExpense(expMonthKey, id)
-    reload()
+    mutate()
 
     showToast(
       `${title} gelöscht`,
@@ -294,7 +292,7 @@ export function StatusScreen(props: { settings: Settings; onChange: (next: Setti
           title: deletedExpense.title,
           category: deletedExpense.category,
         })
-        reload()
+        mutate()
         showToast(`${title} wiederhergestellt`, 'success', 2000)
       }
     )
