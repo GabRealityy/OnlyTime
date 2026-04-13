@@ -18,6 +18,7 @@ import { BudgetManager } from '../components/BudgetManager'
 import { ConfirmDialog } from '../components/ConfirmDialog'
 import { showToast } from '../components/Toast'
 import { OnboardingChecklist, type ChecklistItem } from '../components/OnboardingChecklist'
+import { DecimalInput } from '../components/DecimalInput'
 import { expenseCategories, type QuickAddPreset, categoryEmojis, AVAILABLE_EMOJIS } from '../lib/expenses'
 import { loadExpensesForMonth } from '../lib/expenses'
 import { monthKeyFromDate } from '../lib/date'
@@ -516,29 +517,19 @@ export function SettingsScreen(props: {
                 <div className="grid grid-cols-2 gap-2">
                   <div>
                     <label className="text-xs text-tertiary">Betrag (CHF/Monat)</label>
-                    <input
-                      inputMode="decimal"
+                    <DecimalInput
                       placeholder="z.B. 500"
-                      value={String(source.amountCHF)}
-                      onChange={(e) =>
-                        updateIncomeSource(source.id, {
-                          amountCHF: Number(e.target.value.replace(',', '.')) || 0,
-                        })
-                      }
+                      value={source.amountCHF}
+                      onChange={(next) => updateIncomeSource(source.id, { amountCHF: next })}
                       className="w-full text-sm"
                     />
                   </div>
                   <div>
                     <label className="text-xs text-tertiary">Zeitaufwand (h/Monat)</label>
-                    <input
-                      inputMode="decimal"
+                    <DecimalInput
                       placeholder="z.B. 20"
-                      value={String(source.hoursPerMonth)}
-                      onChange={(e) =>
-                        updateIncomeSource(source.id, {
-                          hoursPerMonth: Number(e.target.value.replace(',', '.')) || 0,
-                        })
-                      }
+                      value={source.hoursPerMonth}
+                      onChange={(next) => updateIncomeSource(source.id, { hoursPerMonth: next })}
                       className="w-full text-sm"
                     />
                   </div>
@@ -656,15 +647,9 @@ export function SettingsScreen(props: {
 
                 <div className="sm:col-span-3">
                   <label className="text-xs text-tertiary">Betrag (CHF)</label>
-                  <input
-                    inputMode="decimal"
-                    value={String(p.amountCHF ?? 0)}
-                    onChange={(e) => {
-                      const rawValue = e.target.value.replace(',', '.')
-                      updateQuickAddPreset(p.id, {
-                        amountCHF: Number(rawValue) || 0,
-                      })
-                    }}
+                  <DecimalInput
+                    value={p.amountCHF ?? 0}
+                    onChange={(next) => updateQuickAddPreset(p.id, { amountCHF: next })}
                     className="w-full text-sm"
                   />
                 </div>
