@@ -343,3 +343,48 @@ Die App ist jetzt bereit für Tests, Demos und produktiven Einsatz! 🎉
 
 **Implementiert von:** GitHub Copilot  
 **Review empfohlen:** Ja, bitte manuelle Tests durchführen
+
+## Daten-Schicht (Phasen 4–5)
+
+Das Verbesserungsprogramm hat eine Repository-Seam zwischen UI-Code und
+localStorage-Bucket eingezogen. Komponenten, Screens und Hooks kennen nur
+noch das Interface; die konkrete Speicher-Implementierung ist austauschbar.
+
+### Interface
+
+[src/lib/expenseRepo.ts](src/lib/expenseRepo.ts) definiert `ExpenseRepo`
+mit `listMonth`, `listRange`, `add` und `delete`. Die Default-Instanz
+`localStorageExpenseRepo` delegiert an die Low-Level-Funktionen in
+[src/lib/expenses.ts](src/lib/expenses.ts) (per-Monat-Keys im Schema
+`onlytime:v1:expenses:YYYY-MM`).
+
+Types und Konstanten liegen in [src/lib/expenseTypes.ts](src/lib/expenseTypes.ts),
+damit Komponenten Typen importieren können, ohne den Storage-Code
+mitzuziehen.
+
+### Context & Hook
+
+[src/contexts/RepoContext.tsx](src/contexts/RepoContext.tsx) stellt
+`RepoProvider` und `useExpenseRepo()` bereit. Der Provider wrapt den
+App-Baum in [src/App.tsx](src/App.tsx) und verwendet in Produktion die
+localStorage-Instanz. Tests können jeden anderen `ExpenseRepo`
+injizieren.
+
+### Testing-Seam
+
+[src/test/renderWithRepo.tsx](src/test/renderWithRepo.tsx) liefert einen
+`createInMemoryRepo(seed)` plus einen `renderWithRepo(ui, { seed })`
+Helper. Komponenten- und Screen-Tests
+([src/components/__tests__/](src/components/__tests__/),
+[src/screens/__tests__/](src/screens/__tests__/)) laufen ausschliesslich
+gegen diesen In-Memory-Repo; keine Testdatei greift auf `localStorage`
+zu.
+
+### Grep-Boundary
+
+Der Seam wird durch eine Import-Regel abgesichert: `grep -r
+"from.*lib/expenses" src/` darf ausser `expenseRepo.ts` und Test-Dateien
+keine Treffer liefern. Lib-interne Callsites
+([dummyData](src/lib/dummyData.ts), [rangeAnalytics](src/lib/rangeAnalytics.ts))
+gehen deshalb über `localStorageExpenseRepo`, nicht über die rohen
+Storage-Funktionen.

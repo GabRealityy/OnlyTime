@@ -18,7 +18,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version-file: .nvmrc
           cache: npm
 
       - name: Install dependencies
@@ -27,8 +27,17 @@ jobs:
       - name: Lint
         run: npm run lint
 
-      - name: Tests
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Unit tests
         run: npm run test:run
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: E2E tests
+        run: npx playwright test
 
       - name: Build
         run: npm run build
