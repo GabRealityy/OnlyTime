@@ -12,6 +12,7 @@ import { Modal } from './Modal'
 import { ConfirmDialog } from './ConfirmDialog'
 import type { CustomCategory } from '../lib/expenses'
 import { AVAILABLE_EMOJIS } from '../lib/expenses'
+import { showToast } from './Toast'
 
 
 
@@ -80,19 +81,17 @@ export function CategoryManager(props: {
     onSave(categories.filter(cat => cat.id !== id))
     setCategoryToDelete(null)
 
-    // Show toast with undo option (if showToast is available)
-    if (typeof (window as any).showToast === 'function') {
-      (window as any).showToast(
-        `Kategorie "${deletedCategory.name}" gelöscht`,
-        'info',
-        5000,
-        'Rückgängig',
-        () => {
-          onSave([...categories, deletedCategory])
-            ; (window as any).showToast(`Kategorie wiederhergestellt`, 'success', 2000)
-        }
-      )
-    }
+    // Show toast with undo option
+    showToast(
+      `Kategorie "${deletedCategory.name}" gelöscht`,
+      'info',
+      5000,
+      'Rückgängig',
+      () => {
+        onSave([...categories, deletedCategory])
+        showToast(`Kategorie wiederhergestellt`, 'success', 2000)
+      },
+    )
   }
 
   return (

@@ -12,6 +12,7 @@ import { ConfirmDialog } from './ConfirmDialog'
 import type { CategoryBudget, CustomCategory } from '../lib/expenses'
 import { expenseCategories, categoryEmojis } from '../lib/expenses'
 import { formatCHF, toHours, formatHoursMinutes } from '../lib/money'
+import { showToast } from './Toast'
 
 export function BudgetManager(props: {
   open: boolean
@@ -101,18 +102,16 @@ export function BudgetManager(props: {
 
     // Show toast with undo option
     const categoryName = allCategories.find(c => c.id === categoryId)?.name || categoryId
-    if (typeof (window as any).showToast === 'function') {
-      (window as any).showToast(
-        `Budget für "${categoryName}" gelöscht`,
-        'info',
-        5000,
-        'Rückgängig',
-        () => {
-          onSave([...budgets, deletedBudget])
-            ; (window as any).showToast(`Budget wiederhergestellt`, 'success', 2000)
-        }
-      )
-    }
+    showToast(
+      `Budget für "${categoryName}" gelöscht`,
+      'info',
+      5000,
+      'Rückgängig',
+      () => {
+        onSave([...budgets, deletedBudget])
+        showToast(`Budget wiederhergestellt`, 'success', 2000)
+      },
+    )
   }
 
   return (

@@ -23,6 +23,7 @@ export type Toast = {
 let toastListeners: Array<(toast: Toast) => void> = []
 let toastIdCounter = 0
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function showToast(
   message: string,
   type: ToastType = 'info',

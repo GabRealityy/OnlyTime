@@ -39,20 +39,23 @@ export function ReportsScreen(props: { settings: Settings }) {
   }, [timeRange])
 
   const chartPoints: DailyPoint[] = useMemo(() => {
+    const points: DailyPoint[] = []
     let earnedCum = 0
     let spentCum = 0
-    return monthlyData.map((m, idx) => {
+    for (let idx = 0; idx < monthlyData.length; idx++) {
+      const m = monthlyData[idx]
       earnedCum += m.earned
       spentCum += m.spent
-      return {
+      points.push({
         day: idx + 1,
         dayLabel: m.label,
         earned: earnedCum,
         spent: spentCum,
         earnedHours: toHours(earnedCum, hourly),
         spentHours: toHours(spentCum, hourly),
-      }
-    })
+      })
+    }
+    return points
   }, [monthlyData, hourly])
 
   const categoryBreakdown = useMemo(() => {

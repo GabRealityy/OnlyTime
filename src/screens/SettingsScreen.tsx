@@ -148,13 +148,13 @@ export function SettingsScreen(props: {
   const handleChecklistClick = (id: string) => {
     // Scroll to relevant section or open modal
     switch (id) {
-      case 'hourly-rate':
-        // Scroll to income section
+      case 'hourly-rate': {
         const incomeSection = document.querySelector('[data-section="income"]')
         if (incomeSection) {
           incomeSection.scrollIntoView({ behavior: 'smooth', block: 'start' })
         }
         break
+      }
       case 'category':
         setShowCategoryManager(true)
         break

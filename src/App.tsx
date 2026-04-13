@@ -3,7 +3,7 @@
   No backend. All persistence via localStorage.
 */
 
-import { useMemo, useState, useEffect } from 'react'
+import { useMemo, useState } from 'react'
 import type { Screen } from './types.ts'
 import { TopNav } from './components/TopNav'
 import { SettingsScreen } from './screens/SettingsScreen'
@@ -20,21 +20,15 @@ import { OnboardingFlow } from './components/OnboardingFlow'
 
 export default function App() {
   const [screen, setScreen] = useState<Screen>('status')
-  const [showOnboarding, setShowOnboarding] = useState(false)
+  const [showOnboarding, setShowOnboarding] = useState(
+    () => !localStorage.getItem('onlyTime_hasSeenOnboarding'),
+  )
 
   const [settings, setSettings] = useLocalStorageState(
     storageKeys.settings,
     loadSettings,
     saveSettings,
   )
-
-  // Check if first visit
-  useEffect(() => {
-    const hasSeenOnboarding = localStorage.getItem('onlyTime_hasSeenOnboarding')
-    if (!hasSeenOnboarding) {
-      setShowOnboarding(true)
-    }
-  }, [])
 
   const handleOnboardingComplete = () => {
     localStorage.setItem('onlyTime_hasSeenOnboarding', 'true')

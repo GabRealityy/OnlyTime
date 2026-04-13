@@ -7,7 +7,7 @@
   - Auto-Focus auf Betrags-Feld
 */
 
-import { useState, useEffect, useRef } from 'react'
+import { useState } from 'react'
 import { Modal } from './Modal'
 import { formatCHF, formatHoursMinutes, toHours } from '../lib/money'
 import { expenseCategories, type ExpenseCategory, categoryEmojis } from '../lib/expenses'
@@ -36,32 +36,14 @@ export function ExpenseFormModal(props: {
   const [inputMode, setInputMode] = useState<'chf' | 'time'>(preferTimeDisplay && hourlyRate > 0 ? 'time' : 'chf')
 
   // Form fields
-  const [amountInput, setAmountInput] = useState<string>('')
-  const [title, setTitle] = useState<string>('')
-  const [category, setCategory] = useState<ExpenseCategory | string>('Essen')
-  const [date, setDate] = useState<string>(isoDateLocal(new Date()))
+  const [amountInput, setAmountInput] = useState<string>(() => initialData?.amountCHF?.toString() || '')
+  const [title, setTitle] = useState<string>(() => initialData?.title || '')
+  const [category, setCategory] = useState<ExpenseCategory | string>(() => initialData?.category || 'Essen')
+  const [date, setDate] = useState<string>(() => initialData?.date || isoDateLocal(new Date()))
   const [note, setNote] = useState<string>('')
 
   // Validation & errors
   const [errors, setErrors] = useState<{ amount?: string; title?: string }>({})
-
-  const amountInputRef = useRef<HTMLInputElement>(null)
-
-  // Reset form when modal opens
-  useEffect(() => {
-    if (open) {
-      setAmountInput(initialData?.amountCHF?.toString() || '')
-      setTitle(initialData?.title || '')
-      setCategory(initialData?.category || 'Essen')
-      setDate(initialData?.date || isoDateLocal(new Date()))
-      setNote('')
-      setErrors({})
-      setInputMode(preferTimeDisplay && hourlyRate > 0 ? 'time' : 'chf')
-
-      // Focus amount field after modal animation
-      setTimeout(() => amountInputRef.current?.focus(), 100)
-    }
-  }, [open, initialData, preferTimeDisplay, hourlyRate])
 
   const parseTimeInput = (input: string): number | null => {
     // Format: "1:30" oder "1.5" oder "90"
@@ -146,7 +128,7 @@ export function ExpenseFormModal(props: {
           </div>
 
           <input
-            ref={amountInputRef}
+            autoFocus
             id="amount"
             inputMode="decimal"
             className="w-full bg-transparent text-center text-5xl font-black tracking-tighter focus:outline-none placeholder:text-tertiary"

@@ -8,7 +8,7 @@
     earned = (monthlyIncome / daysInMonth) * today
 */
 
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import type { Settings } from '../lib/settings'
 import { hourlyRateCHF, effectiveNetMonthlyIncome } from '../lib/settings'
 import { dayOfMonth, daysInMonth, isoDateLocal, monthKeyFromDate, monthLabel } from '../lib/date'
@@ -38,22 +38,28 @@ function toDay(isoDate: string): number {
 }
 
 export function StatusScreen(props: { settings: Settings; onChange: (next: Settings) => void }) {
-  const now = new Date()
+  const [timeRange, setTimeRange] = useState<TimeRange>('1M')
+  const [selectedCategory, setSelectedCategory] = useState<string>('all')
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
+
+  const [reloadToken, setReloadToken] = useState(0)
+  const [now, setNow] = useState(() => new Date())
+  const reload = () => {
+    setNow(new Date())
+    setReloadToken((t) => t + 1)
+  }
+
   const monthKey = monthKeyFromDate(now)
   const today = dayOfMonth(now)
   const dim = daysInMonth(now)
   const label = monthLabel(now)
 
-  const [timeRange, setTimeRange] = useState<TimeRange>('1M')
-  const [selectedCategory, setSelectedCategory] = useState<string>('all')
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
-
-  const [lastUpdate, setLastUpdate] = useState(Date.now())
-  const [expenses, setExpenses] = useState<Expense[]>(() => loadExpensesForMonth(monthKey))
-
-  useEffect(() => {
-    setExpenses(loadExpensesForMonth(monthKey))
-  }, [monthKey, lastUpdate])
+  const expenses = useMemo(
+    () => loadExpensesForMonth(monthKey),
+    // reloadToken triggers re-read of localStorage after mutations
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [monthKey, reloadToken],
+  )
 
   // Modal states
   const [showExpenseForm, setShowExpenseForm] = useState(false)
@@ -127,12 +133,9 @@ export function StatusScreen(props: { settings: Settings; onChange: (next: Setti
     }
 
     return warnings.sort((a, b) => b.percentage - a.percentage)
-  }, [props.settings.categoryBudgets, categorySpending])
+  }, [props.settings.categoryBudgets, categorySpending, hourly])
 
   const allRangeExpenses = useMemo(() => {
-    // Force re-evaluation on lastUpdate
-    lastUpdate
-
     let all: Expense[] = []
     if (timeRange === '1M') {
       all = [...expenses]
@@ -145,7 +148,7 @@ export function StatusScreen(props: { settings: Settings; onChange: (next: Setti
     }
 
     return all
-  }, [timeRange, now, expenses, lastUpdate])
+  }, [timeRange, now, expenses])
 
   // Helper function to format values based on preferTimeDisplay
   const formatValue = (chf: number, hours: number) => {
@@ -244,7 +247,7 @@ export function StatusScreen(props: { settings: Settings; onChange: (next: Setti
       category: data.category,
     })
 
-    setLastUpdate(Date.now())
+    reload()
     showToast(`${data.title} erfolgreich gespeichert`, 'success')
   }
 
@@ -255,7 +258,7 @@ export function StatusScreen(props: { settings: Settings; onChange: (next: Setti
       title: preset.title,
       category: preset.category,
     })
-    setLastUpdate(Date.now())
+    reload()
     showToast(`${preset.title} erfasst: ${formatCHF(preset.amountCHF)}`, 'success', 2000)
   }
 
@@ -265,7 +268,7 @@ export function StatusScreen(props: { settings: Settings; onChange: (next: Setti
       addExpense(expMonthKey, exp)
     }
 
-    setLastUpdate(Date.now())
+    reload()
     showToast(`${importedExpenses.length} Ausgaben importiert`, 'success')
   }
 
@@ -276,7 +279,7 @@ export function StatusScreen(props: { settings: Settings; onChange: (next: Setti
 
     const expMonthKey = deletedExpense.date.slice(0, 7)
     deleteExpense(expMonthKey, id)
-    setLastUpdate(Date.now())
+    reload()
 
     showToast(
       `${title} gelöscht`,
@@ -291,7 +294,7 @@ export function StatusScreen(props: { settings: Settings; onChange: (next: Setti
           title: deletedExpense.title,
           category: deletedExpense.category,
         })
-        setLastUpdate(Date.now())
+        reload()
         showToast(`${title} wiederhergestellt`, 'success', 2000)
       }
     )
@@ -565,6 +568,7 @@ export function StatusScreen(props: { settings: Settings; onChange: (next: Setti
       </div>
 
       <ExpenseFormModal
+        key={showExpenseForm ? 'open' : 'closed'}
         open={showExpenseForm}
         onClose={() => setShowExpenseForm(false)}
         onSave={onSaveExpense}
