@@ -10,7 +10,7 @@
 import { useState } from 'react'
 import { Modal } from './Modal'
 import { formatCHF, formatHoursMinutes, toHours } from '../lib/money'
-import { expenseCategories, type ExpenseCategory, categoryEmojis } from '../lib/expenses'
+import { expenseCategories, type ExpenseCategory, categoryEmojis } from '../lib/expenseTypes'
 import { isoDateLocal } from '../lib/date'
 
 export type ExpenseFormData = {

@@ -1,5 +1,7 @@
 /*
-  Expenses model (stored per-month in localStorage).
+  Low-level expense storage (localStorage, per-month buckets).
+  Access from app code only via src/lib/expenseRepo.ts — this module
+  is an implementation detail of the repository.
 
   Storage scheme:
   - Key: onlytime:v1:expenses:YYYY-MM
@@ -7,87 +9,7 @@
 */
 
 import { loadFromStorage, saveToStorage, storageKeys } from './storage'
-
-export const expenseCategories = [
-  'Essen',
-  'Mobilität',
-  'Einkaufen',
-  'Wohnen',
-  'Freizeit',
-  'Abos',
-  'Sonstiges',
-] as const
-
-export const categoryEmojis: Record<string, string> = {
-  Essen: '🍕',
-  Mobilität: '🚲',
-  Einkaufen: '🛒',
-  Wohnen: '🏠',
-  Freizeit: '🎮',
-  Abos: '📅',
-  Sonstiges: '📁',
-}
-
-export const AVAILABLE_EMOJIS = [
-  '🍕', '🍔', '🍟', '🍿', '🥤', '☕', '🍺', '🍽️',
-  '🚗', '🚌', '🚇', '✈️', '🚲', '⛽', '🚕', '🏍️',
-  '🛒', '👕', '👔', '👗', '👟', '🎽', '🧥', '👜',
-  '🎮', '🎬', '🎵', '🎸', '📚', '🎨', '🎭', '🎪',
-  '💊', '🏥', '💉', '🩺', '🧘', '🏋️', '🧪', '🔬',
-  '🏠', '💡', '🔧', '🔨', '🪛', '🧰', '📦', '🧹',
-  '📱', '💻', '⌨️', '🖥️', '🖱️', '💾', '📷', '📸',
-  '❤️', '💰', '💳', '🎁', '🎉', '🎂', '🎈', '⭐',
-]
-
-export type ExpenseCategory = (typeof expenseCategories)[number]
-
-/**
- * Quick-Add Preset: Häufige Ausgaben mit einem Klick erfassen
- */
-export type QuickAddPreset = {
-  id: string
-  title: string
-  amountCHF: number
-  category: ExpenseCategory | string // string für custom categories
-  emoji?: string
-}
-
-/**
- * Benutzerdefinierte Kategorie mit optionaler Farbe/Icon
- */
-export type CustomCategory = {
-  id: string
-  name: string
-  emoji?: string
-}
-
-/**
- * Budget pro Kategorie (CHF oder Stunden pro Monat)
- * Unterstützt Dual-Display: Budget kann in CHF ODER Stunden definiert werden
- */
-export type CategoryBudget = {
-  categoryId: string
-  monthlyBudgetCHF?: number
-  monthlyBudgetHours?: number
-}
-
-export type Expense = {
-  id: string
-  // YYYY-MM-DD (local date, matches <input type="date">)
-  date: string
-  amountCHF: number
-  title: string
-  // Built-in category (ExpenseCategory) or a custom category id
-  category: string
-  createdAt: number
-  // Optional: berechnete Stundenanzahl (wird dynamisch aus amountCHF / hourlyRate berechnet)
-  amountHours?: number
-}
-
-export function monthKeyFromIsoDate(isoDate: string): string {
-  // isoDate expected: YYYY-MM-DD
-  return isoDate.slice(0, 7)
-}
+import type { Expense } from './expenseTypes'
 
 export function loadExpensesForMonth(monthKey: string): Expense[] {
   const raw = loadFromStorage<unknown>(storageKeys.expensesByMonth(monthKey))
@@ -99,49 +21,32 @@ export function loadExpensesForMonth(monthKey: string): Expense[] {
     if (exp) parsed.push(exp)
   }
 
-  // newest first in UI
   parsed.sort((a, b) => b.date.localeCompare(a.date) || b.createdAt - a.createdAt)
   return parsed
 }
 
-/**
- * Lädt Ausgaben für einen Datumsbereich effizient.
- * Nützlich für lange Zeiträume, um mehrere Monate auf einmal zu laden.
- * 
- * @param startMonthKey - Start-Monat im Format YYYY-MM
- * @param endMonthKey - End-Monat im Format YYYY-MM (inklusive)
- * @returns Alle Ausgaben im angegebenen Zeitraum, sortiert nach Datum
- */
 export function loadExpensesForRange(startMonthKey: string, endMonthKey: string): Expense[] {
   const allExpenses: Expense[] = []
-  
-  // Parse start and end dates
   const [startYear, startMonth] = startMonthKey.split('-').map(Number)
   const [endYear, endMonth] = endMonthKey.split('-').map(Number)
-  
+
   let currentYear = startYear
   let currentMonth = startMonth
-  
-  // Iterate through all months in range
+
   while (
-    currentYear < endYear || 
+    currentYear < endYear ||
     (currentYear === endYear && currentMonth <= endMonth)
   ) {
     const monthKey = `${currentYear}-${String(currentMonth).padStart(2, '0')}`
-    const monthExpenses = loadExpensesForMonth(monthKey)
-    allExpenses.push(...monthExpenses)
-    
-    // Move to next month
+    allExpenses.push(...loadExpensesForMonth(monthKey))
     currentMonth++
     if (currentMonth > 12) {
       currentMonth = 1
       currentYear++
     }
   }
-  
-  // Sort all expenses by date (newest first)
+
   allExpenses.sort((a, b) => b.date.localeCompare(a.date) || b.createdAt - a.createdAt)
-  
   return allExpenses
 }
 

@@ -20,7 +20,7 @@
 */
 
 import { loadFromStorage, saveToStorage, storageKeys } from './storage'
-import type { QuickAddPreset, CustomCategory, CategoryBudget } from './expenses'
+import type { QuickAddPreset, CustomCategory, CategoryBudget } from './expenseTypes'
 import type { Currency } from '../types'
 
 export type IncomeSource = {

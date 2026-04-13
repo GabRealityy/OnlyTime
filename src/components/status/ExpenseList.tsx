@@ -1,5 +1,5 @@
 import { formatCHF, formatHoursMinutes, toHours } from '../../lib/money'
-import type { Expense } from '../../lib/expenses'
+import type { Expense } from '../../lib/expenseTypes'
 import { CategoryFilterBar } from './CategoryFilterBar'
 
 type SortOrder = 'asc' | 'desc'

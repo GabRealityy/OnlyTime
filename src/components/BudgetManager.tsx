@@ -9,8 +9,8 @@
 import { useState } from 'react'
 import { Modal } from './Modal'
 import { ConfirmDialog } from './ConfirmDialog'
-import type { CategoryBudget, CustomCategory } from '../lib/expenses'
-import { expenseCategories, categoryEmojis } from '../lib/expenses'
+import type { CategoryBudget, CustomCategory } from '../lib/expenseTypes'
+import { expenseCategories, categoryEmojis } from '../lib/expenseTypes'
 import { formatCHF, toHours, formatHoursMinutes } from '../lib/money'
 import { showToast } from './Toast'
 

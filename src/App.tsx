@@ -17,6 +17,7 @@ import { storageKeys } from './lib/storage'
 import { useLocalStorageState } from './hooks/useLocalStorageState'
 import { ToastContainer, showToast } from './components/Toast'
 import { OnboardingFlow } from './components/OnboardingFlow'
+import { RepoProvider } from './contexts/RepoContext'
 
 export default function App() {
   const [screen, setScreen] = useState<Screen>('status')
@@ -63,6 +64,7 @@ export default function App() {
   }, [screen, settings, setSettings])
 
   return (
+    <RepoProvider>
     <div className="min-h-screen">
       <TopNav active={screen} onNavigate={setScreen} />
 
@@ -99,5 +101,6 @@ export default function App() {
         onSkip={handleOnboardingSkip}
       />
     </div>
+    </RepoProvider>
   )
 }

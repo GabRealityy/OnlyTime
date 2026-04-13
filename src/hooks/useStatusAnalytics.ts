@@ -2,7 +2,8 @@ import { useMemo } from 'react'
 import type { Settings } from '../lib/settings'
 import { effectiveNetMonthlyIncome } from '../lib/settings'
 import { toHours } from '../lib/money'
-import { loadExpensesForMonth, type Expense } from '../lib/expenses'
+import type { Expense } from '../lib/expenseTypes'
+import { useExpenseRepo } from '../contexts/RepoContext'
 import type { DailyPoint } from '../components/LineChart'
 import type { BudgetWarning } from '../components/status/BudgetWarnings'
 import {
@@ -42,6 +43,7 @@ export function useStatusAnalytics(input: {
   today: number
 }): StatusAnalytics {
   const { settings, expenses, hourly, timeRange, now, dim, today } = input
+  const repo = useExpenseRepo()
 
   const rangeMonthlyData = useMemo(
     () => buildMonthlyData(settings, timeRange, now),
@@ -100,9 +102,9 @@ export function useStatusAnalytics(input: {
     if (timeRange === '1M') return [...expenses]
     const keys = getMonthKeys(timeRange, now)
     const all: Expense[] = []
-    for (const key of keys) all.push(...loadExpensesForMonth(key))
+    for (const key of keys) all.push(...repo.listMonth(key))
     return all
-  }, [timeRange, now, expenses])
+  }, [timeRange, now, expenses, repo])
 
   const dailyPoints = useMemo<DailyPoint[]>(() => {
     const monthly = effectiveNetMonthlyIncome(settings)

@@ -3,7 +3,7 @@ import type { Settings } from '../lib/settings'
 import { hourlyRateCHF } from '../lib/settings'
 import { showToast } from '../components/Toast'
 import { OnboardingChecklist, type ChecklistItem } from '../components/OnboardingChecklist'
-import { loadExpensesForMonth } from '../lib/expenses'
+import { useExpenseRepo } from '../contexts/RepoContext'
 import { monthKeyFromDate } from '../lib/date'
 import { DisplaySection } from '../components/settings/DisplaySection'
 import { IncomeSection } from '../components/settings/IncomeSection'
@@ -21,6 +21,7 @@ export function SettingsScreen(props: {
   const [openCategoryManager, setOpenCategoryManager] = useState(false)
   const [openBudgetManager, setOpenBudgetManager] = useState(false)
 
+  const repo = useExpenseRepo()
   const hourlyRate = hourlyRateCHF(settings)
 
   const checklistItems: ChecklistItem[] = [
@@ -46,7 +47,7 @@ export function SettingsScreen(props: {
       id: 'expense',
       label: 'Erste Ausgabe erfassen',
       description: 'Ausgabe manuell oder per Quick-Add speichern',
-      completed: loadExpensesForMonth(monthKeyFromDate(new Date())).length > 0,
+      completed: repo.listMonth(monthKeyFromDate(new Date())).length > 0,
     },
   ]
 

@@ -3,7 +3,7 @@ import type { Settings } from '../../lib/settings'
 import { formatCHF } from '../../lib/money'
 import { DecimalInput } from '../DecimalInput'
 import { showToast } from '../Toast'
-import { expenseCategories, categoryEmojis, AVAILABLE_EMOJIS, type QuickAddPreset } from '../../lib/expenses'
+import { expenseCategories, categoryEmojis, AVAILABLE_EMOJIS, type QuickAddPreset } from '../../lib/expenseTypes'
 
 export function QuickAddSection(props: {
   settings: Settings

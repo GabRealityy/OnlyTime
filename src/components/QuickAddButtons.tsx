@@ -2,7 +2,7 @@
   Quick-Add Component: Häufige Ausgaben mit einem Klick erfassen
 */
 
-import type { QuickAddPreset } from '../lib/expenses'
+import type { QuickAddPreset } from '../lib/expenseTypes'
 import { formatCHF, formatHoursMinutes, toHours } from '../lib/money'
 
 export function QuickAddButtons(props: {

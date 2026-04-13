@@ -9,7 +9,7 @@
 
 import { useState } from 'react'
 import { Modal } from './Modal'
-import { type Expense, type ExpenseCategory } from '../lib/expenses'
+import { type Expense, type ExpenseCategory } from '../lib/expenseTypes'
 import { formatCHF } from '../lib/money'
 import { isoDateLocal } from '../lib/date'
 

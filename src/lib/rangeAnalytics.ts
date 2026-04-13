@@ -1,7 +1,7 @@
 import type { Settings } from './settings'
 import { effectiveNetMonthlyIncome, hourlyRateCHF } from './settings'
 import { daysInMonth, monthKeyFromDate, pad2 } from './date'
-import { loadExpensesForMonth } from './expenses'
+import { localStorageExpenseRepo } from './expenseRepo'
 import { toHours } from './money'
 
 export type TimeRange = '1M' | '3M' | '6M' | 'YTD' | '1Y' | '3Y' | '5Y'
@@ -123,7 +123,7 @@ export function buildMonthlyData(settings: Settings, range: TimeRange, now: Date
   const monthKeys = getMonthKeys(range, now)
 
   return monthKeys.map((monthKey) => {
-    const expenses = loadExpensesForMonth(monthKey)
+    const expenses = localStorageExpenseRepo.listMonth(monthKey)
     const spent = expenses.reduce((sum, e) => sum + (Number.isFinite(e.amountCHF) ? e.amountCHF : 0), 0)
 
     const monthDate = dateFromMonthKey(monthKey)

@@ -3,7 +3,9 @@ import type { Settings } from '../lib/settings'
 import { hourlyRateCHF } from '../lib/settings'
 import { dayOfMonth, daysInMonth, isoDateLocal, monthKeyFromDate, monthLabel } from '../lib/date'
 import { formatCHF } from '../lib/money'
-import { addExpense, deleteExpense, type Expense, type QuickAddPreset, categoryEmojis } from '../lib/expenses'
+import type { Expense, QuickAddPreset } from '../lib/expenseTypes'
+import { categoryEmojis } from '../lib/expenseTypes'
+import { useExpenseRepo } from '../contexts/RepoContext'
 import { useExpenses } from '../hooks/useExpenses'
 import { useStatusAnalytics } from '../hooks/useStatusAnalytics'
 import { LineChart } from '../components/LineChart'
@@ -38,6 +40,7 @@ export function StatusScreen(props: Props) {
   const label = monthLabel(now)
 
   const { expenses, mutate } = useExpenses(monthKey)
+  const repo = useExpenseRepo()
   const hourly = hourlyRateCHF(props.settings)
 
   const analytics = useStatusAnalytics({
@@ -68,7 +71,7 @@ export function StatusScreen(props: Props) {
   }, [analytics.allRangeExpenses, selectedCategory, sortOrder])
 
   const onSaveExpense = (data: ExpenseFormData) => {
-    addExpense(data.date.slice(0, 7), {
+    repo.add(data.date.slice(0, 7), {
       date: data.date,
       amountCHF: data.amountCHF,
       title: data.title,
@@ -79,7 +82,7 @@ export function StatusScreen(props: Props) {
   }
 
   const onQuickAdd = (preset: QuickAddPreset) => {
-    addExpense(monthKey, {
+    repo.add(monthKey, {
       date: isoDateLocal(now),
       amountCHF: preset.amountCHF,
       title: preset.title,
@@ -90,7 +93,7 @@ export function StatusScreen(props: Props) {
   }
 
   const onCSVImport = (importedExpenses: Omit<Expense, 'id'>[]) => {
-    for (const exp of importedExpenses) addExpense(exp.date.slice(0, 7), exp)
+    for (const exp of importedExpenses) repo.add(exp.date.slice(0, 7), exp)
     mutate()
     showToast(`${importedExpenses.length} Ausgaben importiert`, 'success')
   }
@@ -99,10 +102,10 @@ export function StatusScreen(props: Props) {
     const deletedExpense = expenses.find((e) => e.id === id)
     if (!deletedExpense) return
     const expMonthKey = deletedExpense.date.slice(0, 7)
-    deleteExpense(expMonthKey, id)
+    repo.delete(expMonthKey, id)
     mutate()
     showToast(`${title} gelöscht`, 'info', 5000, 'Rückgängig', () => {
-      addExpense(expMonthKey, {
+      repo.add(expMonthKey, {
         date: deletedExpense.date,
         amountCHF: deletedExpense.amountCHF,
         title: deletedExpense.title,

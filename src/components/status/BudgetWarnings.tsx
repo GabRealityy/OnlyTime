@@ -1,4 +1,4 @@
-import type { CustomCategory } from '../../lib/expenses'
+import type { CustomCategory } from '../../lib/expenseTypes'
 import { formatCHF } from '../../lib/money'
 
 export type BudgetWarning = {

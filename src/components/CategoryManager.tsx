@@ -10,8 +10,8 @@
 import { useState } from 'react'
 import { Modal } from './Modal'
 import { ConfirmDialog } from './ConfirmDialog'
-import type { CustomCategory } from '../lib/expenses'
-import { AVAILABLE_EMOJIS } from '../lib/expenses'
+import type { CustomCategory } from '../lib/expenseTypes'
+import { AVAILABLE_EMOJIS } from '../lib/expenseTypes'
 import { showToast } from './Toast'
 
 

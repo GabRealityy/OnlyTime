@@ -5,7 +5,8 @@
   to populate the app for testing, demos, or workshops.
 */
 
-import { addExpense, type ExpenseCategory } from './expenses'
+import { localStorageExpenseRepo } from './expenseRepo'
+import type { ExpenseCategory } from './expenseTypes'
 import type { Settings } from './settings'
 
 type ExpenseTemplate = {
@@ -222,7 +223,7 @@ export function generateDummyData(_settings: Settings, months: number): number {
         const amount = template.minAmount + Math.random() * range
         const amountCHF = Math.round(amount * 20) / 20 // Runden auf 0.05
         
-        addExpense(monthKey, {
+        localStorageExpenseRepo.add(monthKey, {
           date,
           title,
           amountCHF,
