@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm test:*)",
+      "Bash(wc -l src/screens/StatusScreen.tsx src/components/status/*.tsx)",
+      "Bash(npm run:*)",
+      "Bash(wc -l src/screens/SettingsScreen.tsx src/components/settings/*.tsx)",
+      "Bash(npx vitest:*)",
+      "Bash(npx playwright:*)"
+    ]
+  }
+}
